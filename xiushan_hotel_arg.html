@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>休山大酒店 | XIU SHAN VESSEL HOTEL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #0f1a14;
+            --forest: #1a2e22;
+            --moss: #2d4a3e;
+            --sage: #6b8e6b;
+            --gold: #c9a96e;
+            --gold-light: #e0c896;
+            --ivory: #f5f0e8;
+            --stone: #d4cec3;
+            --mist: rgba(245, 240, 232, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: var(--ink);
+            color: var(--ivory);
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: linear-gradient(to bottom, rgba(15,26,20,0.95), transparent);
+            padding: 24px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.4s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(15,26,20,0.98);
+            backdrop-filter: blur(20px);
+            padding: 16px 60px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            color: var(--gold);
+            font-weight: 400;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 48px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--stone);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 4px;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--gold);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            min-height: 100vh;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Home Hero */
+        .hero {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+            filter: brightness(0.7) saturate(0.8);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(15,26,20,0.3), rgba(15,26,20,0.9));
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+            padding: 0 20px;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 400;
+            letter-spacing: 8px;
+            color: var(--ivory);
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1rem, 2vw, 1.4rem);
+            letter-spacing: 6px;
+            color: var(--gold);
+            font-weight: 300;
+            font-style: italic;
+            margin-bottom: 40px;
+        }
+
+        .hero-divider {
+            width: 60px;
+            height: 1px;
+            background: var(--gold);
+            margin: 0 auto 40px;
+            opacity: 0.6;
+        }
+
+        .hero-desc {
+            font-size: 1rem;
+            color: var(--stone);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 2;
+            font-weight: 300;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--gold);
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* Content Blocks */
+        .content-block {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 40px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            letter-spacing: 4px;
+            margin-bottom: 60px;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        /* Special Text Effect */
+        .special-text {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, rgba(26,46,34,0.6), rgba(15,26,20,0.8));
+            border-top: 1px solid rgba(201,169,110,0.2);
+            border-bottom: 1px solid rgba(201,169,110,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .special-text::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(201,169,110,0.05) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .special-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 4rem);
+            color: var(--gold);
+            letter-spacing: 12px;
+            font-weight: 400;
+            position: relative;
+            text-shadow: 0 0 40px rgba(201,169,110,0.3);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; text-shadow: 0 0 60px rgba(201,169,110,0.5); }
+        }
+
+        /* Booking Form */
+        .booking-section {
+            background: var(--forest);
+            padding: 80px 40px;
+        }
+
+        .booking-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(15,26,20,0.6);
+            border: 1px solid rgba(201,169,110,0.2);
+            padding: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .booking-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+
+        .form-group select, .form-group input {
+            padding: 14px 16px;
+            background: rgba(245,240,232,0.05);
+            border: 1px solid rgba(201,169,110,0.3);
+            color: var(--ivory);
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .form-group select:focus, .form-group input:focus {
+            border-color: var(--gold);
+            background: rgba(245,240,232,0.08);
+        }
+
+        .form-group select option {
+            background: var(--forest);
+            color: var(--ivory);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            background: var(--gold);
+            color: var(--ink);
+        }
+
+        /* Room Showcase */
+        .rooms-showcase {
+            padding: 100px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .room-card {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            border: 1px solid rgba(201,169,110,0.15);
+        }
+
+        .room-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease, filter 0.6s;
+            filter: brightness(0.8) saturate(0.8);
+        }
+
+        .room-card:hover img {
+            transform: scale(1.05);
+            filter: brightness(0.9) saturate(1);
+        }
+
+        .room-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px 20px 20px;
+            background: linear-gradient(to top, rgba(15,26,20,0.95), transparent);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            color: var(--ivory);
+        }
+
+        /* Footer Links */
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 60px 20px;
+            border-top: 1px solid rgba(201,169,110,0.1);
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--sage);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            transition: color 0.3s;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15,26,20,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal {
+            background: var(--forest);
+            border: 1px solid rgba(201,169,110,0.3);
+            padding: 50px;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .modal h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 3px;
+            font-weight: 400;
+        }
+
+        .modal .form-group {
+            margin-bottom: 20px;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(245,240,232,0.05);
+            border: 1px solid rgba(201,169,110,0.3);
+            color: var(--ivory);
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .modal input:focus {
+            border-color: var(--gold);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--stone);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+            background: none;
+            border: none;
+        }
+
+        .modal-close:hover {
+            color: var(--gold);
+        }
+
+        .error-msg {
+            color: #c96e6e;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .code-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.8rem;
+            color: var(--gold);
+            text-align: center;
+            letter-spacing: 4px;
+            padding: 30px;
+            border: 1px dashed var(--gold);
+            margin: 20px 0;
+            background: rgba(201,169,110,0.05);
+        }
+
+        /* About Section */
+        .about-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 120px 40px 100px;
+        }
+
+        .post-card {
+            background: rgba(26,46,34,0.4);
+            border: 1px solid rgba(201,169,110,0.15);
+            padding: 50px;
+            margin-bottom: 40px;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .post-card:hover {
+            border-color: rgba(201,169,110,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .post-card.error-card {
+            border-color: rgba(201, 110, 110, 0.3);
+            cursor: not-allowed;
+        }
+
+        .post-card.error-card:hover {
+            border-color: rgba(201, 110, 110, 0.5);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .post-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+
+        .post-date {
+            font-size: 0.8rem;
+            color: var(--sage);
+            letter-spacing: 1px;
+        }
+
+        .post-body {
+            color: var(--stone);
+            line-height: 2;
+            font-size: 0.95rem;
+        }
+
+        .post-body p {
+            margin-bottom: 16px;
+        }
+
+        .post-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(201,169,110,0.1);
+            font-size: 0.8rem;
+            color: var(--sage);
+            letter-spacing: 1px;
+        }
+
+        .error-code {
+            font-family: 'Courier New', monospace;
+            color: #c96e6e;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        /* Journey Section - Typography Art */
+        .journey-section {
+            padding: 120px 40px 100px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .journey-hero {
+            text-align: center;
+            margin-bottom: 100px;
+            position: relative;
+        }
+
+        .journey-hero::after {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 80px;
+            background: linear-gradient(to bottom, var(--gold), transparent);
+            margin: 60px auto 0;
+        }
+
+        .journey-title-xl {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            color: var(--gold);
+            font-weight: 400;
+            letter-spacing: 16px;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .journey-title-lg {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            color: var(--ivory);
+            font-weight: 300;
+            letter-spacing: 8px;
+            margin-bottom: 16px;
+        }
+
+        .journey-title-md {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: var(--sage);
+            letter-spacing: 6px;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        .journey-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 100px;
+            align-items: center;
+        }
+
+        .journey-block.reverse {
+            direction: rtl;
+        }
+
+        .journey-block.reverse > * {
+            direction: ltr;
+        }
+
+        .journey-text h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            font-weight: 400;
+        }
+
+        .journey-text p {
+            color: var(--stone);
+            line-height: 2.2;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .journey-text .en-caption {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--sage);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .journey-visual {
+            border: 1px solid rgba(201,169,110,0.15);
+            padding: 40px;
+            text-align: center;
+            background: rgba(26,46,34,0.3);
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .journey-visual .vessel-icon {
+            font-size: 3rem;
+            color: var(--gold);
+            opacity: 0.5;
+        }
+
+        .journey-visual-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--sage);
+            letter-spacing: 4px;
+        }
+
+        .journey-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .journey-list li {
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(201,169,110,0.1);
+            color: var(--stone);
+            letter-spacing: 2px;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .journey-list li span {
+            color: var(--gold);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+        }
+
+        .journey-center {
+            text-align: center;
+            padding: 80px 20px;
+            border-top: 1px solid rgba(201,169,110,0.1);
+            border-bottom: 1px solid rgba(201,169,110,0.1);
+            margin: 80px 0;
+        }
+
+        .journey-center h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            color: var(--gold);
+            letter-spacing: 6px;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .journey-center p {
+            color: var(--sage);
+            font-size: 1rem;
+            letter-spacing: 2px;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 2;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links { gap: 24px; }
+            nav { padding: 20px 30px; }
+            .booking-grid { grid-template-columns: 1fr; }
+            .rooms-grid { grid-template-columns: 1fr; }
+            .journey-block { grid-template-columns: 1fr; gap: 40px; }
+            .content-block { padding: 60px 20px; }
+            .modal { padding: 30px; }
+            .post-card { padding: 30px; }
+        }
+
+        /* Utility */
+        .text-center { text-align: center; }
+        .mb-4 { margin-bottom: 16px; }
+        .mt-8 { margin-top: 32px; }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="logo">VESSEL</div>
+        <ul class="nav-links">
+            <li><a onclick="showSection('home')" class="active" id="nav-home">首页</a></li>
+            <li><a onclick="showSection('about')" id="nav-about">关于休山大酒店</a></li>
+            <li><a onclick="showSection('journey')" id="nav-journey">开启旅程</a></li>
+        </ul>
+    </nav>
+
+    <!-- HOME SECTION -->
+    <div id="home" class="section active">
+        <div class="hero">
+            <img src="休山大酒店.png" alt="休山大酒店" class="hero-bg">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">休山大酒店</h1>
+                <p class="hero-subtitle">XIU SHAN VESSEL HOTEL</p>
+                <div class="hero-divider"></div>
+                <p class="hero-desc">
+                    休山大酒店依山势层叠而建，隐于青山密林之间，是融合自然野趣与顶奢质感的山地度假酒店。
+                    酒店整体顺着山体错落铺展，外立面简约大气，无边露天泳池悬于半山，推窗即是连绵苍翠山景。
+                </p>
+            </div>
+            <div class="scroll-indicator">
+                <span>SCROLL</span>
+                <span style="font-size: 1.2rem;">↓</span>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <p style="color: var(--stone); line-height: 2.2; font-size: 1.05rem; text-align: center; max-width: 800px; margin: 0 auto;">
+                步入酒店大堂，高挑穹顶搭配通透全景落地窗，柔和自然光倾泻而入，轻奢石材与原木肌理相融，静谧雅致，一步一景皆显格调。
+                客房分为舒适普通客房与观景豪华套房两类。基础客房简约大气，配套齐全，适合日常休憩；
+                主推山景豪华套房堪称度假臻选，全屋通铺温润奢华实木地板，中央铺陈复古宫廷纹样地毯，质感厚重华贵。
+                房间内配置超大轻奢软包卧床、巨幕智能电视，窗边立着修长落地长台灯，氛围感拉满。
+                套房自带私属露天温泉泡池，泡在温热汤泉中，远眺层叠山峦，隔绝外界喧嚣。
+            </p>
+            <p style="color: var(--sage); line-height: 2.2; font-size: 1rem; text-align: center; max-width: 800px; margin: 40px auto 0;">
+                全酒店配套完善，半山泳池、山林步道、私汤庭院、休闲公区一应俱全。在这里既能沉浸式拥抱山野自然，又可享受无微不至的高端服务。
+                本酒店作为Vessel酒店旗下的子酒店，会员将享有与Vessel会员的同样待遇，如免费早餐，免费健身房等。
+            </p>
+        </div>
+
+        <div class="special-text">
+            <h2>隐世之旅就此开启</h2>
+        </div>
+
+        <div class="booking-section">
+            <div class="booking-container">
+                <h3 class="section-title" style="margin-bottom: 40px; font-size: 1.5rem;">预订行程</h3>
+                <div class="booking-grid">
+                    <div class="form-group">
+                        <label>目的地</label>
+                        <select id="destination">
+                            <option value="">请选择目的地</option>
+                            <option value="dayun">大云市</option>
+                            <option value="houston">休斯顿市</option>
+                            <option value="la">洛杉矶市</option>
+                            <option value="tokyo">东京市</option>
+                            <option value="singapore">新加坡</option>
+                            <option value="london">伦敦市</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>旅行时间</label>
+                        <input type="date" id="travelDate" min="2026-01-01" max="2268-12-31">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="handleBooking()">确 定</button>
+            </div>
+        </div>
+
+        <div class="rooms-showcase">
+            <h3 class="section-title">客房展示</h3>
+            <div class="rooms-grid">
+                <div class="room-card">
+                    <img src="休山大酒店大堂.png" alt="酒店大堂">
+                    <div class="room-label">大厅</div>
+                </div>
+                <div class="room-card">
+                    <img src="休山大酒店普通客房.png" alt="普通客房">
+                    <div class="room-label">普通客房</div>
+                </div>
+                <div class="room-card">
+                    <img src="休山大酒店豪华客房.png" alt="豪华客房">
+                    <div class="room-label">豪华客房</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-links">
+            <a>Vessel旅行服务</a>
+            <a>Vessel会员</a>
+            <a>会员礼遇</a>
+            <a>赚取积分</a>
+            <a>兑换积分</a>
+        </div>
+    </div>
+
+    <!-- ABOUT SECTION -->
+    <div id="about" class="section">
+        <div class="about-content">
+            <h3 class="section-title">关于休山大酒店</h3>
+
+            <div class="post-card">
+                <div class="post-header">
+                    <h4 class="post-title">住宿体验</h4>
+                </div>
+                <div class="post-body">
+                    <p>关于本酒店的住宿体验等更多问题可在（KLKKKKKKKKKKKK占位符）网站反馈</p>
+                </div>
+                <div class="post-footer">
+                    2026年3月2日 休山大酒店 电话：177-XXXX-XXXX 152-XXXX-XXXX 邮箱：XIUSHANHOtel@vessel.com
+                </div>
+            </div>
+
+            <div class="post-card">
+                <div class="post-header">
+                    <h4 class="post-title">贺休山大酒店2025年璀璨落成</h4>
+                    <span class="post-date">2025年4月2日</span>
+                </div>
+                <div class="post-body">
+                    <p>青山叠翠，云雾为屏。值此2025年之际，我们满怀喜悦与自豪，热烈祝贺休山大酒店圆满建成，盛大启幕！</p>
+                    <p>休山大酒店依山势层叠而建，隐于密林之间，将自然野趣与顶奢质感融为一体。建筑顺着山体错落铺展，简约大气的外立面与苍翠山色相映成趣。半山之上，无边泳池悬于云端，推窗即见连绵峰峦，时有云雾漫过池边，山水风光尽收眼底。步入大堂，高挑穹顶配以通透落地窗，自然光倾泻而入，轻奢石材与原木肌理交织出静谧雅致的空间，一步一景，处处显格调。</p>
+                    <p>客房精心打造两类居所：舒适普通客房配套齐全，是日常休憩的理想之选；主推的山景豪华套房更堪称度假臻选——通铺温润实木地板，中央点缀复古宫廷纹样地毯，华贵而厚重。超大轻奢软包卧床、巨幕智能电视、修长落地台灯营造出极致氛围感；而私属露天温泉泡池，则让您在温热汤泉中远眺层峦，尽享远离喧嚣的宁静时刻。</p>
+                    <p>全酒店配套完善：半山泳池、山林步道、私汤庭院、休闲公区……一应俱全。在这里，既能沉浸式拥抱山野自然，又可享受无微不至的高端服务——无论短途静养、休闲度假，还是观景放松，休山大酒店都将为每一位宾客打造独一份的山居奢享体验。</p>
+                    <p>尤为值得一提的是，休山大酒店作为Vessel酒店集团旗下子酒店，所有Vessel会员将享有同等礼遇，包括免费早餐、免费健身房等专属权益。品牌承诺一脉相承，尊贵体验无缝延续。</p>
+                    <p>2025，山门已启，恭候君临。愿休山大酒店成为旅者心中的避世桃源，书写山地度假的崭新篇章！</p>
+                    <p>热烈祝贺休山大酒店2025年辉煌建成！期待与您在半山云雾间，共赴一场自然与奢华的栖居之约。</p>
+                </div>
+                <div class="post-footer">
+                    Vessel集团
+                </div>
+            </div>
+
+            <div class="post-card error-card" onclick="showErrorModal()">
+                <div class="post-header">
+                    <h4 class="post-title" style="color: #c96e6e;">Vessel集团通知</h4>
+                </div>
+                <div class="post-body">
+                    <p style="text-align: center; color: var(--sage);">[ 无法进入，错误码 Ct0003 ]</p>
+                    <p style="text-align: center; font-size: 0.85rem; color: var(--sage); margin-top: 10px;">点击以查看详情</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JOURNEY SECTION -->
+    <div id="journey" class="section">
+        <div class="journey-section">
+            <div class="journey-hero">
+                <div class="journey-title-xl">山野启序</div>
+                <div class="journey-title-lg">赴山之约</div>
+                <div class="journey-title-md">即刻启程</div>
+            </div>
+
+            <div class="journey-block">
+                <div class="journey-text">
+                    <span class="en-caption">MOUNTAIN CHECK-IN</span>
+                    <h4>奔赴山海</h4>
+                    <p>寻迹山林奢境，奔赴心之所向，赴一场藏于青山的度假之旅。</p>
+                    <p style="color: var(--gold); font-size: 1.1rem; letter-spacing: 2px; margin-top: 30px;">开启山居旅程</p>
+                </div>
+                <div class="journey-visual">
+                    <div class="vessel-icon">◈</div>
+                    <div class="journey-visual-text">Mountain view suite<br>with private open-air hot spring</div>
+                </div>
+            </div>
+
+            <div class="journey-block reverse">
+                <div class="journey-text">
+                    <span class="en-caption">Overhanging infinity pool on mountain ridge</span>
+                    <h4>山野新意</h4>
+                    <p>旅程启幕。下一站心向青山？从云雾缠绕的半山泳池到私汤环绕的观景套房，于此安放向往，规划一场避世奢旅。</p>
+                    <p style="color: var(--gold); font-size: 1.1rem; letter-spacing: 2px; margin-top: 30px;">探索山居行程</p>
+                </div>
+                <div class="journey-visual">
+                    <div class="vessel-icon">◇</div>
+                    <div class="journey-visual-text">Xiushan Grand Hotel<br>山巅臻选旅居</div>
+                </div>
+            </div>
+
+            <div class="journey-center">
+                <h3>依山而筑的顶奢酒店</h3>
+                <p>以原木宫廷美学客房、半山露天汤池与无边山景出圈，沉浸式静享山林静谧与专属尊崇服务。</p>
+            </div>
+
+            <div class="journey-block">
+                <div class="journey-text">
+                    <span class="en-caption">Luxury suite with solid wood flooring and palace carpet</span>
+                    <h4>泡汤观山，松弛自愈</h4>
+                    <p>漫步山林饱览层叠翠峦，回到私汤套房浸润暖汤，将俗世疲惫尽数消解，静赏落日漫过山脊。</p>
+                </div>
+                <div class="journey-text">
+                    <span class="en-caption">Luxury suite with long floor lamp and mountain terrace</span>
+                    <h4>揽山入怀，静享悠然</h4>
+                    <p>随心赴野，全新出发。隐于绿意之间的静谧居所，抛开日常琐碎，与青山晚风相伴，解锁独一份的山居慢时光。</p>
+                </div>
+            </div>
+
+            <div class="journey-center" style="border: none; margin: 60px 0;">
+                <h3 style="font-size: clamp(2rem, 5vw, 4rem); letter-spacing: 12px;">挣脱尘世喧嚣</h3>
+                <p style="font-size: 1.2rem; margin-top: 20px;">Xiushan Grand Hotel</p>
+            </div>
+
+            <div class="journey-block reverse">
+                <div class="journey-text">
+                    <span class="en-caption">Hillside infinity swimming pool</span>
+                    <h4>寻觅</h4>
+                    <p>山野启序。于层叠山色间拾取浪漫灵感，即刻出发，书写独属于你的山间回忆。</p>
+                    <p style="color: var(--gold); font-size: 1.1rem; letter-spacing: 2px; margin-top: 30px;">汲取山野灵感</p>
+                </div>
+                <div class="journey-visual">
+                    <div class="vessel-icon">✦</div>
+                    <div class="journey-visual-text">Aerial view of<br>mountain hotel</div>
+                </div>
+            </div>
+
+            <div class="journey-block">
+                <div class="journey-text">
+                    <h4>清幽山境</h4>
+                    <p>避开人声鼎沸的网红景点，落脚半山私邸，在独享静谧中坐拥整片山林风光，感受小众高端度假质感。</p>
+                </div>
+                <div class="journey-text">
+                    <h4>整装再赴</h4>
+                    <p>赴山之约。踏上山间探索之路，专属山居游玩指南为你梳理山野玩法，休山大酒店伴你览尽四季山景。</p>
+                </div>
+            </div>
+
+            <div style="max-width: 600px; margin: 80px auto;">
+                <ul class="journey-list">
+                    <li>山林徒步区 <span>→</span></li>
+                    <li>半山温泉庭 <span>→</span></li>
+                    <li>云端观景台 <span>→</span></li>
+                    <li>秘境茶歇处 <span>→</span></li>
+                    <li>星空露台 <span>→</span></li>
+                </ul>
+            </div>
+
+            <div class="journey-center">
+                <h3>悠然独处</h3>
+                <p>自在发生。寻觅适合独自放空、双人度假的山间居所，枕山而眠，与清风星月为伴。</p>
+                <p style="color: var(--gold); margin-top: 30px; font-size: 1.1rem; letter-spacing: 3px;">探索独处山居</p>
+            </div>
+
+            <div class="journey-block" style="margin-bottom: 40px;">
+                <div class="journey-visual">
+                    <div class="vessel-icon">◉</div>
+                    <div class="journey-visual-text">Private hot spring terrace<br>of mountain suite</div>
+                </div>
+                <div class="journey-text">
+                    <h4>山野新意</h4>
+                    <p>山林漫游。整装再赴。</p>
+                </div>
+            </div>
+
+            <div class="journey-block reverse" style="margin-bottom: 40px;">
+                <div class="journey-visual">
+                    <div class="vessel-icon">◐</div>
+                    <div class="journey-visual-text">Xiushan Grand Hotel<br>exterior view</div>
+                </div>
+                <div class="journey-text">
+                    <h4>悠然独处</h4>
+                    <p>山林野趣体验。整装再赴。</p>
+                </div>
+            </div>
+
+            <div class="journey-block" style="margin-bottom: 40px;">
+                <div class="journey-visual">
+                    <div class="vessel-icon">◑</div>
+                    <div class="journey-visual-text">Sunset mountain<br>landscape</div>
+                </div>
+                <div class="journey-text">
+                    <h4>赴山之约</h4>
+                    <p>定制山居行程。一览休山大酒店全系列旅居，半山泳池、私汤套房、云端大堂、山林步道多元体验随心选择。</p>
+                    <p style="color: var(--gold); font-size: 1.1rem; letter-spacing: 2px; margin-top: 20px;">浏览山居乐趣</p>
+                </div>
+            </div>
+
+            <div class="journey-center" style="margin-top: 60px;">
+                <h3>更多山野秘境</h3>
+                <p>续写山间浪漫旅程</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('loginModal')">×</button>
+            <h3>会员登录</h3>
+            <div class="form-group">
+                <label>账号</label>
+                <input type="text" id="loginAccount" placeholder="请输入账号">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="loginPassword" placeholder="请输入密码">
+            </div>
+            <div class="error-msg" id="loginError">账号或密码错误</div>
+            <button class="btn-primary" onclick="handleLogin()" style="margin-top: 20px;">登 录</button>
+        </div>
+    </div>
+
+    <!-- Code Modal -->
+    <div class="modal-overlay" id="codeModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('codeModal')">×</button>
+            <h3>预约确认</h3>
+            <p style="text-align: center; color: var(--stone); margin-bottom: 20px; font-size: 0.9rem;">您的行程已预订成功</p>
+            <div class="code-display" id="bookingCode">Ct0012</div>
+            <p style="text-align: center; color: var(--sage); font-size: 0.85rem; letter-spacing: 1px;">请妥善保存您的预约码</p>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal-overlay" id="errorModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal('errorModal')">×</button>
+            <h3 style="color: #c96e6e;">访问受限</h3>
+            <div class="error-code">ERROR Ct0003</div>
+            <p style="text-align: center; color: var(--sage); font-size: 0.9rem;">该通知当前无法访问，请联系系统管理员。</p>
+        </div>
+    </div>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Section navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            document.getElementById('nav-' + sectionId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // Modal controls
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showErrorModal() {
+            document.getElementById('errorModal').classList.add('active');
+        }
+
+        // Booking logic
+        let isLoggedIn = false;
+        let selectedDate = null;
+        let selectedDestination = null;
+
+        function handleBooking() {
+            const dest = document.getElementById('destination').value;
+            const date = document.getElementById('travelDate').value;
+
+            if (!dest || !date) {
+                alert('请选择目的地和旅行时间');
+                return;
+            }
+
+            selectedDate = date;
+            selectedDestination = dest;
+
+            // Check special date: 2212-04-02
+            if (date === '2212-04-02') {
+                // Special redirect - placeholder for now
+                alert('正在跳转至特殊页面... (网站1占位符)');
+                // window.location.href = 'website1.html';
+                return;
+            }
+
+            if (!isLoggedIn) {
+                document.getElementById('loginModal').classList.add('active');
+            } else {
+                showBookingCode();
+            }
+        }
+
+        function handleLogin() {
+            const account = document.getElementById('loginAccount').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const errorMsg = document.getElementById('loginError');
+
+            if (account === 'Liu2026@vessel.com' && password === 'A1234567') {
+                isLoggedIn = true;
+                closeModal('loginModal');
+                showBookingCode();
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        function showBookingCode() {
+            document.getElementById('codeModal').classList.add('active');
+        }
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Set default date
+        document.getElementById('travelDate').value = '2026-01-01';
+    </script>
+</body>
+</html>
