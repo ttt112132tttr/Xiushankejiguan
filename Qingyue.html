@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>青樾论坛</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg: #0c0c0e;
+            --surface: #141416;
+            --surface-hover: #1a1a1d;
+            --border: #1f1f23;
+            --border-light: #2a2a2e;
+            --text: #e8e8e8;
+            --text-secondary: #6b6b6b;
+            --text-tertiary: #3a3a3a;
+            --accent: #c0a062;
+            --accent-dim: #8a7340;
+            --highlight: #d4a84b;
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* 数字粒子背景 */
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.08;
+        }
+        
+        /* 导航 */
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 64px;
+            background: rgba(12, 12, 14, 0.85);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 48px;
+        }
+        
+        .logo {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: 4px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--accent);
+            opacity: 0.6;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 36px;
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text);
+        }
+        
+        /* 搜索框 */
+        .search-box {
+            position: relative;
+        }
+        
+        .search-input {
+            width: 240px;
+            padding: 8px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: var(--accent);
+            width: 300px;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+        
+        /* 主区域 */
+        .main {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 140px 24px 80px;
+        }
+        
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding-bottom: 60px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .hero-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 52px;
+            font-weight: 700;
+            letter-spacing: 12px;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+        
+        .hero-subtitle {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 16px;
+            font-weight: 300;
+            color: var(--text-secondary);
+            letter-spacing: 6px;
+        }
+        
+        .hero-subtitle .accent {
+            color: var(--accent);
+            font-weight: 400;
+        }
+        
+        .hero-meta {
+            margin-top: 40px;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            letter-spacing: 2px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* 论坛容器 */
+        .forum {
+            margin-top: 48px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .forum-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 28px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .forum-label {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        
+        .forum-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 6px 18px;
+            border: 1px solid var(--border-light);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 3px;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .btn-primary {
+            border-color: var(--accent-dim);
+            color: var(--accent);
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+        
+        /* 帖子列表 */
+        .thread-list {
+            padding: 0;
+        }
+        
+        .thread-item {
+            padding: 20px 28px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .thread-item:hover {
+            background: var(--surface-hover);
+        }
+        
+        .thread-item:last-child {
+            border-bottom: none;
+        }
+        
+        .thread-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+        
+        .thread-content {
+            flex: 1;
+        }
+        
+        .thread-title {
+            font-size: 15px;
+            font-weight: 400;
+            color: var(--text);
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+        }
+        
+        .thread-meta {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .thread-lock {
+            font-size: 11px;
+            color: var(--accent-dim);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+        }
+        
+        .thread-open {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+        }
+        
+        /* 弹窗遮罩 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 40px;
+            max-width: 480px;
+            width: 90%;
+            position: relative;
+        }
+        
+        .modal-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+            letter-spacing: 2px;
+        }
+        
+        .modal-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            letter-spacing: 1px;
+        }
+        
+        .question-block {
+            margin-bottom: 24px;
+        }
+        
+        .question-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .question-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .question-input:focus {
+            border-color: var(--accent);
+        }
+        
+        .question-input::placeholder {
+            color: var(--text-tertiary);
+        }
+        
+        .modal-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            margin-top: 8px;
+        }
+        
+        .modal-btn:hover {
+            opacity: 0.85;
+        }
+        
+        .error-msg {
+            font-size: 12px;
+            color: #8b4040;
+            margin-top: 12px;
+            text-align: center;
+            letter-spacing: 1px;
+            display: none;
+        }
+        
+        .error-msg.active {
+            display: block;
+        }
+        
+        /* 搜索页面 */
+        .search-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            z-index: 300;
+            overflow-y: auto;
+        }
+        
+        .search-overlay.active {
+            display: block;
+        }
+        
+        .search-header {
+            position: sticky;
+            top: 0;
+            background: rgba(12, 12, 14, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+        
+        .search-back {
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.3s;
+            letter-spacing: 1px;
+        }
+        
+        .search-back:hover {
+            color: var(--accent);
+        }
+        
+        .search-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 18px;
+            letter-spacing: 3px;
+        }
+        
+        .search-body {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+        
+        .search-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            letter-spacing: 1px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .search-keyword {
+            color: var(--accent);
+        }
+        
+        .search-result-item {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .search-result-item:hover {
+            opacity: 0.7;
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .search-result-title {
+            font-size: 16px;
+            color: var(--text);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        
+        .search-result-snippet {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .search-result-meta {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* 聊天室 */
+        .chat-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            z-index: 400;
+            overflow-y: auto;
+        }
+        
+        .chat-overlay.active {
+            display: block;
+        }
+        
+        .chat-header {
+            position: sticky;
+            top: 0;
+            background: rgba(12, 12, 14, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+        
+        .chat-back {
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.3s;
+            letter-spacing: 1px;
+        }
+        
+        .chat-back:hover {
+            color: var(--accent);
+        }
+        
+        .chat-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 18px;
+            letter-spacing: 3px;
+        }
+        
+        .chat-status {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .chat-body {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+        
+        .chat-session {
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .chat-session:last-child {
+            border-bottom: none;
+        }
+        
+        .chat-msg {
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        
+        .chat-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--accent);
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+        
+        .chat-text {
+            font-size: 14px;
+            color: var(--text);
+            padding-left: 16px;
+            border-left: 2px solid var(--border);
+        }
+        
+        .chat-terminate {
+            text-align: center;
+            padding: 16px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            letter-spacing: 3px;
+            margin: 24px 0;
+        }
+        
+        .chat-terminate::before,
+        .chat-terminate::after {
+            content: '—';
+            margin: 0 12px;
+            color: var(--border-light);
+        }
+        
+        .highlight-text {
+            color: var(--highlight);
+            font-weight: 500;
+            background: rgba(212, 168, 75, 0.08);
+            padding: 0 4px;
+            border-radius: 2px;
+        }
+        
+        .illegal-link {
+            color: var(--text-tertiary);
+            font-style: italic;
+            background: rgba(139, 64, 64, 0.08);
+            padding: 2px 8px;
+            border-radius: 2px;
+            border: 1px solid rgba(139, 64, 64, 0.2);
+        }
+        
+        /* 图片展示 */
+        .chat-image {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            display: block;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        
+        /* 音频播放器 */
+        .chat-audio {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            display: block;
+        }
+        
+        .audio-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--accent-dim);
+            margin-bottom: 12px;
+            letter-spacing: 3px;
+            text-align: center;
+        }
+        
+        /* 底部 */
+        .footer {
+            position: relative;
+            z-index: 1;
+            margin-top: 80px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        .footer p {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            letter-spacing: 2px;
+        }
+        
+        .footer-divider {
+            margin: 0 12px;
+            color: var(--border-light);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .nav { padding: 0 24px; }
+            .hero-title { font-size: 36px; letter-spacing: 6px; }
+            .nav-links { display: none; }
+            .chat-header, .search-header { padding: 20px 24px; }
+            .search-input { width: 160px; }
+            .search-input:focus { width: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-bg"></canvas>
+    
+    <nav class="nav">
+        <div class="logo" onclick="goHome()">青樾</div>
+        <div class="nav-links">
+            <a href="#" onclick="goHome()">首页</a>
+            <a href="#">板块</a>
+            <a href="#" onclick="focusSearch()">搜索</a>
+            <a href="#">关于</a>
+        </div>
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索..." onkeypress="handleSearch(event)">
+        </div>
+    </nav>
+    
+    <div class="main" id="mainPage">
+        <div class="hero">
+            <h1 class="hero-title">青樾论坛</h1>
+            <p class="hero-subtitle">卸下身份，<<span class="accent">畅所欲言</span></p>
+            <div class="hero-meta">ENCRYPTED · ANONYMOUS · NODE_0</div>
+        </div>
+        
+        <div class="forum">
+            <div class="forum-header">
+                <span class="forum-label">最新讨论</span>
+                <div class="forum-actions">
+                    <button class="btn">刷新</button>
+                    <button class="btn btn-primary">发布</button>
+                </div>
+            </div>
+            
+            <div class="thread-list">
+                <div class="thread-item" onclick="openVerify('shen')">
+                    <div class="thread-icon">◈</div>
+                    <div class="thread-content">
+                        <div class="thread-title">神的聊天室</div>
+                        <div class="thread-meta">2026-06-09 · 加密会话</div>
+                    </div>
+                    <div class="thread-lock">[ 需验证 ]</div>
+                </div>
+                
+                <div class="thread-item" onclick="openVerify('bai')">
+                    <div class="thread-icon">◈</div>
+                    <div class="thread-content">
+                        <div class="thread-title">白的聊天室</div>
+                        <div class="thread-meta">2026-06-09 · 加密会话</div>
+                    </div>
+                    <div class="thread-lock">[ 需验证 ]</div>
+                </div>
+                
+                <div class="thread-item" onclick="openChat('yue')">
+                    <div class="thread-icon">◇</div>
+                    <div class="thread-content">
+                        <div class="thread-title">粤的聊天室</div>
+                        <div class="thread-meta">2026-06-09 · 公开会话</div>
+                    </div>
+                    <div class="thread-open">[ 公开 ]</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>青樾论坛<span class="footer-divider">·</span>匿名通信节点<span class="footer-divider">·</span>v1.0.0</p>
+        </div>
+    </div>
+    
+    <!-- 验证弹窗 -->
+    <div class="modal-overlay" id="verifyModal">
+        <div class="modal">
+            <div class="modal-title" id="verifyModalTitle">身份验证</div>
+            <div class="modal-subtitle" id="verifyModalSubtitle">回答以下问题以进入加密会话</div>
+            
+            <div id="verifyQuestions">
+                <!-- 动态插入 -->
+            </div>
+            
+            <button class="modal-btn" onclick="checkVerify()">确认</button>
+            <div class="error-msg" id="errorMsg">验证失败，请重新输入</div>
+        </div>
+    </div>
+    
+    <!-- 搜索页面 -->
+    <div class="search-overlay" id="searchPage">
+        <div class="search-header">
+            <div class="search-back" onclick="closeSearch()">← 返回</div>
+            <div class="search-title">搜索结果</div>
+            <div style="width: 60px;"></div>
+        </div>
+        
+        <div class="search-body" id="searchBody">
+            <!-- 动态插入 -->
+        </div>
+    </div>
+    
+    <!-- 聊天室 -->
+    <div class="chat-overlay" id="chatRoom">
+        <div class="chat-header">
+            <div class="chat-back" onclick="closeChat()">← 返回</div>
+            <div class="chat-title" id="chatTitle">神的聊天室</div>
+            <div class="chat-status" id="chatStatus">ENCRYPTED</div>
+        </div>
+        
+        <div class="chat-body" id="chatBody">
+            <!-- 内容动态插入 -->
+        </div>
+    </div>
+    
+    <script>
+        // 数字粒子背景
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const chars = '0123456789ABCDEF';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.random() * -100;
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(12, 12, 14, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = 'rgba(192, 160, 98, 0.15)';
+            ctx.font = fontSize + 'px JetBrains Mono';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 50);
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // 当前验证目标
+        let currentVerifyTarget = '';
+        
+        // 验证配置
+        const verifyConfig = {
+            shen: {
+                title: '身份验证',
+                subtitle: '回答以下问题以进入加密会话',
+                questions: [
+                    { label: '问题 1 / 2', id: 'q1', placeholder: '你的家乡是？' },
+                    { label: '问题 2 / 2', id: 'q2', placeholder: '我的名字是？' }
+                ],
+                answers: ['休山', '林夜冬'],
+                targetRoom: 'shen'
+            },
+            bai: {
+                title: '身份验证',
+                subtitle: '回答以下问题以进入加密会话',
+                questions: [
+                    { label: '问题', id: 'bq1', placeholder: '渤海东隅，有邑名OO，常蒙重雾，一水经其地，号曰OO。' }
+                ],
+                answers: ['麓睢冥河'],
+                targetRoom: 'bai'
+            }
+        };
+        
+        // 聊天数据
+        const chatData = {
+            shen: {
+                title: '神的聊天室',
+                status: 'ENCRYPTED',
+                sessions: [
+                    {
+                        msgs: [
+                            {name: '叶', text: '你上次跟我说的事是真的吗'},
+                            {name: '神', text: '千真万确'},
+                            {name: '叶', text: '那我们需要准备什么'},
+                            {name: '神', text: '-档案已删除-'}
+                        ],
+                        terminate: '聊天已终止'
+                    },
+                    {
+                        msgs: [
+                            {name: '鱼', text: '你答应我的事情一定能做到吗'},
+                            {name: '神', text: '我会努力的'},
+                            {name: '鱼', text: '这和你线下答应我的不一样'},
+                            {name: '神', text: '哎，现在这个情况，你也知道'},
+                            {name: '鱼', text: '算了，要是清梦还在的话那估计就不会这样了'}
+                        ],
+                        terminate: '聊天已终止'
+                    },
+                    {
+                        msgs: [
+                            {name: '克', text: '医生，我最近经常梦到一座山，然后天很红，很暗，压的我喘不过气'},
+                            {name: '神', text: '用拉康的框架来看，那座山、暗红的天空、以及压迫感，共同构成了"实在界"的一次现身——你遭遇了那个无法被语言和符号秩序消化的硬核。<br><br>山往往象征着"大他者"的沉重。它可能是父之名、社会法则，或是某种你无法逾越的象征性秩序。平时你依靠想象界和象征界来协调与它的关系，但在梦中，它赤裸裸地矗立在那里，不可商量，也不可解释。<br><br>而"天很红，很暗"是关键。红色常与创伤、激情或原初场景的残留相关，暗则意味着能见度的丧失——也就是"象征界"的失效。当天空不再提供日光，你就失去了定位自身的坐标。此时，山不再是一个可以被谈论的对象，而是直接压过来的实在。<br><br>喘不过气，恰恰是主体面对"实在界"时的典型反应。拉康会说，这不是你被山压着，而是你遭遇了自己欲望的真相——大他者体内那无法符号化的剩余。你或许在清醒时回避某个核心焦虑，但它每晚以山的形态返回：不让你逃逸，也不让你象征化。<br><br>建议你不必急于"解"出山的含义，而是试着问：梦中的"红"让你联想到生活里哪一种无法言说的张力？那座山是否像某个你既敬畏又想逃离的权威？当你允许自己体验那种窒息而不寻找出口时，你或许会听到拉康所谓的"实在界的低语"——它渴望的不是答案，而是你承认它的存在'},
+                            {name: '克', text: '医生，我应该怎么办，这个噩梦我天天都做'},
+                            {name: '神', text: '你如果不急的话，可以多找心理医生或者精神分析师咨询，如果很急的话你可以去大云市第一医院那里开一点<span class="highlight-text">"宋餘"</span>吃，就说是<span class="highlight-text">林夜冬</span>让你买的'}
+                        ],
+                        terminate: '聊天已终止'
+                    }
+                ]
+            },
+            bai: {
+                title: '白的聊天室',
+                status: 'ENCRYPTED',
+                sessions: [
+                    {
+                        msgs: [
+                            {name: '白', text: '你们有人听说过休山吗？'},
+                            {name: '藤', text: '怎么了'},
+                            {name: '白', text: '我做梦梦到了休山，上网一搜，发现还真有这个地方'},
+                            {name: '藤', text: '额'},
+                            {name: '白', text: '不是，一模一样的，天哪，那种感觉你不知道'}
+                        ],
+                        terminate: '聊天已结束'
+                    },
+                    {
+                        msgs: [
+                            {name: '白', text: '我去，什么情况，有休山人吗，虽然网上能搜到休山，但是国内和国外都没有这个地方啊。'},
+                            {name: '神', text: '我是休山人'},
+                            {name: '白', text: '哪来的中二病'}
+                        ],
+                        terminate: '聊天已结束'
+                    },
+                    {
+                        msgs: [
+                            {name: '境', text: '你知道冥水不知道休山？'},
+                            {name: '白', text: '冥水？你指这句诗吗？这也是我梦到的'},
+                            {name: '境', text: '……'},
+                            {name: '境', text: '<img src="https://temp.aoki.dpdns.org/temp/43ce22a3773a1d7041ae9520caf8c817.png" class="chat-image" style="margin: 20px 0;" alt="图片">'},
+                            {name: '白', text: '啥意思'},
+                            {name: '境', text: '得出答案后可以在<span class="highlight-text">灵狐搜索</span>搜一下'}
+                        ],
+                        terminate: '聊天已结束'
+                    }
+                ],
+                hasAudio: true,
+                audioUrl: '/mnt/agents/upload/未命名音频.wav'
+            },
+            yue: {
+                title: '粤的聊天室',
+                status: 'PUBLIC',
+                sessions: [
+                    {
+                        msgs: [
+                            {name: '崎', text: '人要如何幸福'},
+                            {name: '粤', text: '朝闻道，夕死可矣便是幸福'}
+                        ],
+                        terminate: '聊天已结束'
+                    },
+                    {
+                        msgs: [
+                            {name: '拓', text: '有什么好用的搜索引擎吗？最近想看点文献'},
+                            {name: '粤', text: '你用ai查呗，要不就用<span class="highlight-text">灵狐搜索</span>，但是网址我忘了'},
+                            {name: '拓', text: '你现在登一下，把网址复制给我呗'},
+                            {name: '粤', text: '<span class="illegal-link">【该链接已标记为非法链接】</span>'}
+                        ],
+                        terminate: '聊天已结束'
+                    },
+                    {
+                        msgs: [
+                            {name: '马', text: '有什么好玩的视觉小说吗'},
+                            {name: '粤', text: '白色相薄2'},
+                            {name: '马', text: '这个我玩过了'},
+                            {name: '粤', text: '那就白1呗'},
+                            {name: '马', text: '我也玩过了'},
+                            {name: '粤', text: '你喜欢玩什么类型的'},
+                            {name: '马', text: '来点能让我豪上那么一两下的呗'},
+                            {name: '粤', text: 'noesis挺好玩的'}
+                        ],
+                        terminate: '聊天已结束'
+                    },
+                    {
+                        msgs: [
+                            {name: '空', text: '那些要回答问题的帖子怎么进啊'},
+                            {name: '粤', text: '不知道，估计别人线下或者其他社交平台早就认识了，然后发个密码让别人进的吧'}
+                        ],
+                        terminate: '聊天已结束'
+                    },
+                    {
+                        msgs: [
+                            {name: '碳', text: '你拾野有号吗？'},
+                            {name: '粤', text: '没'}
+                        ],
+                        terminate: '聊天已结束'
+                    }
+                ]
+            },
+            ku: {
+                title: '堀的聊天室',
+                status: 'PUBLIC',
+                sessions: [
+                    {
+                        msgs: [
+                            {name: '和', text: '兄弟你有灵狐搜索的网址没'},
+                            {name: '堀', text: '我没有，但是我记得隔壁那个拾野网站有人发过，好像叫风什么什么，我也是用的他发的网站'}
+                        ],
+                        terminate: '聊天已结束'
+                    }
+                ]
+            },
+            tie: {
+                title: '餮的聊天室',
+                status: 'PUBLIC',
+                hasImage: true,
+                imageUrl: 'https://temp.aoki.dpdns.org/temp/a1fe0066d404b1c27286d5b54818fe27.png',
+                sessions: [
+                    {
+                        msgs: [
+                            {name: '餮', text: '有人想知道阿尔法号的事情吗，来这里找我'},
+                            {name: '库', text: '我去了这里没人啊'},
+                            {name: '餮', text: '你什么时候来的，我等了一下午没来一个人，这样吧，你直走，看见一个教堂的时候往右转，然后在一个公园那里的垃圾桶，我放了一张纸条'},
+                            {name: '库', text: '有必要搞得这么神秘吗'}
+                        ],
+                        terminate: '聊天已结束'
+                    }
+                ]
+            },
+            ku2: {
+                title: '库的聊天室',
+                status: 'PUBLIC',
+                hasImage: true,
+                imageUrl: 'https://temp.aoki.dpdns.org/temp/16e95a8955d1e3081bd035945c1aa983.png',
+                sessions: [
+                    {
+                        msgs: [
+                            {name: '库', text: '捡到个这个，带回家看了一下，没看出什么端倪啊，之前哪个大哥逗我玩吧'}
+                        ],
+                        terminate: '聊天已结束'
+                    }
+                ]
+            }
+        };
+        
+        // 验证逻辑
+        function openVerify(target) {
+            currentVerifyTarget = target;
+            const config = verifyConfig[target];
+            
+            document.getElementById('verifyModalTitle').textContent = config.title;
+            document.getElementById('verifyModalSubtitle').textContent = config.subtitle;
+            
+            let questionsHtml = '';
+            config.questions.forEach((q, index) => {
+                questionsHtml += `
+                    <div class="question-block">
+                        <div class="question-label">${q.label}</div>
+                        <input type="text" class="question-input" id="${q.id}" placeholder="${q.placeholder}">
+                    </div>
+                `;
+            });
+            
+            document.getElementById('verifyQuestions').innerHTML = questionsHtml;
+            document.getElementById('verifyModal').classList.add('active');
+            document.getElementById('errorMsg').classList.remove('active');
+            
+            // 清空输入
+            config.questions.forEach(q => {
+                document.getElementById(q.id).value = '';
+            });
+        }
+        
+        function checkVerify() {
+            const config = verifyConfig[currentVerifyTarget];
+            const inputs = config.questions.map(q => document.getElementById(q.id).value.trim());
+            
+            // 拼接所有答案
+            const userAnswer = inputs.join('');
+            const correctAnswer = config.answers.join('');
+            
+            if (userAnswer === correctAnswer) {
+                document.getElementById('verifyModal').classList.remove('active');
+                openChat(config.targetRoom);
+            } else {
+                document.getElementById('errorMsg').classList.add('active');
+            }
+        }
+        
+        // 搜索功能
+        function handleSearch(e) {
+            if (e.key === 'Enter') {
+                const keyword = e.target.value.trim();
+                if (keyword) {
+                    document.getElementById('searchPage').classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    
+                    let html = `
+                        <div class="search-info">
+                            搜索关键词：<span class="search-keyword">${keyword}</span>
+                        </div>
+                    `;
+                    
+                    if (keyword === '灵狐搜索') {
+                        html += `
+                            <div class="search-result-item" onclick="openChat('yue')">
+                                <div class="search-result-title">粤的聊天室</div>
+                                <div class="search-result-snippet">拓：有什么好用的搜索引擎吗？最近想看点文献<br>粤：你用ai查呗，要不就用<span class="highlight-text">灵狐搜索</span>，但是网址我忘了</div>
+                                <div class="search-result-meta">2026-06-09 · 公开会话</div>
+                            </div>
+                            
+                            <div class="search-result-item" onclick="openChat('ku')">
+                                <div class="search-result-title">堀的聊天室</div>
+                                <div class="search-result-snippet">和：兄弟你有<span class="highlight-text">灵狐搜索</span>的网址没<br>堀：我没有，但是我记得隔壁那个拾野网站有人发过，好像叫风什么什么</div>
+                                <div class="search-result-meta">2026-06-09 · 公开会话</div>
+                            </div>
+                        `;
+                    } else if (keyword === '阿尔法号') {
+                        html += `
+                            <div class="search-result-item" onclick="openChat('tie')">
+                                <div class="search-result-title">餮的聊天室</div>
+                                <div class="search-result-snippet">餮：有人想知道<span class="highlight-text">阿尔法号</span>的事情吗，来这里找我<br>库：我去了这里没人啊</div>
+                                <div class="search-result-meta">2026-06-09 · 公开会话 · 含图片</div>
+                            </div>
+                        `;
+                    } else if (keyword === '县立公园' || keyword === 'Carthay Circle Park') {
+                        html += `
+                            <div class="search-result-item" onclick="openChat('ku2')">
+                                <div class="search-result-title">库的聊天室</div>
+                                <div class="search-result-snippet">库：捡到个这个，带回家看了一下，没看出什么端倪啊，之前哪个大哥逗我玩吧</div>
+                                <div class="search-result-meta">2026-06-09 · 公开会话 · 含图片</div>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div style="text-align: center; padding: 80px 0; color: var(--text-tertiary); font-size: 13px; letter-spacing: 2px;">
+                                未找到相关结果
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('searchBody').innerHTML = html;
+                }
+            }
+        }
+        
+        function focusSearch() {
+            document.getElementById('searchInput').focus();
+        }
+        
+        function closeSearch() {
+            document.getElementById('searchPage').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('searchInput').value = '';
+        }
+        
+        function goHome() {
+            closeSearch();
+            closeChat();
+            document.getElementById('verifyModal').classList.remove('active');
+        }
+        
+        // 打开聊天室
+        function openChat(roomId) {
+            const data = chatData[roomId];
+            document.getElementById('chatTitle').textContent = data.title;
+            document.getElementById('chatStatus').textContent = data.status;
+            
+            let html = '';
+            
+            // 如果有图片，显示图片
+            if (data.hasImage && data.imageUrl) {
+                html += `<img src="${data.imageUrl}" class="chat-image" alt="图片">`;
+            }
+            
+            // 如果有音频，显示音频播放器
+            if (data.hasAudio && data.audioUrl) {
+                html += `
+                    <div style="margin-bottom: 40px;">
+                        <div class="audio-label">[ 音频附件 ]</div>
+                        <audio controls class="chat-audio">
+                            <source src="${data.audioUrl}" type="audio/wav">
+                            您的浏览器不支持音频播放
+                        </audio>
+                    </div>
+                `;
+            }
+            
+            data.sessions.forEach(session => {
+                html += '<div class="chat-session">';
+                session.msgs.forEach(msg => {
+                    html += `<div class="chat-msg">
+                        <div class="chat-name">${msg.name}</div>
+                        <div class="chat-text">${msg.text}</div>
+                    </div>`;
+                });
+                html += `<div class="chat-terminate">${session.terminate}</div>`;
+                html += '</div>';
+            });
+            
+            document.getElementById('chatBody').innerHTML = html;
+            document.getElementById('chatRoom').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeChat() {
+            document.getElementById('chatRoom').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // 回车提交
+        document.addEventListener('keypress', function(e) {
+            if (e.target.classList.contains('question-input') && e.key === 'Enter') {
+                checkVerify();
+            }
+        });
+    </script>
+</body>
+</html>
