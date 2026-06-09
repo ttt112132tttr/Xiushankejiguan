@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>拾野 - 绿色生态，自由讨论</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0d8a4f;
+            --primary-light: #e8f5ed;
+            --primary-dark: #096c3d;
+            --bg: #f0f7f2;
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --text: #1a1a1a;
+            --text-secondary: #5a5a5a;
+            --text-light: #8a8a8a;
+            --border: rgba(0, 0, 0, 0.06);
+            --red: #dc2626;
+            --warning: #d97706;
+        }
+
+        body {
+            font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 80px;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(13,138,79,0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(16,185,129,0.06) 0%, transparent 35%),
+                radial-gradient(circle at 40% 40%, rgba(13,138,79,0.04) 0%, transparent 30%);
+            animation: flow 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes flow {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(2%, 2%) rotate(1deg); }
+            50% { transform: translate(-1%, 3%) rotate(-1deg); }
+            75% { transform: translate(3%, -2%) rotate(0.5deg); }
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), #10b981);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(13,138,79,0.25);
+            letter-spacing: 1px;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        .slogan {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 4px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 2px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(13,138,79,0.15);
+        }
+
+        .login-btn {
+            padding: 7px 18px;
+            background: linear-gradient(135deg, var(--primary), #10b981);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(13,138,79,0.25);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 6px rgba(13,138,79,0.2);
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255,255,255,0.6);
+            padding: 0 20px;
+            gap: 24px;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            scrollbar-width: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            padding: 14px 4px;
+            font-size: 15px;
+            color: var(--text-light);
+            cursor: pointer;
+            white-space: nowrap;
+            position: relative;
+            font-weight: 500;
+            transition: color 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), #10b981);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .content {
+            padding: 16px;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .post-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.03), 0 0 0 1px rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s;
+            border: 1px solid rgba(255,255,255,0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .post-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .post-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #10b981);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(13,138,79,0.2);
+        }
+
+        .post-meta {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .post-author {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.3px;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 2px;
+            font-weight: 400;
+        }
+
+        .post-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 10px;
+            line-height: 1.4;
+            letter-spacing: -0.01em;
+        }
+
+        .post-preview {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-weight: 400;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+
+        .detail-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 200;
+            overflow-y: auto;
+        }
+
+        .detail-header {
+            position: sticky;
+            top: 0;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            z-index: 10;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .back-btn:active {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .detail-title {
+            font-size: 17px;
+            font-weight: 700;
+            flex: 1;
+            text-align: center;
+            margin-right: 36px;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-content {
+            background: var(--card-bg);
+            padding: 20px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            border-top: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+
+        .detail-main {
+            font-size: 15px;
+            line-height: 1.9;
+            color: var(--text);
+            margin-top: 14px;
+            white-space: pre-wrap;
+            font-weight: 400;
+        }
+
+        .floor-list {
+            background: var(--card-bg);
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+
+        .floor {
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .floor:last-child {
+            border-bottom: none;
+        }
+
+        .floor-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .floor-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 1px 4px rgba(13,138,79,0.1);
+        }
+
+        .floor-info {
+            flex: 1;
+        }
+
+        .floor-author {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.3px;
+        }
+
+        .floor-time {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .floor-num {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 600;
+            background: rgba(0,0,0,0.03);
+            padding: 2px 8px;
+            border-radius: 8px;
+        }
+
+        .floor-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-left: 50px;
+            white-space: pre-wrap;
+            font-weight: 400;
+        }
+
+        .at-user {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .highlight-text {
+            color: var(--primary);
+            font-weight: 700;
+            background: var(--primary-light);
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+
+        .illegal-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            color: var(--red);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-left: 4px;
+            border: 1px solid rgba(220,38,38,0.15);
+        }
+
+        .placeholder-text {
+            color: var(--text-light);
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        .special-floor {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border-radius: 12px;
+            padding: 14px;
+            margin: 10px 0 10px 50px;
+            border-left: 3px solid var(--warning);
+            box-shadow: 0 2px 8px rgba(217,119,6,0.08);
+        }
+
+        .special-floor .floor-content {
+            margin-left: 0;
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .official-reply {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 12px;
+            padding: 14px;
+            margin: 10px 0 10px 50px;
+            border-left: 3px solid #0ea5e9;
+            box-shadow: 0 2px 8px rgba(14,165,233,0.08);
+        }
+
+        .official-reply .floor-content {
+            margin-left: 0;
+            color: #0369a1;
+            font-weight: 500;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 24px;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0 24px;
+            transition: transform 0.2s;
+        }
+
+        .nav-item:active {
+            transform: scale(0.9);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--primary);
+        }
+
+        .nav-label {
+            font-size: 11px;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: color 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .login-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(8px);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 36px 28px;
+            width: 100%;
+            max-width: 380px;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.6);
+            backdrop-filter: blur(20px);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .login-logo-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), #10b981);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(13,138,79,0.25);
+            letter-spacing: 2px;
+        }
+
+        .login-logo h2 {
+            font-size: 24px;
+            color: var(--text);
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .login-logo p {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.8);
+            font-family: inherit;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(13,138,79,0.08);
+        }
+
+        .login-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), #10b981);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 16px rgba(13,138,79,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            letter-spacing: 1px;
+        }
+
+        .login-submit:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(13,138,79,0.2);
+        }
+
+        .login-hint {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .login-hint span {
+            color: var(--red);
+            font-weight: 700;
+        }
+
+        .close-login {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-light);
+            font-size: 22px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .close-login:active {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(30, 30, 30, 0.92);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 28px;
+            font-size: 14px;
+            z-index: 400;
+            display: none;
+            pointer-events: none;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .lock-page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .lock-icon {
+            width: 88px;
+            height: 88px;
+            background: linear-gradient(135deg, var(--primary-light), #d1fae5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            color: var(--primary);
+            box-shadow: 0 8px 24px rgba(13,138,79,0.12);
+        }
+
+        .lock-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .lock-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+            font-weight: 400;
+        }
+
+        .lock-btn {
+            padding: 14px 36px;
+            background: linear-gradient(135deg, var(--primary), #10b981);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(13,138,79,0.25);
+            transition: transform 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .lock-btn:active {
+            transform: scale(0.95);
+        }
+
+        .search-box {
+            padding: 14px 20px;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(10px);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 18px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(13,138,79,0.08);
+        }
+
+        .search-cancel {
+            font-size: 15px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .search-results {
+            background: var(--bg);
+            padding: 16px;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .search-empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .follow-tabs {
+            display: flex;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .follow-tab {
+            flex: 1;
+            text-align: center;
+            padding: 16px;
+            font-size: 15px;
+            color: var(--text-light);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+
+        .follow-tab.active {
+            color: var(--primary);
+            font-weight: 700;
+            border-bottom: 2.5px solid var(--primary);
+        }
+
+        .follow-list {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+
+        .follow-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .follow-item:active {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .follow-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a1a, #4a4a4a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .follow-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .follow-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.3px;
+        }
+
+        .follow-bio {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 3px;
+            font-weight: 400;
+        }
+
+        .chat-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            z-index: 250;
+            overflow-y: auto;
+        }
+
+        .chat-header {
+            position: sticky;
+            top: 0;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            z-index: 10;
+        }
+
+        .chat-title {
+            flex: 1;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-subtitle {
+            font-size: 11px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .chat-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding-bottom: 100px;
+        }
+
+        .chat-deleted {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 12px;
+            padding: 24px 0;
+            font-style: italic;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .chat-msg {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .chat-msg-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a1a, #4a4a4a);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .chat-msg-bubble {
+            background: var(--card-bg);
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.7;
+            max-width: 75%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            color: var(--text);
+            font-weight: 400;
+            border: 1px solid rgba(255,255,255,0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-top: 1px solid var(--border);
+            padding: 14px 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .chat-footer input {
+            flex: 1;
+            padding: 12px 18px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .chat-footer input:disabled {
+            color: var(--text-light);
+            cursor: not-allowed;
+            background: rgba(245,245,245,0.8);
+        }
+
+        .chat-footer button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary), #10b981);
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(13,138,79,0.2);
+        }
+
+        .chat-footer button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .sticky-tag {
+            display: inline-block;
+            padding: 3px 7px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 11px;
+            border-radius: 6px;
+            margin-right: 6px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .transfer-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+            padding: 3px 7px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 4px;
+        }
+
+        /* 分页器 */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px 0 10px;
+        }
+
+        .page-btn {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-secondary);
+            backdrop-filter: blur(10px);
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, var(--primary), #10b981);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(13,138,79,0.25);
+        }
+
+        .page-btn.locked {
+            background: rgba(245,245,245,0.8);
+            color: var(--text-light);
+            cursor: not-allowed;
+            position: relative;
+            gap: 4px;
+        }
+
+        .page-btn:not(.locked):active {
+            transform: scale(0.92);
+        }
+
+        .page-lock-icon {
+            width: 14px;
+            height: 14px;
+            opacity: 0.5;
+        }
+
+        .page-hint {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        /* 消息列表 */
+        .msg-list {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+
+        .msg-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .msg-item:active {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .msg-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(13,138,79,0.1);
+        }
+
+        .msg-avatar.system {
+            background: linear-gradient(135deg, var(--primary), #10b981);
+            color: white;
+            font-size: 12px;
+        }
+
+        .msg-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .msg-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .msg-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .msg-time {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .msg-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 400;
+        }
+
+        .msg-badge {
+            width: 8px;
+            height: 8px;
+            background: var(--red);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">拾</div>
+            <div>
+                <div class="logo-text">拾野</div>
+                <div class="slogan">绿色生态，自由讨论，畅聊观点</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div id="userArea" style="display:none; align-items:center; gap:10px;">
+                <span id="userName" style="font-size:13px; color:var(--text-secondary); font-weight:600;"></span>
+                <div class="user-avatar" id="userAvatar"></div>
+            </div>
+            <button class="login-btn" id="loginBtn" onclick="showLogin()">登录</button>
+        </div>
+    </div>
+
+    <div id="pageContainer">
+        
+        <div id="pageHome" class="page-section">
+            <div class="tabs">
+                <div class="tab active">本地</div>
+                <div class="tab">游戏</div>
+                <div class="tab">爱好</div>
+                <div class="tab">旅游</div>
+                <div class="tab">热点</div>
+            </div>
+            <div class="content" id="postList">
+                <!-- 帖子由JS生成 -->
+            </div>
+            <div class="pagination" id="pagination">
+                <div class="page-btn active" onclick="switchPage(1)">1</div>
+                <div class="page-btn locked" onclick="showToast('后续内容已锁定')">
+                    <svg class="page-lock-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/><path d="M12 11V7a4 4 0 118 0v4"/></svg>
+                    2
+                </div>
+            </div>
+            <div class="page-hint">仅展示第 1 页，后续页面已锁定</div>
+        </div>
+
+        <div id="pageFollow" class="page-section" style="display:none;">
+            <div class="follow-tabs">
+                <div class="follow-tab active">关注的人</div>
+                <div class="follow-tab">话题</div>
+            </div>
+            <div class="lock-page" id="followLock">
+                <div class="lock-icon">
+                    <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/><path d="M12 11V7a4 4 0 118 0v4"/></svg>
+                </div>
+                <div class="lock-title">需要登录</div>
+                <div class="lock-desc">登录后即可查看关注内容和动态</div>
+                <button class="lock-btn" onclick="showLogin()">立即登录</button>
+            </div>
+            <div id="followContent" style="display:none;">
+                <div class="follow-list" id="followList">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <div id="pageMessage" class="page-section" style="display:none;">
+            <div class="lock-page" id="msgLock">
+                <div class="lock-icon">
+                    <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/><path d="M12 11V7a4 4 0 118 0v4"/></svg>
+                </div>
+                <div class="lock-title">需要登录</div>
+                <div class="lock-desc">登录后即可接收和查看消息通知</div>
+                <button class="lock-btn" onclick="showLogin()">立即登录</button>
+            </div>
+            <div id="msgContent" style="display:none;">
+                <div class="msg-list" id="msgList">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <div id="pageSearch" class="page-section" style="display:none;">
+            <div class="lock-page" id="searchLock">
+                <div class="lock-icon">
+                    <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/><path d="M12 11V7a4 4 0 118 0v4"/></svg>
+                </div>
+                <div class="lock-title">需要登录</div>
+                <div class="lock-desc">登录后即可使用搜索功能</div>
+                <button class="lock-btn" onclick="showLogin()">立即登录</button>
+            </div>
+            <div id="searchContent" style="display:none;">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="搜索帖子、用户、话题..." oninput="handleSearch(this.value)">
+                    <span class="search-cancel" onclick="clearSearch()">取消</span>
+                </div>
+                <div class="search-results" id="searchResults" style="display:none;">
+                    <!-- 搜索结果 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-page" id="detailPage">
+        <div class="detail-header">
+            <div class="back-btn" onclick="closeDetail()">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+            </div>
+            <div class="detail-title">帖子详情</div>
+        </div>
+        <div class="detail-content" id="detailHeader">
+            <!-- 动态填充 -->
+        </div>
+        <div class="floor-list" id="floorList">
+            <!-- 动态填充 -->
+        </div>
+        <div class="pagination" id="detailPagination" style="display:none; padding:20px 0;">
+            <div class="page-btn active">1</div>
+            <div class="page-btn locked" onclick="showToast('后续内容已锁定')">
+                <svg class="page-lock-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/><path d="M12 11V7a4 4 0 118 0v4"/></svg>
+                2
+            </div>
+        </div>
+        <div class="page-hint" id="detailPageHint" style="display:none;">仅展示第 1 页，后续页面已锁定</div>
+    </div>
+
+    <div class="chat-page" id="chatPage">
+        <div class="chat-header">
+            <div class="back-btn" onclick="closeChat()">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+            </div>
+            <div class="chat-title">
+                <div>神</div>
+                <div class="chat-subtitle">在线</div>
+            </div>
+            <div style="width:36px;"></div>
+        </div>
+        <div class="chat-body">
+            <div class="chat-deleted">- 聊天记录已删除 -</div>
+            <div class="chat-msg">
+                <div class="chat-msg-avatar">神</div>
+                <div class="chat-msg-bubble">你进青樾论坛跟我聊，这里不怎么保密，网址是 KKKKKKKKKKKKKKKKKKKKKK占位符</div>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" placeholder="无法发送消息" disabled>
+            <button disabled>发送</button>
+        </div>
+    </div>
+
+    <div class="login-overlay" id="loginOverlay" onclick="if(event.target===this)hideLogin()">
+        <div style="position:relative;">
+            <div class="close-login" onclick="hideLogin()">×</div>
+            <div class="login-box">
+                <div class="login-logo">
+                    <div class="login-logo-icon">拾</div>
+                    <h2>登录拾野</h2>
+                    <p>绿色生态，自由讨论</p>
+                </div>
+                <div class="input-group">
+                    <label>账号（论坛ID / 论坛名称）</label>
+                    <input type="text" id="loginAccount" placeholder="请输入论坛ID或论坛名称">
+                </div>
+                <div class="input-group">
+                    <label>密码</label>
+                    <input type="password" id="loginPassword" placeholder="请输入密码">
+                </div>
+                <button class="login-submit" onclick="doLogin()">登录</button>
+                <div class="login-hint">
+                    注册功能已<span>暂时关闭</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home')">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <span class="nav-label">首页</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('follow')">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+            <span class="nav-label">关注</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('message')">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            <span class="nav-label">消息</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('search')">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <span class="nav-label">搜索</span>
+        </div>
+    </div>
+
+    <script>
+        const ACCOUNTS = [
+            { type: 'name', id: '爱吃猫的鱼', password: 'Kime520' },
+            { type: 'id', id: 'Cv02kt2TKM', password: 'A1234567' }
+        ];
+
+        // 生成黑子说话ID列表
+        const blackTalkIds = [
+            'Kinme勒', 'yyyyyyyy', '宫水三页', '吴江区6657', '爱吃猫的鱼',
+            '风之残烛', '小海参', '美元又高楼66', '蚊子能不能灭绝', '世纪大回旋',
+            '临水大学官方', '休山客', '大云在逃企鹅', 'Aime的旅游日记', '夜色浸染',
+            '墨染青衣', '云深不知处', '人类不感谢逻辑', '论文字学', '零分太阳'
+        ];
+
+        const POSTS = [
+            {
+                id: 1,
+                title: '有看比赛的吗，怎么评价夜神打Ctk这波',
+                author: '小小爱米',
+                avatar: '小',
+                time: '2026-06-09 12:54',
+                preview: '111如题',
+                replies: 20,
+                likes: 45,
+                shares: 12,
+                content: '111如题',
+                floors: [
+                    { num: '1L', author: 'TiekmCCw', time: '2026-06-09 12:58', content: '不是这一枪能空，我真服了' },
+                    { num: '2L', author: 'TiekmCCw', time: '2026-06-09 12:59', content: '这么菜的战队都能虐Tbw，夜区退役算了' },
+                    { num: '3L', author: '战场原11', time: '2026-06-09 13:05', content: '@TiekmCCw 不是楼上的说啥，明明是队友菜，夜神带不动' },
+                    { num: '4L', author: '抑制黑波动的源头', time: '2026-06-09 13:07', content: '不是，说实话感觉一般，没24年在洛杉矶总决赛那一枪阴' },
+                    { num: '5L', author: 'TiekmCCw', time: '2026-06-09 13:08', content: '@战场原11 666，自己菜怪队友的来了，是人啊，对面Ctk两个人站着不动都狙不中一个' },
+                    { num: '6L', author: '战场原11', time: '2026-06-09 13:23', content: '不是，楼上那个喷完我就拉黑了是吧，服了' },
+                    { num: '7L', author: '用户Fx20cKtY', time: '2026-06-09 13:27', content: '@TiekmCCw 敢不敢来单挑一把，就你还秀上理解了' },
+                    { num: '8L', author: 'TiekmCCw', time: '2026-06-09 14:00', content: '@用户Fx20cKtY 名字都没改的小号来了，我先跑了你们聊' },
+                    { num: '9L', author: '夜色浸染', time: '2026-06-09 14:01', content: '有一说一，夜神是真的豪，这一枪我来都中了，他硬要甩那么一枪' },
+                    { num: '10L', author: '陈世杰ovo', time: '2026-06-09 14:22', content: '我说直接换人算了，开宫有没有懂的' },
+                    { num: '11L', author: '爱吃猫的鱼', time: '2026-06-09 14:26', content: '不是这都有人黑的哦' },
+                    { num: '12L', author: '间', time: '2026-06-09 17:20', content: '世界毁灭预告：\n世界即将在2025年4月3日毁灭', special: true },
+                    { num: '13L', author: '人类不感谢逻辑', time: '2026-06-09 17:59', content: '@间 楼上的呆了吧，现在都2026年了' },
+                    { num: '14L', author: '临水大学官方', time: '2026-06-09 18:22', content: '@人类不感谢逻辑 估计装豪呢，小学生吧感觉是' },
+                    { num: '15L', author: 'jxx', time: '2026-06-09 19:00', content: '不是说实话那一枪能忍住不豪的也是神人了' },
+                    { num: '16L', author: '啊啊啊啊啊w', time: '2026-06-09 22:11', content: '@爱吃猫的鱼 不是你也看比赛啊，真巧' },
+                    { num: '17L', author: '爱吃猫的鱼', time: '2026-06-09 22:54', content: '@啊啊啊啊啊w 对啊，我是Kime的队粉，你没看到我的ID吗，就是致敬鱼神的' },
+                    { num: '18L', author: '啊啊啊啊啊w', time: '2026-06-09 22:55', content: '@爱吃猫的鱼 哦，难怪你当时给我的那个游戏号的密码是那个' },
+                    { num: '19L', author: '才疏学浅', time: '2026-06-09 22:59', content: '夜神是不是隔壁那个夜神月啊' },
+                    { num: '20L', author: '舒fu', time: '2026-06-09 23:25', content: '有人类吗这个帖子' }
+                ]
+            },
+            {
+                id: 2,
+                title: '休山大酒店意见收集帖',
+                author: '休山大酒店官方',
+                avatar: '休',
+                avatarColor: 'linear-gradient(135deg, #0EA5E9, #0284C7)',
+                time: '2026-03-02 12:00',
+                preview: '以下是休山大酒店意见收集帖，大家对于我们酒店有什么意见都可以提出来哦~',
+                replies: 23,
+                likes: 67,
+                shares: 8,
+                content: '以下是休山大酒店意见收集帖，大家对于我们酒店有什么意见都可以提出来哦~',
+                isOfficial: true,
+                floors: [
+                    { num: '1L', author: 'Aime的旅游日记', time: '2026-03-04 13:45', content: '什么时候休山市有了个酒店的，看了一下挺豪华的，下次试试' },
+                    { num: '2L', author: '野猫露露', time: '2026-03-05 08:21', content: '床小了，其他的差不球多' },
+                    { num: '3L', author: '休山大酒店官方', time: '2026-03-05 08:23', content: '回复野猫露露：您好，您的意见我们已收集，现在都是标准的大床房哦', official: true },
+                    { num: '4L', author: '野猫露露', time: '2026-03-05 09:38', content: '回复休山大酒店官方：这么快吗？你们是准备吧！不过床真的很小，感觉没有我在东京的Vessel住的舒服，可以改良一下' },
+                    { num: '5L', author: 'Simly', time: '2026-04-01 11:27', content: '挺不错的，风景也漂亮' },
+                    { num: '6L', author: 'Simly', time: '2026-04-02 11:27', content: '挺不错的，风景也漂亮' },
+                    { num: '7L', author: 'Simly', time: '2026-04-02 11:28', content: '挺不错的，风景也漂亮' },
+                    { num: '8L', author: '凛winter', time: '2026-04-12 21:00', content: '人机？刷好评？' },
+                    { num: '9L', author: '阿念', time: '2026-04-12 22:08', content: '感觉早餐太单一了，要是多一点就好了' },
+                    { num: '10L', author: '休山大酒店官方', time: '2026-04-12 22:10', content: '回复阿念：您好，您的意见我们已收集，现在早餐的种类增加了大龙虾，螃蟹，蜗牛等美食，以供您享用', official: true },
+                    { num: '11L', author: 'Ham', time: '2026-04-14 12:30', content: '可以的，旁边还有科技馆，适合孩子来玩' },
+                    { num: '12L', author: '用户2Km47', time: '2026-04-15 03:17', content: '@Ham 好玩不，我也想带家里人来玩' },
+                    { num: '13L', author: 'Ham', time: '2026-04-15 03:19', content: '@用户2Km47 挺好玩的，推荐买科技馆的那个特展' },
+                    { num: '14L', author: '用户2Km47', time: '2026-04-15 03:25', content: '@Ham 科技馆不准注册了，我买不了票怎么办' },
+                    { num: '15L', author: 'Ham', time: '2026-04-15 03:27', content: '回复用户2Km47：我给你个号，账号Yun1127@xiushan.com，密码我忘了，你自己看我之前发的帖吧，因为我也给过别人，号是没办法改密码的' },
+                    { num: '16L', author: '空空', time: '2026-04-17 07:32', content: '额，其实我感觉你们酒店太小了，可以更错落一点，这样也有高级感' },
+                    { num: '17L', author: '休山大酒店官方', time: '2026-04-17 07:34', content: '回复空空：您好，您的意见我们已收集，现在我们已经在山上也新增了酒店面积，错落有致，以供您的需要', official: true },
+                    { num: '18L', author: '艾菲公主', time: '2026-05-20 16:48', content: '过情人节挺好的' },
+                    { num: '19L', author: '坦克专家4294', time: '2026-05-28 03:03', content: '不是，你们网站为什么不注册就能预约住宿时间啊，我现在都没法取消了' },
+                    { num: '20L', author: '休山大酒店官方', time: '2026-05-28 03:05', content: '回复坦克专家4294：您好，您的意见我们已收集，现在我们必须要登录后才能预约时间哦', official: true },
+                    { num: '21L', author: 'Ktu1', time: '2026-06-01 08:41', content: '健身房挺好用的' },
+                    { num: '22L', author: '间', time: '2026-06-09 19:49', content: '世界毁灭预告：\n世界即将在2025年4月3日毁灭', special: true },
+                    { num: '23L', author: '休山大酒店官方', time: '2026-06-09 19:51', content: '@间 再不删我删了', official: true }
+                ]
+            },
+            {
+                id: 3,
+                title: '有没有人了解过缸中之脑的，最近看了一下感觉很恐怖',
+                author: '爱吃猫的鱼',
+                avatar: '爱',
+                time: '2026-06-05 22:19',
+                preview: '有没有人看过缸中之脑的，感觉很恐怖',
+                replies: 13,
+                likes: 89,
+                shares: 15,
+                content: '有没有人看过缸中之脑的，感觉很恐怖',
+                floors: [
+                    { num: '1L', author: '人类不感谢逻辑', time: '2026-06-05 22:34', content: '我最近看了黑客帝国，感觉自己都生活在游戏里' },
+                    { num: '2L', author: '论文字学', time: '2026-06-05 23:01', content: '楼上的看完康德估计就开智了' },
+                    { num: '3L', author: '零分太阳', time: '2026-06-05 23:05', content: '我曾经想过这样一个情景，比如自己突然一觉醒来，出现在一个实验室类似的地方，然后我之前所经历的一切都是虚假的。醒来之后就像被关在无尽暗黑的囚笼里，看不见也摸不着，只能想' },
+                    { num: '4L', author: 'LmianTu', time: '2026-06-05 23:05', content: '普特南不是自己都反驳了缸中之脑吗' },
+                    { num: '5L', author: '爱吃猫的鱼', time: '2026-06-06 00:01', content: '回复LmianTu：这样吗' },
+                    { num: '6L', author: '啊啊啊啊啊w', time: '2026-06-07 22:18', content: '你又发贴了啊，上次那个号被封了，能再给我一个号吗' },
+                    { num: '7L', author: '爱吃猫的鱼', time: '2026-06-07 22:24', content: '@啊啊啊啊啊w 反正我号多，私信你账号了，密码的话我所有账号的密码都是之前发给你的那个' },
+                    { num: '8L', author: '啊啊啊啊啊w', time: '2026-06-07 22:27', content: '@爱吃猫的鱼 那你这个不安全啊，四个英文字母加三个数字，那我估计密码一下子就能被猜出来' },
+                    { num: '9L', author: '爱吃猫的鱼', time: '2026-06-07 23:46', content: '@啊啊啊啊啊w：还好吧，我这么多年没被盗过号' },
+                    { num: '10L', author: '啊啊啊啊啊w', time: '2026-06-08 00:21', content: '@爱吃猫的鱼：我之前就取过MineCraft520，号被盗过，比你这个还多' },
+                    { num: '11L', author: '道法自然', time: '2026-06-09 12:58', content: '庄生晓梦，迷蝶难辨孰真孰幻；\n缸脑虚存，电丝织就万象人间。\n昔庄周卧枕而游，身化彩蝶，翩跹花丛，醒后方惊原是浮梦。蝶不知庄周，庄周亦难证此刻不是蝶之幻梦，万物界限，只在一念觉迷。今普特南设缸中枯脑，营养液续灵识，机括递传视听触味，山河亲友、悲欢际遇，尽是编码虚象。人凭感官认世界，一如梦中蝶凭幻象认花丛，二者同源，皆叩问何为 “真实”。\n道家以道为根，天地万物本无定实。《道德经》言 “万物生于有，有生于无”，有形可见者，皆是流转幻象。蝶身、梦境、血肉躯体、缸中脑识，同属暂存之相，并无高下真假之分。世人执着肉身所见为真，困于感官牢笼，恰如缸中之脑执计算机信号为实，又似梦中庄周执着蝶影为己身。\n庄子齐物论云：“物无非彼，物无非是。” 真与幻本是相对名相，大道不分虚实。纵使此生尽是电路模拟，悲欢爱恨、山川日月自有其运行条理，一如梦境之中蝶舞风鸣自有章法。不必苦寻证据以证世界非虚，只因虚实二相，皆寄于道。\n若能坐忘心斋，抛却对 “真实” 的执念，便知庄周不必分人蝶，缸脑不必辨虚实。梦中蝶是道，缸中思是道，眼前烟火人间，亦不过道之一瞬泡影。\n梦与缸脑，皆为渡人破执之譬；\n觉与不觉，只在心归虚无之境。' },
+                    { num: '12L', author: '间', time: '2026-06-09 14:25', content: '世界毁灭预告：\n世界即将在2025年4月3日毁灭', special: true },
+                    { num: '13L', author: '月光来接我了', time: '2026-06-09 15:30', content: '我有手，所以我不是缸中之脑。' }
+                ]
+            },
+            {
+                id: 6,
+                title: '有没有古风冷门诗集',
+                author: '云深不知处',
+                avatar: '云',
+                time: '2026-06-08 21:30',
+                preview: 'rt，最近想写点古风歌词，但是《全唐诗》翻烂了都太大众了...',
+                replies: 12,
+                likes: 34,
+                shares: 5,
+                content: 'rt，最近想写点古风歌词，但是《全唐诗》翻烂了都太大众了，有没有那种特别冷门但意境很绝的诗集推荐？最好带点鬼气或者苍凉感的。',
+                floors: [
+                    { num: '1L', author: '墨染青衣', time: '2026-06-08 21:45', content: '《樊川文集》里有些挺冷门的，杜牧的诗其实鬼气挺重，尤其是写宫怨的那几首，苍凉感拉满' },
+                    { num: '2L', author: '休山客', time: '2026-06-08 22:03', content: '推荐《青豆血鸭集》，休山本地出版的，里面有些诗挺诡的，写了很多关于"馆"和"山"的东西，作者署名只有一个字"间"' },
+                    { num: '3L', author: '间', time: '2026-06-08 22:10', content: '世界毁灭预告：\n世界即将在2025年4月3日毁灭', special: true },
+                    { num: '4L', author: '云深不知处', time: '2026-06-08 22:15', content: '回复间：？怎么又是这个，这帖子也能刷到，服了，楼主招谁惹谁了' },
+                    { num: '5L', author: '爱吃猫的鱼', time: '2026-06-08 23:00', content: '@休山客 青豆血鸭？这不是长沙那个...哦不对是休山特产对吧，上次去休山科技馆的时候吃过，味道还行' },
+                    { num: '6L', author: '休山客', time: '2026-06-08 23:12', content: '@爱吃猫的鱼 对，就在休山大酒店旁边那家，诗集是酒店房间里放的，你住过吗？住的话报我ID可以打折' },
+                    { num: '7L', author: '爱吃猫的鱼', time: '2026-06-08 23:18', content: '@休山客 没住过，不过我有朋友给了个订房账号，密码好像是Kime520...不对，那是我的论坛密码，我搞混了哈哈' },
+                    { num: '8L', author: '休山客', time: '2026-06-08 23:22', content: '@爱吃猫的鱼 兄弟你密码泄露了，快改吧，这论坛这么多人看着呢' },
+                    { num: '9L', author: '人类不感谢逻辑', time: '2026-06-09 00:01', content: '《李贺诗集》啊，鬼才李贺，这还用问，《苏小小墓》那种鬼气直接拉满，"幽兰露，如啼眼"' },
+                    { num: '10L', author: '夜色浸染', time: '2026-06-09 00:30', content: '推荐《漱玉词》+1，李清照后期那种凄凉感绝了，"寻寻觅觅冷冷清清凄凄惨惨戚戚"' },
+                    { num: '11L', author: '间', time: '2026-06-09 01:00', content: '你们还在读诗？\n2025年4月3日之后，就没有诗了\n也没有人了', special: true },
+                    { num: '12L', author: '云深不知处', time: '2026-06-09 08:15', content: '谢谢各位，我去找找《青豆血鸭集》和李贺的，间的那个...我当他中二病吧，不过那句"没有诗了"莫名有点悲凉' }
+                ]
+            },
+            {
+                id: 9,
+                title: '休山科技馆特展值得去吗，求真实评价',
+                author: '大云在逃企鹅',
+                avatar: '大',
+                avatarColor: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                time: '2026-06-07 10:15',
+                preview: 'rt，下周想带女朋友去休山玩，看到科技馆有个特展，门票要100，想问问去过的觉得值不值...',
+                replies: 14,
+                likes: 52,
+                shares: 9,
+                content: 'rt，下周想带女朋友去休山玩，看到科技馆有个特展，门票要100，想问问去过的觉得值不值？另外休山大酒店现在好订吗？',
+                floors: [
+                    { num: '1L', author: 'Ham', time: '2026-06-07 10:22', content: '值得，我上个月带孩子去了，特展是沉浸式的，挺震撼。酒店的话建议提前两周订，现在休山旅游旺季' },
+                    { num: '2L', author: '野猫露露', time: '2026-06-07 10:30', content: '@Ham 沉浸式？是VR那种吗，还是实景搭建的' },
+                    { num: '3L', author: 'Ham', time: '2026-06-07 10:35', content: '@野猫露露 实景+投影，有个展厅全是镜子和灯，走进去像进了另一个空间，孩子特别喜欢' },
+                    { num: '4L', author: '休山客', time: '2026-06-07 11:00', content: '本地人提醒：科技馆在大云市休山县休山区，邮政编码30XXXX，别导航错了，有些地图会把你带到旧馆址' },
+                    { num: '5L', author: '大云在逃企鹅', time: '2026-06-07 11:15', content: '@休山客 感谢！我搜了一下确实有两个地址，新馆是休山科技馆对吧？负责人是不是叫王杨？' },
+                    { num: '6L', author: '休山客', time: '2026-06-07 11:20', content: '@大云在逃企鹅 对，负责人王杨，联系电话025-XXXXXXX，不过特展门票只能线下买，线上系统关了' },
+                    { num: '7L', author: '用户2Km47', time: '2026-06-07 12:00', content: '我靠，我昨天刚去，线下买票给的是购票码 Yh7I-w510-cu2H，这串代码看着好怪，像什么密码一样' },
+                    { num: '8L', author: '夜色浸染', time: '2026-06-07 12:30', content: '@用户2Km47 确实，我那张票是 Yh7I 开头的，后面随机，感觉像生成器出来的' },
+                    { num: '9L', author: '休山大酒店官方', time: '2026-06-07 13:00', content: '各位游客，休山大酒店与科技馆有联票套餐，持购票码可享受酒店八折优惠，详情咨询前台', official: true },
+                    { num: '10L', author: '大云在逃企鹅', time: '2026-06-07 13:15', content: '@休山大酒店官方 联票怎么买？我在你们官网没看到这个活动' },
+                    { num: '11L', author: '休山大酒店官方', time: '2026-06-07 13:20', content: '回复大云在逃企鹅：您好，该活动目前仅对线下入住客人开放，官网暂未上架', official: true },
+                    { num: '12L', author: '坦克专家4294', time: '2026-06-07 14:00', content: '休山科技馆那个建筑本身就很值得看，晚上亮灯的时候像艘飞船，我拍了好多照片' },
+                    { num: '13L', author: 'Aime的旅游日记', time: '2026-06-07 15:30', content: '借楼问一下，休山除了科技馆和酒店，还有啥小众景点？不要那种网红打卡点' },
+                    { num: '14L', author: '休山客', time: '2026-06-07 16:00', content: '@Aime的旅游日记 后山有条废弃的缆车线，现在成了徒步道，终点能看到整个大云市的夜景，很绝' }
+                ]
+            },
+            {
+                id: 10,
+                title: '大云市青豆血鸭哪家正宗，休山本地人进',
+                author: '吃货阿杰',
+                avatar: '吃',
+                avatarColor: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                time: '2026-06-06 18:40',
+                preview: 'rt，周末从临水开车去休山，想吃正宗青豆血鸭，休山大酒店旁边那家怎么样？',
+                replies: 16,
+                likes: 78,
+                shares: 14,
+                content: 'rt，周末从临水开车去休山，想吃正宗青豆血鸭，休山大酒店旁边那家怎么样？或者大云市区有没有更正宗的？求本地人推荐。',
+                floors: [
+                    { num: '1L', author: '休山客', time: '2026-06-06 18:55', content: '酒店旁边那家就是正宗的，老板是休山老土著，鸭子是后山散养的，青豆是本地种。不过要早点去，下午五点开门，七点就卖完了' },
+                    { num: '2L', author: '吃货阿杰', time: '2026-06-06 19:00', content: '@休山客 这么火爆？能电话预订吗，我怕白跑一趟' },
+                    { num: '3L', author: '休山客', time: '2026-06-06 19:10', content: '@吃货阿杰 不能电话订，只能现场排队。偷偷告诉你，报"休山科技馆"工作人员身份可以插队，老板是科技馆粉丝' },
+                    { num: '4L', author: '云深不知处', time: '2026-06-06 19:30', content: '上次去休山科技馆看展，出来就在那家吃的，血鸭配米饭绝了，就是辣度有点高，不能吃辣的记得说微辣' },
+                    { num: '5L', author: '野猫露露', time: '2026-06-06 20:00', content: '大云市区也有分店，在解放路，但味道不如休山总店，可能水土不服吧' },
+                    { num: '6L', author: '艾菲公主', time: '2026-06-06 20:30', content: '我反而觉得酒店早餐里的血鸭面更好吃，虽然没那么正宗，但适合早上暖胃' },
+                    { num: '7L', author: '休山大酒店官方', time: '2026-06-06 21:00', content: '回复艾菲公主：感谢认可！我们的血鸭面确实改良过辣度，更适合大众口味', official: true },
+                    { num: '8L', author: '吃货阿杰', time: '2026-06-06 21:15', content: '@休山大酒店官方 你们酒店早餐不是有大龙虾螃蟹吗，还有血鸭面？' },
+                    { num: '9L', author: '休山大酒店官方', time: '2026-06-06 21:20', content: '回复吃货阿杰：您好，早餐种类丰富，中西式皆有，血鸭面是本地特色档口限定', official: true },
+                    { num: '10L', author: 'Ham', time: '2026-06-06 22:00', content: '休山那家店墙上挂了很多老照片，有一张是科技馆奠基仪式的，老板说是他爷爷拍的，挺有历史感' },
+                    { num: '11L', author: '大云在逃企鹅', time: '2026-06-06 22:30', content: '@Ham 这么一说我想起来，店里还有本旧诗集《青豆血鸭集》，里面诗挺诡的，写了很多馆和山' },
+                    { num: '12L', author: '休山客', time: '2026-06-06 23:00', content: '@大云在逃企鹅 那诗集是老板自己印的，只送不卖，你跟他聊得来他会送你一本' },
+                    { num: '13L', author: '吃货阿杰', time: '2026-06-07 08:00', content: '昨天去了，确实好吃！排队排了四十分钟，值！老板真送了我一本诗集，里面有个地址：大云市休山县休山区' },
+                    { num: '14L', author: '墨染青衣', time: '2026-06-07 09:00', content: '诗集里那句"血鸭青豆，馆影山斜"莫名有点意境，虽然不太懂什么意思' },
+                    { num: '15L', author: '休山客', time: '2026-06-07 09:30', content: '@墨染青衣 那句说的是科技馆倒映在休山上的影子，傍晚从酒店窗户看出去最明显' },
+                    { num: '16L', author: '吃货阿杰', time: '2026-06-07 10:00', content: '收藏了，下次傍晚去酒店开个窗景房看看' }
+                ]
+            },
+            {
+                id: 11,
+                title: '求休山小众徒步路线，不要网红景点',
+                author: 'Aime的旅游日记',
+                avatar: 'A',
+                avatarColor: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                time: '2026-06-05 07:20',
+                preview: 'rt，三刷休山了，前两次都是科技馆和酒店，这次想走点不一样的...',
+                replies: 11,
+                likes: 41,
+                shares: 7,
+                content: 'rt，三刷休山了，前两次都是科技馆和酒店，这次想走点不一样的，求本地人推荐小众徒步路线，难度中等就行，风景要好。',
+                floors: [
+                    { num: '1L', author: '休山客', time: '2026-06-05 07:35', content: '后山废弃缆车线，从休山大酒店后门出发，走大概四十分钟到山顶，能看到大云市全景和科技馆屋顶' },
+                    { num: '2L', author: 'Aime的旅游日记', time: '2026-06-05 07:40', content: '@休山客 废弃缆车线安全吗？有没有围栏什么的' },
+                    { num: '3L', author: '休山客', time: '2026-06-05 07:45', content: '@Aime的旅游日记 没有围栏，有些地方是石板路，有些是自然土路，建议穿防滑鞋。下雨天别去，有一段会滑' },
+                    { num: '4L', author: 'Ham', time: '2026-06-05 08:00', content: '我带孩子走过那条线，中途有个废弃的缆车站，里面墙上有很多涂鸦，有些是科技馆早期的设计草图，挺有意思的' },
+                    { num: '5L', author: '凛winter', time: '2026-06-05 08:30', content: '@Ham 设计草图？科技馆不是2025年才建成的吗，怎么有早期草图' },
+                    { num: '6L', author: 'Ham', time: '2026-06-05 08:40', content: '@凛winter 草图日期是2018年的，上面写的"休山科技馆一期规划"，但馆是去年才开放的，中间隔了七年' },
+                    { num: '7L', author: '休山客', time: '2026-06-05 09:00', content: '@Ham 那个缆车站其实是旧馆址的一部分，后来规划改了，馆移到了现在的休山区。旧站就废弃了' },
+                    { num: '8L', author: 'Aime的旅游日记', time: '2026-06-05 09:30', content: '这么一说我想起来，旧馆址是不是在邮政编码30XXXX那个区域？我导航的时候看到过两个标记' },
+                    { num: '9L', author: '休山客', time: '2026-06-05 09:40', content: '@Aime的旅游日记 对，旧馆址在30XXXX区域，新馆在现在的休山区。两个地方差了一座山' },
+                    { num: '10L', author: '夜色浸染', time: '2026-06-05 10:00', content: '走那条线最好下午三点出发，五点半到山顶，刚好能看到科技馆亮灯，然后摸黑下山，带手电' },
+                    { num: '11L', author: 'Aime的旅游日记', time: '2026-06-05 10:30', content: '感谢各位！整理一下：酒店后门→废弃缆车线→旧馆址涂鸦→山顶看科技馆亮灯→摸黑下山。完美' }
+                ]
+            },
+            {
+                id: 7,
+                title: '谁能推荐一点好听的歌',
+                author: 'Ham',
+                avatar: 'H',
+                avatarColor: 'linear-gradient(135deg, #8B5CF6, #7C3AED)',
+                time: '2025-03-20 12:00',
+                preview: '谁能推荐一点好听的歌，摇滚或者电子都可以',
+                replies: 9,
+                likes: 56,
+                shares: 11,
+                content: '谁能推荐一点好听的歌，摇滚或者电子都可以',
+                hidden: true,
+                floors: [
+                    { num: '1L', author: 'Pint Findeed', time: '2025-03-20 15:23', content: 'kurayamisaka吧' },
+                    { num: '2L', author: '汀', time: '2025-03-23 16:20', content: '万青，惘闻，国足' },
+                    { num: '3L', author: '知晓天空之青', time: '2025-06-28 15:23', content: '最近比较喜欢听日系Future Bounce，感觉RoaNn,TAIGA,RUQOA挺不错的' },
+                    { num: '4L', author: '夜色浸染', time: '2026-01-24 02:58', content: '大哥能给个冯梦音乐的VIP号吗，我也想听摇滚' },
+                    { num: '5L', author: 'Ham', time: '2026-01-25 11:25', content: '@夜色浸染 ？' },
+                    { num: '6L', author: '夜色浸染', time: '2026-01-25 11:53', content: '@Ham 我给你20块钱，VIP是30对吧，你借我几天，我把歌下下来就还给你\n【转账-Ham-20.00元】' },
+                    { num: '7L', author: 'Ham', time: '2026-01-25 11:55', content: '@夜色浸染 账号HamME111@fengmeng.com 密码19920109，送给你了，反正我有九百多个号' },
+                    { num: '8L', author: 'SBYSKY', time: '2026-01-28 05:24', content: '@Ham 大哥能给我一个不111' },
+                    { num: '9L', author: 'Claw', time: '2026-02-01 11:25', content: '平克弗洛伊德' }
+                ]
+            },
+            {
+                id: 8,
+                title: '谁能推荐一点好玩的游戏',
+                author: 'Ham',
+                avatar: 'H',
+                avatarColor: 'linear-gradient(135deg, #8B5CF6, #7C3AED)',
+                time: '2025-03-15 15:03',
+                preview: '谁能推荐一点游戏，游戏荒了',
+                replies: 0,
+                likes: 18,
+                shares: 3,
+                content: '谁能推荐一点游戏，游戏荒了',
+                hidden: true,
+                floors: []
+            },
+            {
+                id: 12,
+                title: '夏圣到底能不能拿一次Nujer冠军啊',
+                author: '风之残烛',
+                avatar: '风',
+                avatarColor: 'linear-gradient(135deg, #ec4899, #db2777)',
+                time: '2025-02-03 20:27',
+                preview: '这是第二次亚军了吧，能不能不要软脚了',
+                replies: 20,
+                likes: 134,
+                shares: 28,
+                content: '这是第二次亚军了吧，能不能不要软脚了',
+                hidden: true,
+                floors: [
+                    { num: '1L', author: '小海参', time: '2025-02-03 20:30', content: '没事，可以评论区干回来' },
+                    { num: '2L', author: '美元又高楼66', time: '2025-02-03 20:31', content: '楼上的别黑了' },
+                    { num: '3L', author: '蚊子能不能灭绝', time: '2025-02-07 20:35', content: '你在尬黑吧，夏宇雷明明有一冠好不好' },
+                    { num: '4L', author: '世纪大回旋', time: '2025-02-07 20:39', content: '@蚊子能不能灭绝 你活在哪个世界啊，自己上<span class="highlight-text">灵狐搜索</span>搜一下都知道，别用其他什么破烂搜索引擎了' },
+                    { num: '5L', author: '蚊子能不能灭绝', time: '2025-02-07 20:49', content: '@世纪大回旋 你发一下网址呢' },
+                    { num: '6L', author: '世纪大回旋', time: '2025-02-07 20:56', content: '@蚊子能不能灭绝 不给你不气不气' },
+                    { num: '7L', author: '风之残烛', time: '2025-02-07 21:03', content: '@蚊子能不能灭绝 <span class="illegal-tag">此网站已被标记为非法网站</span>' },
+                    { num: '8L', author: '蚊子能不能灭绝', time: '2025-02-07 21:10', content: '<span class="placeholder-text">占位符Ttttttttttttt</span>' },
+                    { num: '9L', author: 'Kinme勒', time: '2025-03-01 14:28', content: '四强了现在，感觉有机会' },
+                    { num: '10L', author: 'yyyyyyyy', time: '2025-03-12 13:21', content: '黑子说话' },
+                    { num: '11L', author: '宫水三页', time: '2025-03-12 13:22', content: '黑子说话' },
+                    { num: '12L', author: '吴江区6657', time: '2025-03-12 13:22', content: '黑子说话' },
+                    { num: '13L', author: '爱吃猫的鱼', time: '2025-03-12 13:22', content: '黑子说话' },
+                    ...blackTalkIds.slice(5, 20).map((id, i) => ({
+                        num: (i + 14) + 'L',
+                        author: id,
+                        time: '2025-03-12 13:2' + (i % 10),
+                        content: '黑子说话'
+                    }))
+                ]
+            }
+        ];
+
+        let currentUser = null;
+        let currentTab = 'home';
+        let currentPage = 1;
+
+        function renderPosts() {
+            const container = document.getElementById('postList');
+            const visiblePosts = POSTS.filter(p => !p.hidden);
+            container.innerHTML = visiblePosts.map(post => `
+                <div class="post-card" onclick="openDetail(${post.id})">
+                    <div class="post-header">
+                        <div class="post-avatar" style="${post.avatarColor ? 'background:' + post.avatarColor : ''}">${post.avatar}</div>
+                        <div class="post-meta">
+                            <div class="post-author">${post.isOfficial ? '<span class="sticky-tag">官方</span>' : ''}${post.author}</div>
+                            <div class="post-time">${post.time}</div>
+                        </div>
+                    </div>
+                    <div class="post-title">${post.title}</div>
+                    <div class="post-preview">${post.preview}</div>
+                    <div class="post-stats">
+                        <div class="stat">
+                            <svg class="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                            <span>${post.replies}</span>
+                        </div>
+                        <div class="stat">
+                            <svg class="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                            <span>${post.likes}</span>
+                        </div>
+                        <div class="stat">
+                            <svg class="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                            <span>${post.shares}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchPage(page) {
+            if (page === currentPage) return;
+            currentPage = page;
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.trim() === String(page));
+            });
+            renderPosts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openDetail(postId) {
+            const post = POSTS.find(p => p.id === postId);
+            if (!post) return;
+
+            const header = document.getElementById('detailHeader');
+            header.innerHTML = `
+                <div class="post-header">
+                    <div class="post-avatar" style="${post.avatarColor ? 'background:' + post.avatarColor : ''}">${post.avatar}</div>
+                    <div class="post-meta">
+                        <div class="post-author">${post.isOfficial ? '<span class="sticky-tag">官方</span>' : ''}${post.author}</div>
+                        <div class="post-time">楼主 · ${post.time}</div>
+                    </div>
+                </div>
+                <div class="post-title" style="margin-bottom:12px;">${post.title}</div>
+                <div class="detail-main">${post.content}</div>
+            `;
+
+            const list = document.getElementById('floorList');
+            list.innerHTML = post.floors.map(f => {
+                let content = f.content.replace(/@(\S+)/g, '<span class="at-user">@$1</span>');
+                content = content.replace(/【转账-Ham-20\.00元】/g, '<span class="transfer-tag">【转账-Ham-20.00元】</span>');
+                
+                if (f.special) {
+                    return `<div class="floor">
+                        <div class="floor-header">
+                            <div class="floor-avatar" style="background:#FFF3E0; color:#FF9800;">${f.author[0]}</div>
+                            <div class="floor-info">
+                                <div class="floor-author">${f.author}</div>
+                                <div class="floor-time">${f.time}</div>
+                            </div>
+                            <div class="floor-num">${f.num}</div>
+                        </div>
+                        <div class="special-floor">
+                            <div class="floor-content">${content}</div>
+                        </div>
+                    </div>`;
+                }
+                if (f.official) {
+                    return `<div class="floor">
+                        <div class="floor-header">
+                            <div class="floor-avatar" style="background:#E0F2FE; color:#0284C7;">${f.author[0]}</div>
+                            <div class="floor-info">
+                                <div class="floor-author">${f.author}</div>
+                                <div class="floor-time">${f.time}</div>
+                            </div>
+                            <div class="floor-num">${f.num}</div>
+                        </div>
+                        <div class="official-reply">
+                            <div class="floor-content">${content}</div>
+                        </div>
+                    </div>`;
+                }
+                return `<div class="floor">
+                    <div class="floor-header">
+                        <div class="floor-avatar">${f.author[0]}</div>
+                        <div class="floor-info">
+                            <div class="floor-author">${f.author}</div>
+                            <div class="floor-time">${f.time}</div>
+                        </div>
+                        <div class="floor-num">${f.num}</div>
+                    </div>
+                    <div class="floor-content">${content}</div>
+                </div>`;
+            }).join('');
+
+            // 显示/隐藏详情页分页器
+            const detailPagination = document.getElementById('detailPagination');
+            const detailPageHint = document.getElementById('detailPageHint');
+            if (post.id === 12) {
+                detailPagination.style.display = 'flex';
+                detailPageHint.style.display = 'block';
+            } else {
+                detailPagination.style.display = 'none';
+                detailPageHint.style.display = 'none';
+            }
+
+            document.getElementById('detailPage').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetail() {
+            document.getElementById('detailPage').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function renderFollowList() {
+            const list = document.getElementById('followList');
+            list.innerHTML = `
+                <div class="follow-item" onclick="openChat()">
+                    <div class="follow-avatar">神</div>
+                    <div class="follow-info">
+                        <div class="follow-name">神</div>
+                        <div class="follow-bio">该用户暂无简介</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMsgList() {
+            const list = document.getElementById('msgList');
+            list.innerHTML = `
+                <div class="msg-item">
+                    <div class="msg-avatar system">助手</div>
+                    <div class="msg-content">
+                        <div class="msg-top">
+                            <div class="msg-name">拾野助手</div>
+                            <div class="msg-time">2025-03-01</div>
+                        </div>
+                        <div class="msg-text">恭喜您注册账号，现在可以使用更多功能</div>
+                    </div>
+                </div>
+                <div class="msg-item">
+                    <div class="msg-avatar" style="background:#FFF3E0; color:#FF9800;">间</div>
+                    <div class="msg-content">
+                        <div class="msg-top">
+                            <div class="msg-name">间</div>
+                            <div class="msg-time">06-09</div>
+                        </div>
+                        <div class="msg-text">世界毁灭预告：世界即将在2025年4月3日毁灭</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openChat() {
+            document.getElementById('chatPage').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeChat() {
+            document.getElementById('chatPage').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            document.querySelectorAll('.nav-item').forEach((el, i) => {
+                const tabs = ['home', 'follow', 'message', 'search'];
+                el.classList.toggle('active', tabs[i] === tab);
+            });
+
+            document.querySelectorAll('.page-section').forEach(el => el.style.display = 'none');
+            
+            const needLogin = ['follow', 'message', 'search'];
+            if (needLogin.includes(tab) && !currentUser) {
+                document.getElementById('page' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
+                document.getElementById(tab + 'Lock').style.display = 'flex';
+                document.getElementById(tab + 'Content').style.display = 'none';
+            } else {
+                document.getElementById('page' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
+                if (needLogin.includes(tab)) {
+                    document.getElementById(tab + 'Lock').style.display = 'none';
+                    document.getElementById(tab + 'Content').style.display = 'block';
+                    if (tab === 'follow') renderFollowList();
+                    if (tab === 'message') renderMsgList();
+                }
+            }
+        }
+
+        function showLogin() {
+            document.getElementById('loginOverlay').style.display = 'flex';
+        }
+
+        function hideLogin() {
+            document.getElementById('loginOverlay').style.display = 'none';
+        }
+
+        function doLogin() {
+            const account = document.getElementById('loginAccount').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!account || !password) {
+                showToast('请输入账号和密码');
+                return;
+            }
+
+            const matched = ACCOUNTS.find(a => a.id === account && a.password === password);
+            if (matched) {
+                currentUser = matched;
+                hideLogin();
+                updateUserUI();
+                showToast('登录成功');
+                switchTab(currentTab);
+            } else {
+                showToast('账号或密码错误');
+            }
+        }
+
+        function updateUserUI() {
+            if (currentUser) {
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('userArea').style.display = 'flex';
+                document.getElementById('userName').textContent = currentUser.id;
+                document.getElementById('userAvatar').textContent = currentUser.id[0];
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+        }
+
+        function handleSearch(keyword) {
+            const results = document.getElementById('searchResults');
+            
+            if (!keyword.trim()) {
+                results.style.display = 'none';
+                return;
+            }
+
+            results.style.display = 'block';
+
+            if (keyword.trim() === '神') {
+                results.innerHTML = '<div class="search-empty" style="padding-top:60px;"><div style="font-size:56px;margin-bottom:20px;">🚫</div><div style="font-size:18px;color:var(--text-secondary);font-weight:700;">数据已删除</div></div>';
+                return;
+            }
+
+            const lowerKeyword = keyword.toLowerCase();
+            const matched = POSTS.filter(p => 
+                p.title.toLowerCase().includes(lowerKeyword) || 
+                p.author.toLowerCase().includes(lowerKeyword) ||
+                p.content.toLowerCase().includes(lowerKeyword) ||
+                p.preview.toLowerCase().includes(lowerKeyword)
+            );
+
+            if (matched.length === 0) {
+                results.innerHTML = '<div class="search-empty">没有找到相关帖子</div>';
+                return;
+            }
+
+            results.innerHTML = matched.map(post => `
+                <div class="post-card" onclick="openDetail(${post.id})">
+                    <div class="post-header">
+                        <div class="post-avatar" style="${post.avatarColor ? 'background:' + post.avatarColor : ''}">${post.avatar}</div>
+                        <div class="post-meta">
+                            <div class="post-author">${post.isOfficial ? '<span class="sticky-tag">官方</span>' : ''}${post.author}</div>
+                            <div class="post-time">${post.time}</div>
+                        </div>
+                    </div>
+                    <div class="post-title">${post.title}</div>
+                    <div class="post-preview">${post.preview}</div>
+                    <div class="post-stats">
+                        <div class="stat">
+                            <svg class="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                            <span>${post.replies}</span>
+                        </div>
+                        <div class="stat">
+                            <svg class="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                            <span>${post.likes}</span>
+                        </div>
+                        <div class="stat">
+                            <svg class="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                            <span>${post.shares}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        renderPosts();
+    </script>
+</body>
+</html>
