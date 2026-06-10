@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天才俱乐部 · 主界面</title>
+    <style>
+        :root {
+            --red: #c41e3a;
+            --red-bright: #e63946;
+            --blue: #1a3a5c;
+            --blue-bright: #2563eb;
+            --white: #f8f5f0;
+            --marble-gray: #d5d0c8;
+            --marble-dark: #b8b0a5;
+            --gold: #c9a96e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            background-color: #0d0d0d;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(180, 160, 145, 0.25) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 35%, rgba(190, 175, 160, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 70%, rgba(170, 155, 140, 0.22) 0%, transparent 60%),
+                radial-gradient(ellipse at 60% 10%, rgba(200, 185, 170, 0.2) 0%, transparent 45%),
+                repeating-linear-gradient(12deg, transparent, transparent 4px, rgba(140, 130, 115, 0.08) 4px, rgba(140, 130, 115, 0.08) 4.5px),
+                repeating-linear-gradient(-22deg, transparent, transparent 9px, rgba(150, 140, 122, 0.05) 9px, rgba(150, 140, 122, 0.05) 9.6px),
+                linear-gradient(40deg, transparent 68%, rgba(140, 125, 108, 0.06) 68.5%, transparent 69%),
+                radial-gradient(ellipse at 50% 50%, rgba(30, 25, 20, 0.75) 0%, rgba(10, 8, 6, 0.95) 100%);
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .main-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .user-bar {
+            position: fixed;
+            top: 20px;
+            right: 25px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(20, 16, 12, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(200, 160, 130, 0.35);
+            border-radius: 40px;
+            padding: 6px 18px 6px 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            color: #e8d5c0;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c41e3a, #e63946);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 0 14px rgba(200, 30, 40, 0.5);
+        }
+
+        .hub-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 700px;
+            margin-top: 20px;
+        }
+        .club-logo {
+            font-size: 3.2rem;
+            font-weight: 900;
+            color: #f5f0e8;
+            text-shadow: 0 0 20px rgba(228, 30, 50, 0.6), 0 0 60px rgba(37, 99, 235, 0.35);
+            letter-spacing: 0.06em;
+            position: relative;
+        }
+        .club-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #c41e3a, #2563eb, transparent);
+            border-radius: 2px;
+        }
+        .welcome-tag {
+            color: #c9a96e;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .hub-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+            width: 100%;
+        }
+        .hub-card {
+            flex: 1 1 240px;
+            min-width: 220px;
+            background: rgba(18, 15, 12, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(200, 180, 160, 0.4);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
+            padding: 28px 22px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hub-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(200, 140, 110, 0.7);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 0 30px rgba(228, 30, 50, 0.2);
+        }
+        .hub-card.red-border {
+            border-color: rgba(200, 80, 80, 0.5);
+        }
+        .hub-card.blue-border {
+            border-color: rgba(80, 120, 200, 0.5);
+        }
+        .card-icon {
+            font-size: 2.2rem;
+        }
+        .card-title {
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: #f0e6d8;
+            letter-spacing: 0.03em;
+        }
+        .card-desc {
+            font-size: 0.8rem;
+            color: #b8a898;
+            line-height: 1.5;
+        }
+        .card-badge {
+            align-self: flex-start;
+            padding: 3px 12px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 0.06em;
+            background: rgba(200, 160, 120, 0.15);
+            color: #c9a96e;
+            border: 1px solid rgba(200, 160, 120, 0.3);
+        }
+
+        /* 欢迎弹窗 (居中) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-dialog {
+            background: rgba(22, 18, 14, 0.8);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 28px;
+            border: 1px solid rgba(200, 180, 160, 0.5);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.7), 0 0 40px rgba(228,30,50,0.2);
+            padding: 28px 32px;
+            max-width: 420px;
+            width: 90%;
+            position: relative;
+            color: #e8d5c0;
+            animation: modalIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            background: none;
+            border: none;
+            color: #b8a898;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            z-index: 5;
+        }
+        .modal-close:hover {
+            color: #ff7b7b;
+        }
+
+        .welcome-avatar-large {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c41e3a, #e63946);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #fff;
+            box-shadow: 0 0 30px rgba(200,30,40,0.6);
+        }
+
+        /* 右下角私信组件 */
+        .pm-corner {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+            pointer-events: none;
+        }
+        .pm-corner > * {
+            pointer-events: auto;
+        }
+        .pm-notify {
+            background: rgba(20, 16, 12, 0.75);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(200, 160, 130, 0.45);
+            border-radius: 20px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 15px rgba(37,99,235,0.15);
+            color: #e0d5c5;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: slideUp 0.4s cubic-bezier(0.2,0.8,0.2,1.2);
+            white-space: nowrap;
+        }
+        .pm-notify:hover {
+            border-color: rgba(200, 140, 110, 0.8);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(37,99,235,0.25);
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .pm-notify .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #ff5e5e;
+            box-shadow: 0 0 8px #ff5e5e;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        .pm-card {
+            background: rgba(22, 18, 14, 0.8);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(200, 180, 160, 0.5);
+            border-radius: 22px;
+            padding: 20px 22px;
+            max-width: 320px;
+            width: 90vw;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.6), 0 0 25px rgba(37,99,235,0.2);
+            animation: slideUp 0.35s ease;
+            color: #e8d5c0;
+            display: none;
+        }
+        .pm-card.active {
+            display: block;
+        }
+        .pm-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(200,160,130,0.3);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            justify-content: space-between;
+        }
+        .pm-card-header .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pm-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a3a5c, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 0 15px rgba(37,99,235,0.5);
+        }
+        .pm-sender-name {
+            font-weight: 900;
+            color: #8ab4f8;
+        }
+        .offline-status {
+            color: #7a6e62;
+            font-size: 0.7rem;
+            font-style: italic;
+        }
+        .pm-close-btn {
+            background: none;
+            border: none;
+            color: #b8a898;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+        .pm-close-btn:hover {
+            color: #ff7b7b;
+        }
+        .pm-message-body {
+            background: rgba(0,0,0,0.35);
+            padding: 14px 16px;
+            border-radius: 14px;
+            margin: 10px 0;
+            color: #ffd0b0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            border-left: 4px solid #c41e3a;
+        }
+        .pm-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #7a6e62;
+            margin-top: 10px;
+        }
+        .pm-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #b8a898;
+            font-size: 0.75rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        .pm-option input {
+            accent-color: #c41e3a;
+            width: 14px;
+            height: 14px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .club-logo {
+                font-size: 2.2rem;
+            }
+            .hub-card {
+                padding: 20px 16px;
+            }
+            .pm-corner {
+                right: 12px;
+                bottom: 15px;
+            }
+            .pm-card {
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="user-bar">
+        <div class="user-avatar">神</div>
+        <span>神 · 在线</span>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="hub-center">
+            <div class="welcome-tag">Ω-5 安全层级</div>
+            <div class="club-logo">天才俱乐部</div>
+            <div style="color:#b8a898; margin-top:-10px; font-size:0.85rem;">只有少数人能够看见的真相</div>
+
+            <div class="hub-cards">
+                <a href="https://ttt112132tttr.github.io/Xiushankejiguan/M3Jee" target="_blank" class="hub-card red-border" id="archiveCard">
+                    <span class="card-icon">📁</span>
+                    <span class="card-title">绝密档案</span>
+                    <span class="card-desc">M3Je12J6… 休山不存在假说与γζ衍金晶空间畸变报告</span>
+                    <span class="card-badge">最高权限</span>
+                </a>
+                <a href="https://ttt112132tttr.github.io/Xiushankejiguan/PX07e" target="_blank" class="hub-card blue-border" id="chatCard">
+                    <span class="card-icon">💬</span>
+                    <span class="card-title">加密聊天记录</span>
+                    <span class="card-desc">#休山异常讨论组 · Punchia协议 · 端到端加密</span>
+                    <span class="card-badge">5人组</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 欢迎弹窗 (居中) -->
+    <div class="modal-overlay" id="welcomeModal">
+        <div class="modal-dialog">
+            <button class="modal-close" id="closeWelcomeBtn">&times;</button>
+            <div style="text-align:center;">
+                <div class="welcome-avatar-large">神</div>
+                <h3 style="color:#f5f0e8; margin-bottom:6px;">欢迎您回到天才俱乐部</h3>
+                <p style="color:#b8a898; font-size:0.85rem;">账号：神 | 安全等级 Ω-5</p>
+                <p style="color:#7a6e62; font-size:0.75rem; margin-top:10px;">距离上次登录：███小时前</p>
+                <p style="color:#c9a96e; font-size:0.7rem; margin-top:12px;">今日密钥：休山科技馆·Xiushan</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右下角私信组件 -->
+    <div class="pm-corner" id="pmCorner">
+        <!-- 接收通知条 (初始显示) -->
+        <div class="pm-notify" id="pmNotifyBtn">
+            <span class="dot"></span>
+            <span>您收到一条私密消息</span>
+            <span style="font-size:0.75rem; opacity:0.6;">点击接收</span>
+        </div>
+        <!-- 私信内容卡片 (默认隐藏，点击接收后显示) -->
+        <div class="pm-card" id="pmCard">
+            <div class="pm-card-header">
+                <div class="left">
+                    <div class="pm-avatar">命</div>
+                    <div>
+                        <div class="pm-sender-name">命</div>
+                        <div class="offline-status">● 对方已下线</div>
+                    </div>
+                </div>
+                <button class="pm-close-btn" id="closePmCardBtn">&times;</button>
+            </div>
+            <div class="pm-message-body">
+                不要信他们的，加密的网址后面要加一个12，不然进不去，不要问我怎么知道的
+            </div>
+            <div class="pm-card-footer">
+                <span>📩 私密消息 · 阅后即焚</span>
+                <span>02:22</span>
+            </div>
+            <!-- 不再显示选项 -->
+            <div style="margin-top: 8px; display: flex; justify-content: flex-end;">
+                <label class="pm-option" id="neverShowOption">
+                    <input type="checkbox" id="neverShowCheckbox">
+                    <span>不再显示此通知</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 粒子特效
+        (function() {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            let W, H;
+            let particles = [];
+            let beams = [];
+            let fragments = [];
+            let time = 0;
+
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+                const target = Math.max(40, Math.floor(W * H / 22000));
+                while (particles.length < target) particles.push(createParticle());
+                while (particles.length > target) particles.pop();
+                initBeams();
+            }
+
+            function createParticle() {
+                return {
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.25,
+                    size: Math.random() * 1.8 + 0.4,
+                    alpha: Math.random() * 0.4 + 0.2,
+                    flicker: Math.random() * Math.PI * 2,
+                    color: Math.random() < 0.5 ? { r: 210, g: 190, b: 200 } : { r: 180, g: 195, b: 225 }
+                };
+            }
+
+            function initBeams() {
+                beams = [
+                    { ox: W*0.3, oy: H*0.4, angle: 0.7, speed: 0.25, len: Math.min(W,H)*0.7, width: 14, color:'red' },
+                    { ox: W*0.7, oy: H*0.6, angle: 3.8, speed: -0.3, len: Math.min(W,H)*0.65, width: 12, color:'blue' },
+                    { ox: W*0.5, oy: H*0.5, angle: 2.1, speed: 0.2, len: Math.min(W,H)*0.55, width: 11, color:'mixed' }
+                ];
+            }
+
+            function beamPos(beam, t) {
+                const dist = (t-0.5)*beam.len;
+                const wave = Math.sin(dist*0.035 + time*2.5)*4;
+                const px = beam.ox + Math.cos(beam.angle)*dist - Math.sin(beam.angle)*wave;
+                const py = beam.oy + Math.sin(beam.angle)*dist + Math.cos(beam.angle)*wave;
+                return {x:px, y:py};
+            }
+
+            function update(dt) {
+                time += dt;
+                beams.forEach(b => b.angle += b.speed * dt);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.flicker += 0.02;
+                    if(p.x<-20) p.x=W+20; if(p.x>W+20) p.x=-20;
+                    if(p.y<-20) p.y=H+20; if(p.y>H+20) p.y=-20;
+                });
+                const toRemove = [];
+                particles.forEach((p, idx) => {
+                    for(let b of beams) {
+                        for(let i=0; i<20; i++) {
+                            const pos = beamPos(b, i/20);
+                            if(Math.hypot(p.x-pos.x, p.y-pos.y) < b.width*1.1) {
+                                toRemove.push(idx);
+                                for(let j=0;j<6;j++) fragments.push({
+                                    x:p.x, y:p.y, vx:(Math.random()-0.5)*5, vy:(Math.random()-0.5)*5,
+                                    life:1, decay:0.03, size:Math.random()*1.2+0.3,
+                                    color:b.color==='red'?{r:255,g:80,b:70}:b.color==='blue'?{r:70,g:140,b:255}:{r:210,g:130,b:210}
+                                });
+                                break;
+                            }
+                        }
+                    }
+                });
+                for(let i=toRemove.length-1; i>=0; i--) particles.splice(toRemove[i],1);
+                while(particles.length < Math.max(40, Math.floor(W*H/22000))) particles.push(createParticle());
+                fragments.forEach(f=>{ f.x+=f.vx*dt; f.y+=f.vy*dt; f.life-=f.decay; });
+                fragments = fragments.filter(f=>f.life>0 && f.x>0 && f.x<W && f.y>0 && f.y<H);
+                if(fragments.length>150) fragments.splice(0, fragments.length-150);
+            }
+
+            function draw() {
+                ctx.clearRect(0,0,W,H);
+                beams.forEach(b=>{
+                    const col = b.color==='red'?{r:255,g:70,b:55}:b.color==='blue'?{r:55,g:120,b:255}:{r:200,g:100,b:190};
+                    for(let i=0;i<25;i++){
+                        const pos = beamPos(b, i/25);
+                        const grd = ctx.createRadialGradient(pos.x,pos.y,0,pos.x,pos.y,b.width*1.7);
+                        grd.addColorStop(0, `rgba(${col.r},${col.g},${col.b},0.5)`);
+                        grd.addColorStop(0.4, `rgba(${col.r},${col.g},${col.b},0.2)`);
+                        grd.addColorStop(1, 'transparent');
+                        ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(pos.x,pos.y,b.width*1.7,0,Math.PI*2); ctx.fill();
+                    }
+                });
+                fragments.forEach(f=>{
+                    ctx.fillStyle = `rgba(${f.color.r},${f.color.g},${f.color.b},${f.life})`;
+                    ctx.beginPath(); ctx.arc(f.x,f.y,f.size,0,2*Math.PI); ctx.fill();
+                });
+                particles.forEach(p=>{
+                    const flick = Math.sin(p.flicker)*0.2+0.8;
+                    ctx.fillStyle = `rgba(${p.color.r},${p.color.g},${p.color.b},${p.alpha*flick})`;
+                    ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill();
+                });
+            }
+
+            let lastTime;
+            function loop(ts) {
+                const dt = lastTime ? Math.min((ts-lastTime)/1000, 0.1) : 0.016;
+                lastTime = ts;
+                update(dt);
+                draw();
+                requestAnimationFrame(loop);
+            }
+
+            resize();
+            window.addEventListener('resize', resize);
+            requestAnimationFrame(loop);
+        })();
+
+        // 弹窗逻辑
+        const welcomeModal = document.getElementById('welcomeModal');
+        const closeWelcomeBtn = document.getElementById('closeWelcomeBtn');
+        const pmNotifyBtn = document.getElementById('pmNotifyBtn');
+        const pmCard = document.getElementById('pmCard');
+        const closePmCardBtn = document.getElementById('closePmCardBtn');
+        const neverShowCheckbox = document.getElementById('neverShowCheckbox');
+
+        // 页面加载后显示欢迎弹窗
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                welcomeModal.classList.add('active');
+            }, 400);
+        });
+
+        // 关闭欢迎弹窗
+        closeWelcomeBtn.addEventListener('click', () => {
+            welcomeModal.classList.remove('active');
+        });
+
+        welcomeModal.addEventListener('click', (e) => {
+            if (e.target === welcomeModal) {
+                welcomeModal.classList.remove('active');
+            }
+        });
+
+        // 点击右下角接收按钮，展开私信卡片
+        pmNotifyBtn.addEventListener('click', () => {
+            pmNotifyBtn.style.display = 'none';
+            pmCard.classList.add('active');
+            // 重置复选框状态
+            neverShowCheckbox.checked = false;
+        });
+
+        // 关闭私信卡片 (根据复选框决定是否恢复通知条)
+        function closePmCard() {
+            pmCard.classList.remove('active');
+            if (neverShowCheckbox.checked) {
+                // 永久隐藏通知条
+                pmNotifyBtn.style.display = 'none';
+            } else {
+                // 恢复显示通知条
+                pmNotifyBtn.style.display = 'flex';
+            }
+        }
+
+        closePmCardBtn.addEventListener('click', closePmCard);
+
+        // 点击卡片外部区域不关闭，只有通过关闭按钮或勾选逻辑关闭
+        // 保持私信卡片为固定浮层，不自动消失
+    </script>
+</body>
+</html>
