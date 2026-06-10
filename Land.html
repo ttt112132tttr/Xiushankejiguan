@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>无人生还 · 士兵岛谜案 | minimum</title>
+    <!-- 黑蓝白主题 · 海浪粒子特效 · 无人生还 -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #03070f;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Playfair Display', serif;
+            color: #eef5ff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ========= 海浪粒子 canvas 层 ========= */
+        #waveCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 0;
+            pointer-events: none;  /* 让所有事件穿透，不影响阅读 */
+            background: radial-gradient(circle at 20% 30%, #071a2b, #01070f);
+        }
+
+        /* 主内容容器 - 深色磨砂玻璃质感 */
+        .story-container {
+            position: relative;
+            z-index: 10;
+            max-width: 880px;
+            margin: 2rem auto;
+            background: rgba(5, 12, 22, 0.75);
+            backdrop-filter: blur(5px);
+            border-radius: 2rem;
+            border: 1px solid rgba(90, 160, 220, 0.5);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.7), 0 0 0 1px rgba(70, 150, 210, 0.3) inset;
+            padding: 2rem 2rem 2.5rem;
+            transition: all 0.2s;
+        }
+
+        /* 标题区域 minimum + 无人生还 */
+        .minimum-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            border-bottom: 1px solid rgba(70, 160, 230, 0.4);
+            padding-bottom: 1rem;
+        }
+        .minimum-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.6rem;
+            font-weight: 800;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #c0e0ff, #4b8cbf, #1e3a5f);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(64, 164, 255, 0.4);
+            margin-bottom: 0.4rem;
+        }
+        .minimum-header .sub {
+            font-size: 0.95rem;
+            letter-spacing: 4px;
+            color: #8ab3d0;
+            font-family: 'Inter', monospace;
+            font-weight: 300;
+            border-top: 1px dashed #2e6a9e;
+            display: inline-block;
+            padding-top: 8px;
+        }
+        .wave-deco {
+            position: absolute;
+            bottom: -15px;
+            left: 20%;
+            font-size: 1.5rem;
+            opacity: 0.4;
+            filter: blur(0.5px);
+            pointer-events: none;
+        }
+        .wave-deco-right {
+            right: 20%;
+            left: auto;
+        }
+
+        /* 故事正文 */
+        .story-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            font-weight: 320;
+            color: #e0edfa;
+        }
+        .story-text p {
+            margin-bottom: 1.2rem;
+            text-indent: 2em;
+            letter-spacing: 0.01em;
+        }
+
+        /* 高亮区块 — 法官幻象崩溃部分， 冰蓝高亮 */
+        .highlighter {
+            margin-top: 1.8rem;
+            border-left: 6px solid #3e9bdf;
+            background: linear-gradient(90deg, rgba(30, 90, 140, 0.25), rgba(0, 30, 55, 0.5));
+            padding: 0.8rem 0 0.8rem 1.4rem;
+            border-radius: 0 20px 20px 0;
+            box-shadow: 0 2px 6px rgba(0, 30, 70, 0.6);
+        }
+        .highlighter p {
+            color: #ffffff;
+            text-shadow: 0 0 2px #2c6c9e;
+            font-weight: 480;
+            margin-bottom: 1.2rem;
+            text-indent: 2em;
+        }
+        /* 独立高亮最后一段强化 */
+        .highlighter p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 脚注 */
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.72rem;
+            color: #6285a3;
+            border-top: 1px solid rgba(80, 150, 200, 0.3);
+            padding-top: 1.2rem;
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+
+        /* 滚动条暗黑风格 */
+        ::-webkit-scrollbar {
+            width: 5px;
+            background: #07121f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d6f9e;
+            border-radius: 20px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 720px) {
+            .story-container {
+                margin: 1rem;
+                padding: 1.2rem;
+            }
+            .minimum-header h1 {
+                font-size: 2.8rem;
+                letter-spacing: 3px;
+            }
+            .story-text p, .highlighter p {
+                font-size: 0.9rem;
+                text-indent: 1.6em;
+            }
+        }
+
+        /* 静态装饰 海浪小物 */
+        .anchor-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 2rem;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .ship-wheel {
+            position: fixed;
+            top: 30px;
+            left: 20px;
+            font-size: 2.2rem;
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 5;
+        }
+    </style>
+    <!-- 引入Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<canvas id="waveCanvas"></canvas>
+<div class="anchor-icon">⚓ 🌊</div>
+<div class="ship-wheel">🧭 🐚</div>
+
+<div class="story-container">
+    <div class="minimum-header">
+        <h1>minimum</h1>
+        <div class="sub">✦ 无人生还 · 士兵岛绝唱 ✦</div>
+        <div class="wave-deco">🌊 🧊</div>
+        <div class="wave-deco wave-deco-right">❄️ ⚰️</div>
+    </div>
+
+    <div class="story-text">
+        <!-- 故事主体：无人生还全部文本 + 法官遗书 + 最后高亮幻境 -->
+        <p>八月的士兵岛，终究被海风与死寂彻底吞没。<br>数日后，警方快艇抵达孤岛。登岛的探员仔细搜查了整座岛屿，眼前的景象诡异得令人毛骨悚然。岛上一共十具尸体，无一例外，所有曾登上这座岛的人，尽数殒命。现场没有外人闯入的痕迹，没有凶器遗留，没有目击证人，更没有任何可供追查的线索。一座孤岛，十人毙命，逻辑闭环、毫无破绽，成为一桩完全无解的悬案。</p>
+        <p>警方百思不得其解。所有人死于谋杀，可这座与世隔绝的小岛，根本不存在第十一个活人。世间所有刑侦逻辑，在此彻底失效。</p>
+        <p>直到数周之后，一艘拖网渔船在近海打捞时，捞起了一只随波漂流的玻璃瓶。瓶中封存着一张字迹工整的遗书，写下了整起案件的全部真相。</p>
+        <p>遗书道明了所有杀戮的始末、精心设计的死亡顺序与完美的脱罪布局。凶手以极致的缜密，在孤岛之上完成了一场审判式的完美谋杀，亲手终结了所有背负罪孽之人，最后自我了结。<br>海浪翻涌，海风呜咽。当最后一丝秘密被揭开，士兵岛的诡异惨案终于落幕。整座岛屿，自始至终——无人生还。</p>
+        <p>才怪，其实凶手至始至终，是我一人。我写下这一切，是为了让世人知晓士兵岛惨案的全部真相。<br>我，劳伦斯·瓦格雷夫，一名终身秉持正义、却厌倦了司法漏洞的法官，是这起连环谋杀案的唯一凶手。我一生热爱正义，却亲眼见证无数罪孽深重之人游走法律边缘，逍遥法外。于是我选定十名背负命案、却逃脱制裁的罪人，斥资买下士兵岛，布下天罗地网，以童谣为序，逐一清算他们的罪恶。</p>
+        <p>我精心设计了自己的假死场景，骗过所有人，在暗处冷眼旁观每个人在恐惧、猜忌、愧疚中崩溃、死亡。最后仅剩女教师维拉与隆巴德对峙，维拉开枪射杀隆巴德后，在极致的精神崩溃中悬梁自尽。</p>
+        <p>当岛上最后一个罪人离世，世间再无受害者，也再无嫌疑人。我走进房间，摆正维拉踢翻的椅子，取回手枪，在房间内完成了最后的自杀。我的死亡，完美补齐了十死无生的闭环，让这场审判彻底无解。</p>
+        <p>我将这份真相封入玻璃瓶中，投入大海。我不求被人铭记，不求世人理解，只想让这桩完美的犯罪，终有一日得以昭示。<br>海浪带走秘密，孤岛留存死寂。<br>这座岛上，十人赴死，无人生还。</p>
+    </div>
+
+    <!-- 高亮区域：法官陷入恐怖幻觉，亡魂重叠倍增 -->
+    <div class="highlighter">
+        <p>但是连日来的诡异变故像一张密不透风的网，将我牢牢困住，可真正击溃我心理防线的，是那场朦朦胧胧、却无比真实的可怖幻境。我本以为过往的罪孽与诡异的怪事早已落幕，直到那一日，周遭雾气氤氲，视线朦胧模糊，天地间安静得只剩我自己的心跳声，一场极致恐怖的画面，猝不及防闯入我的眼底。</p>
+        <p>令我无比诧异、近乎肝胆俱裂的是，我竟然亲眼看见了那些被我亲手杀死的人。不是零星一两个，而是密密麻麻、层层叠叠的人影伫立在雾气之中，起初我恍惚数出整整十个，可下一秒，人影摇曳重叠，数量还在不断疯涨，无边无际，根本数不清。我在心底按照记忆里的死亡顺序，将他们依次记作A、B、C、D、E、F、G、H、I九人，可眼前的景象，彻底颠覆了我的认知，撕碎了我仅存的理智。</p>
+        <p>雾气沉沉的视野里，代表前四位死者的A、B、C、D，各自仅有一道身影，静静立在白雾深处，沉默地注视着我，无声的压迫感扑面而来。可越往后，诡异的景象愈发令人窒息。E、F、G、H四人不再是单一的身形，我清清楚楚看见他们各自分化出两道一模一样的人影，身形、样貌、神态分毫未差，双双伫立，冷冷定格在我的视线里。</p>
+        <p>而最让我彻底崩溃的，是排在最后的I。我不敢眨眼，死死盯着那片朦胧雾气，却惊恐地发现，属于I的身影足足有七道！七张一模一样的面孔，七道毫无生气的身形，层层叠叠伫立在我面前，密密麻麻，将我团团笼罩。他们无人出声，无人走动，却带着刺骨的寒意，死死禁锢着我的所有思绪。</p>
+        <p>那一刻，我大脑一片空白，心底只剩极致的恐慌与荒诞。我疯狂告诉自己，这一定是幻觉，是连日惊惧、疲惫催生的噩梦，我只是在做梦。我用力眨眼、掐自己的手臂，试图从这场可怖的幻境中挣脱，可指尖传来清晰的痛感，眼前的人影分毫未消。我无比清醒，清醒地看着这一切，清醒地承受着这份濒临疯癫的恐惧。这不是梦，所有诡异的重叠、所有亡魂的重现，都是真实发生在我眼前的一切。</p>
+        <p>无尽的绝望席卷全身，我孤身一人被困在这片诡异的天地间，无人倾诉，无人救赎。我日夜被重叠的亡魂缠绕，被罪孽与恐惧裹挟，束手无策，濒临崩溃。我茫然四顾，心底只剩无尽的哀求——到底有人能教教我，我到底该怎么办？</p>
+    </div>
+
+    <footer>
+        ❄️ 海浪掩埋秘密，孤岛封存审判 · 无人生还  ❄️
+    </footer>
+</div>
+
+<script>
+    (function() {
+        // 海浪粒子特效 —— 纯视觉装饰，无任何彩蛋或交互触发
+        const canvas = document.getElementById('waveCanvas');
+        let ctx = canvas.getContext('2d');
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        
+        // 粒子参数: 漂浮浪花/深海光粒 黑蓝白风格
+        let particles = [];
+        const PARTICLE_COUNT = 240;  // 适量的粒子产生海浪感
+        
+        // 颜色调色板: 冰蓝, 银白, 淡蓝, 深蓝白
+        const colorPool = [
+            'rgba(180, 220, 255, 0.55)', 'rgba(140, 200, 250, 0.6)',
+            'rgba(230, 245, 255, 0.7)', 'rgba(100, 170, 230, 0.5)',
+            'rgba(200, 225, 250, 0.65)', 'rgba(70, 150, 220, 0.5)',
+            'rgba(210, 235, 255, 0.7)'
+        ];
+        
+        class WaveParticle {
+            constructor(x, y, size, speedX, speedY, phase, color) {
+                this.x = x;
+                this.y = y;
+                this.originY = y;
+                this.size = size;
+                this.speedX = speedX;
+                this.speedY = speedY;
+                this.phase = phase;      // 用于波浪偏移
+                this.amp = 0.8 + Math.random() * 1.6;   // 振幅 
+                this.color = color;
+                this.alpha = 0.4 + Math.random() * 0.5;
+            }
+            
+            update(time) {
+                // 水平方向流动感 + 正弦海浪起伏
+                this.x += this.speedX * 0.3;
+                // 让粒子在Y轴随正弦波优雅飘移
+                const waveOffset = Math.sin(time * 0.0025 * this.phase + this.x * 0.012) * this.amp;
+                this.y = this.originY + waveOffset * 1.2;
+                // 边界重置：超出右边界重置左侧，超出左边界重置右侧
+                if (this.x > width + 30) {
+                    this.x = -30;
+                    this.originY = Math.random() * height;
+                    this.y = this.originY;
+                } else if (this.x < -50) {
+                    this.x = width + 30;
+                    this.originY = Math.random() * height;
+                    this.y = this.originY;
+                }
+                // 微微上下范围保护（仍然自然）
+                if (this.y < -20) this.y = -20;
+                if (this.y > height + 20) this.y = height + 20;
+            }
+            
+            draw(ctx) {
+                ctx.beginPath();
+                // 圆形光晕，模拟海浪泡沫与水珠
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                // 根据alpha进行填充
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = 'rgba(100, 180, 240, 0.6)';
+                ctx.fill();
+                // 增加中心高亮 表现晶莹感
+                ctx.beginPath();
+                ctx.arc(this.x - 0.8, this.y - 0.8, this.size * 0.3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.fill();
+                // 重置阴影
+                ctx.shadowBlur = 0;
+            }
+        }
+        
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                let x = Math.random() * width;
+                let y = Math.random() * height;
+                let size = 1.5 + Math.random() * 5;      // 大小范围
+                let speedX = 0.2 + Math.random() * 1.2;   // 向右漂移速度，制造浪潮方向
+                let speedY = (Math.random() - 0.5) * 0.3;
+                let phase = 0.5 + Math.random() * 4;
+                let color = colorPool[Math.floor(Math.random() * colorPool.length)];
+                particles.push(new WaveParticle(x, y, size, speedX, speedY, phase, color));
+            }
+            // 额外增加几颗较大的“碎沫”粒子制造层次感
+            for (let i = 0; i < 40; i++) {
+                let x = Math.random() * width;
+                let y = Math.random() * height;
+                let size = 3.5 + Math.random() * 6;
+                let speedX = 0.1 + Math.random() * 1.0;
+                let speedY = (Math.random() - 0.5) * 0.25;
+                let phase = 0.8 + Math.random() * 5;
+                let color = 'rgba(190, 220, 255, 0.65)';
+                particles.push(new WaveParticle(x, y, size, speedX, speedY, phase, color));
+            }
+        }
+        
+        let animationTime = 0;
+        let lastTimestamp = 0;
+        
+        function drawWave(now) {
+            if (!ctx) return;
+            animationTime = now;
+            ctx.clearRect(0, 0, width, height);
+            
+            // 深海渐变背景 (增强黑蓝白氛围)
+            const grad = ctx.createLinearGradient(0, 0, 0, height);
+            grad.addColorStop(0, '#031120');
+            grad.addColorStop(0.5, '#052840');
+            grad.addColorStop(1, '#02101e');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, height);
+            
+            // 绘制海浪线（抽象波纹层）增加海流感
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                let offsetY = height * 0.3 + i * 35 + Math.sin(now * 0.0012) * 10;
+                ctx.beginPath();
+                ctx.moveTo(0, offsetY);
+                for (let x = 0; x < width; x += 30) {
+                    let y = offsetY + Math.sin(x * 0.008 + now * 0.003) * 8;
+                    ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = `rgba(110, 180, 240, 0.1)`;
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+            }
+            
+            // 更新并绘制所有粒子
+            for (let p of particles) {
+                p.update(now);
+                p.draw(ctx);
+            }
+            
+            // 额外添加稀疏的流光效果 (波浪雾气)
+            ctx.globalCompositeOperation = 'lighter';
+            for (let i = 0; i < 35; i++) {
+                let ghostX = (now * 0.08 + i * 97) % width;
+                let ghostY = height * 0.6 + Math.sin(now * 0.002 + i) * 25;
+                ctx.beginPath();
+                ctx.arc(ghostX, ghostY, 2.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(100, 190, 255, 0.12)`;
+                ctx.fill();
+            }
+            ctx.globalCompositeOperation = 'source-over';
+            
+            requestAnimationFrame(drawWave);
+        }
+        
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            initParticles();     // 重新生成粒子适应新尺寸
+        }
+        
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+        
+        resizeCanvas();
+        requestAnimationFrame(drawWave);
+        
+        // 保证画布动画平滑无任何额外控制台输出/交互彩蛋
+    })();
+</script>
+</body>
+</html>

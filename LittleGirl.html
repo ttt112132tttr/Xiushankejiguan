@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>minimum · 卖火柴的小女孩 · 温暖奇迹</title>
+    <!-- 温暖温馨火焰特效 | 卖火柴的小女孩 | 高亮奇迹篇章 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Quicksand:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1e0a00;
+            min-height: 100vh;
+            font-family: 'Inter', 'Quicksand', system-ui, -apple-system, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            color: #2e241f;
+        }
+
+        /* ========= 火焰粒子 canvas 背景 ========= */
+        #flameCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 0;
+            pointer-events: none;   /* 让文字可点可选 */
+            background: radial-gradient(circle at 30% 20%, #ff7e3a, #b04100, #4a1a00);
+        }
+
+        /* 主容器 — 温暖毛玻璃效果 */
+        .story-wrapper {
+            position: relative;
+            z-index: 10;
+            max-width: 880px;
+            margin: 2rem auto;
+            padding: 0 1.2rem;
+        }
+
+        .story-card {
+            background: rgba(255, 240, 215, 0.85);
+            backdrop-filter: blur(6px);
+            border-radius: 3rem;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.2), 0 0 0 2px rgba(255, 180, 80, 0.5) inset, 0 0 15px rgba(255, 100, 0, 0.4);
+            padding: 2rem 2rem 2.5rem;
+            transition: all 0.2s;
+            border: 1px solid #ffbf80;
+        }
+
+        /* 标题区 minimum */
+        .minimum-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #ffae5a;
+            display: inline-block;
+            width: 100%;
+            padding-bottom: 0.7rem;
+        }
+        .minimum-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.2rem;
+            font-weight: 800;
+            letter-spacing: 5px;
+            background: linear-gradient(135deg, #ff7e2e, #e35200, #a53f00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 12px rgba(255, 120, 0, 0.6);
+            margin-bottom: 0.2rem;
+        }
+        .sub-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 4px;
+            color: #c25d1a;
+            background: rgba(255, 210, 130, 0.5);
+            display: inline-block;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            backdrop-filter: blur(2px);
+        }
+
+        /* 正文样式 温暖微黄 */
+        .story-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            font-weight: 500;
+            color: #2c1a0c;
+        }
+        .story-text p {
+            margin-bottom: 1.2rem;
+            text-indent: 2em;
+        }
+
+        /* 高亮区块 — 神明馈赠，火柴猪奇迹，整个后半部分温暖高光 */
+        .miracle-highlight {
+            margin-top: 1.2rem;
+            border-radius: 2rem;
+            background: linear-gradient(145deg, rgba(255, 220, 150, 0.5), rgba(255, 180, 80, 0.4));
+            box-shadow: 0 5px 20px rgba(255, 100, 0, 0.25), inset 0 1px 4px rgba(255, 245, 200, 0.9);
+            padding: 1rem 1.6rem;
+            border-left: 8px solid #ff9142;
+            transition: all 0.2s;
+        }
+        .miracle-highlight p {
+            color: #2c1809;
+            font-weight: 550;
+            text-shadow: 0 0 2px rgba(255, 245, 180, 0.5);
+            margin-bottom: 1rem;
+            text-indent: 2em;
+        }
+        .miracle-highlight p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 温馨脚注 */
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #b45a2a;
+            border-top: 1px solid #ffbd7f;
+            padding-top: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        /* 火柴小装饰 */
+        .match-deco {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 2rem;
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .match-deco-right {
+            right: 20px;
+            left: auto;
+            top: auto;
+            bottom: 20px;
+            transform: rotate(15deg);
+        }
+
+        /* 响应式 */
+        @media (max-width: 680px) {
+            .story-wrapper {
+                margin: 1rem auto;
+            }
+            .story-card {
+                padding: 1.2rem;
+            }
+            .minimum-header h1 {
+                font-size: 2.8rem;
+                letter-spacing: 3px;
+            }
+            .story-text p, .miracle-highlight p {
+                font-size: 0.9rem;
+                text-indent: 1.6em;
+            }
+        }
+
+        /* 滚动条温暖色 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            background: #3e1f0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff8c42;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="flameCanvas"></canvas>
+<div class="match-deco">🕯️ 🔥 🧯</div>
+<div class="match-deco match-deco-right">🧡 🐷 ✨</div>
+
+<div class="story-wrapper">
+    <div class="story-card">
+        <div class="minimum-header">
+            <h1>minimum</h1>
+            <div class="sub-title">✦ 卖火柴的小女孩 ✦</div>
+        </div>
+
+        <div class="story-text">
+            <!-- 普通叙述： 小女孩的寒冷与神明降临前的情节 -->
+            <p>天色渐渐暗了下来，街上的行人越来越少。冰冷的雪花落在小女孩金黄的长发上，她蜷缩着身子，不敢回家。她没有卖掉一根火柴，没有赚到一个铜板。她的父亲一定会打她。而且家里也是很冷的。他们的屋顶有许多破洞，风可以随意灌进来，虽然堵上了一些干草和破布，依旧挡不住刺骨的寒风。</p>
+            <p>小女孩依旧坐在墙角里，小手冻得通红、僵硬。她不断擦燃火柴，在微弱的火光中看见了温暖的火炉、喷香的烤鹅、美丽的圣诞树，最后看见了唯一疼爱她的奶奶。</p>
+            <p>凛冽的寒风裹挟着细碎的雪沫，一遍遍刮过空旷的街巷，冻得小女孩蜷缩在冰冷的墙角，浑身瑟瑟发抖。连日来的饥寒交迫、颠沛流离，早已磨尽了她所有的力气，看着手中寥寥无几、即将耗尽的火柴，绝望一点点吞噬着她的心底。就在她快要撑不住，意识渐渐模糊的时刻，风雪骤然停歇，一道柔和圣洁的金光穿透漫天风雪，缓缓笼罩了整片街巷。</p>
+            <p>光影流转间，一位身姿圣洁、气质温润的神明缓缓出现在她的眼前。神明周身萦绕着淡淡的柔光，驱散了周遭所有的严寒与阴冷，温柔的目光落在狼狈落魄的小女孩身上，满是悲悯与善意。小女孩怔怔地望着眼前的神明，惶恐又惊喜，冻得僵硬的身体下意识蜷缩起来，不敢出声。</p>
+            <p>神明俯身看向她，嗓音温和治愈，缓缓许下承诺，要赠予她一只精致的魔法盒子，还有神奇的火柴猪。这种火柴猪拥有特殊的魔力，能够源源不断产出取暖售卖的火柴，只是魔力有限，初始只能赠予她两只。听闻这话，小女孩黯淡的眼眸瞬间亮起璀璨的光芒，连日的委屈与绝望瞬间消散，心底涌上满满的欢喜与希冀。她用力点头，毫不犹豫地虔诚应允，郑重地答应了神明的馈赠。</p>
+        </div>
+
+        <!-- 高亮区块：从神明赠礼直至幸福结局 (高光温暖部分) -->
+        <div class="miracle-highlight">
+            <p>随后，神明将古朴精致的魔法盒子与两只小巧可爱的火柴猪交到小女孩手中。火柴猪通体雪白，模样软萌可爱，温顺地依偎在盒子里，乖巧又灵动。小女孩小心翼翼地将两只珍贵的火柴猪放进魔法盒子中悉心饲养，视若珍宝。从那以后，她寸步不离地守在装着火柴猪的盒子旁，日夜相伴、形影不离，生怕稍有不慎，弄丢了这份来之不易的希望。白日里她静静守候，夜里便将盒子抱在怀里，借着微弱的暖意抵御寒冬的侵袭。</p>
+            <p>为了让她能安心照料火柴猪、随时知晓它们的状态，神明又赠予她一枚晶莹剔透的神秘魔法球。这枚魔法球澄澈透亮，拥有窥伺万物的魔力，能够清晰无误地观测到火柴猪的一举一动、一丝一毫的变化。有了魔法球的加持，小女孩愈发安心，时时刻刻关注着两只小猪的状态，悉心呵护，不敢有半点懈怠。</p>
+            <p>在小女孩无微不至的照料下，两只火柴猪在魔法盒子里安稳生活，日日安好，长势喜人。它们不负期待，源源不断地产出一根根整齐干燥的火柴，数量日渐积攒，慢慢堆满了盒子的角落，彻底解决了小女孩无柴可卖、无火取暖的困境。安稳的日子日复一日延续，平淡又温暖，让小女孩第一次体会到安稳度日的美好。</p>
+            <p>可平静的生活在某天被一抹突如其来的白光打破。那日午后，小女孩正透过魔法球静静观察盒中的火柴猪，忽见密闭的魔法盒子深处，骤然闪过一道耀眼纯净的白光，光芒转瞬即逝，却带来了翻天覆地的变化。待白光散去，她定睛一看，瞬间满脸错愕——盒子里不知何时挤进来整整十只白白胖胖的小火柴猪！<br>这十只小猪个个圆润可爱、通体雪白，灵动温顺地挤在盒子里，让原本空旷的盒子瞬间变得热闹鲜活。小女孩满心诧异，反复打量着凭空出现的小猪，百思不得其解。片刻后，她猛然反应过来，这般神奇的魔力，这般凭空降生的奇迹，定然是仁慈的神明大人暗中降临，暗自赐予她的馈赠。</p>
+            <p>心念至此，小女孩心中满是敬畏与感激，她立刻端正身姿，虔诚地对着虚空深深跪拜，由衷感念神明的慈悲与眷顾。<br>自此，火柴猪的数量成倍增多，产出的火柴也愈发充足。小女孩带着满满一箱优质的火柴前往街巷售卖，充足的货源、优质的火柴，让她很快赚到了安稳度日的钱财。她终于摆脱了饥寒交迫、颠沛流离的苦难，不用再在寒冬里蜷缩街头、忍冻挨饿，靠着神明的馈赠与自己的坚守，稳稳守住了生活的希望，日复一日，安稳顺遂，过上了人人期盼的温暖幸福的生活。</p>
+        </div>
+
+        <footer>
+            🕯️ 愿每一簇火光，都带来希望与奇迹 · 火柴猪的祝福 🐷✨
+        </footer>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // 火焰粒子特效 — 温暖温馨，模拟跳跃的火星、飘浮的火焰粒子，橙红金黄
+        const canvas = document.getElementById('flameCanvas');
+        let ctx = canvas.getContext('2d');
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        
+        // 粒子数组
+        let particles = [];
+        const PARTICLE_COUNT = 180;
+        
+        // 火焰色盘
+        const flameColors = [
+            'rgba(255, 100, 20, 0.7)',   // 橙红
+            'rgba(255, 140, 30, 0.8)',   // 亮橙
+            'rgba(255, 190, 60, 0.85)',  // 金黄
+            'rgba(255, 70, 30, 0.6)',
+            'rgba(255, 120, 40, 0.75)',
+            'rgba(255, 200, 80, 0.9)',
+            'rgba(240, 80, 20, 0.65)'
+        ];
+        
+        class FlameParticle {
+            constructor(x, y, size, vx, vy, color, life, maxLife) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.vx = vx;
+                this.vy = vy;
+                this.color = color;
+                this.life = life;       // 当前生命
+                this.maxLife = maxLife;
+                this.alpha = 0.8;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                // 飘移火焰特性：随机轻微减速，上升略快
+                this.vy -= 0.03;   // 微微上升感
+                this.vx += (Math.random() - 0.5) * 0.08;
+                // 空气阻力
+                this.vx *= 0.99;
+                this.vy *= 0.99;
+                this.life--;
+                // 生命周期末尾缩小尺寸
+                let lifeRatio = this.life / this.maxLife;
+                this.size = this.size * (0.7 + lifeRatio * 0.4);
+                if (this.size < 0.3) this.size = 0;
+                return this.life <= 0;
+            }
+            
+            draw(ctx) {
+                let lifeRatio = Math.max(0, this.life / this.maxLife);
+                let glowStrength = lifeRatio * 1.2;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 0.8, 0, Math.PI * 2);
+                // 产生光晕渐变
+                let gradient = ctx.createRadialGradient(this.x, this.y, 1, this.x, this.y, this.size);
+                gradient.addColorStop(0, `rgba(255, 180, 70, ${0.6 * lifeRatio})`);
+                gradient.addColorStop(0.8, this.color.replace(/[\d\.]+\)$/g, `${0.4 * lifeRatio})`));
+                ctx.fillStyle = gradient;
+                ctx.shadowBlur = 10 * lifeRatio;
+                ctx.shadowColor = '#ff7a2b';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                // 内焰高亮
+                ctx.beginPath();
+                ctx.arc(this.x - 1, this.y - 1, this.size * 0.35, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 220, 120, ${0.7 * lifeRatio})`;
+                ctx.fill();
+            }
+        }
+        
+        function initFlame() {
+            particles = [];
+            // 生成大量火焰粒子，集中在画面下半区域，飘向上方
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                let x = Math.random() * width;
+                let y = height - Math.random() * height * 0.6;  // 底部多
+                let size = 2 + Math.random() * 6;
+                let vx = (Math.random() - 0.5) * 0.7;
+                let vy = -(Math.random() * 1.2 + 0.5);   // 向上飘
+                let color = flameColors[Math.floor(Math.random() * flameColors.length)];
+                let maxLife = 70 + Math.random() * 60;
+                let life = maxLife;
+                particles.push(new FlameParticle(x, y, size, vx, vy, color, life, maxLife));
+            }
+            // 额外补充一些火星飘浮大粒子
+            for (let i = 0; i < 60; i++) {
+                let x = Math.random() * width;
+                let y = Math.random() * height;
+                let size = 1.8 + Math.random() * 5;
+                let vx = (Math.random() - 0.5) * 0.4;
+                let vy = -(Math.random() * 0.8 + 0.3);
+                let color = flameColors[Math.floor(Math.random() * flameColors.length)];
+                let maxLife = 90 + Math.random() * 50;
+                let life = maxLife;
+                particles.push(new FlameParticle(x, y, size, vx, vy, color, life, maxLife));
+            }
+        }
+        
+        function updateAndDrawFlame() {
+            if (!ctx) return;
+            // 背景透明但保留canvas底色（火焰背景渐变提前绘制在全景上，但为了火焰更亮，我们使用叠加)
+            // 保留背景径向渐变，每次先绘制基底增强火焰氛围
+            const grad = ctx.createLinearGradient(0, 0, 0, height);
+            grad.addColorStop(0, '#ff884d');
+            grad.addColorStop(0.4, '#d45a1c');
+            grad.addColorStop(1, '#632b0a');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, height);
+            
+            // 绘制火焰辉光（大面积光晕）
+            ctx.globalCompositeOperation = 'lighter';
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.draw(ctx);
+            }
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // 额外绘制底焰光晕 (暖场)
+            ctx.fillStyle = 'rgba(255, 100, 30, 0.15)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 更新粒子，移除死亡粒子并新增
+            for (let i = particles.length-1; i >= 0; i--) {
+                let isDead = particles[i].update();
+                if (isDead) {
+                    particles.splice(i,1);
+                }
+            }
+            
+            // 补充粒子，保持数量动态温暖
+            while (particles.length < PARTICLE_COUNT + 40) {
+                let x = Math.random() * width;
+                let y = height - Math.random() * height * 0.5;
+                let size = 1.5 + Math.random() * 6;
+                let vx = (Math.random() - 0.5) * 0.8;
+                let vy = -(Math.random() * 1.5 + 0.4);
+                let color = flameColors[Math.floor(Math.random() * flameColors.length)];
+                let maxLife = 60 + Math.random() * 70;
+                let life = maxLife;
+                particles.push(new FlameParticle(x, y, size, vx, vy, color, life, maxLife));
+            }
+            
+            // 绘制飘浮火花光斑 额外增加火焰温馨感
+            ctx.globalCompositeOperation = 'lighter';
+            for (let i = 0; i < 25; i++) {
+                let flicker = Math.sin(Date.now() * 0.005 + i) * 0.3;
+                let rad = 6 + flicker * 3;
+                let x = (Date.now() * 0.1 + i * 57) % width;
+                let y = height - 40 - Math.abs(Math.sin(Date.now() * 0.008 + i) * 60);
+                ctx.beginPath();
+                ctx.arc(x, y, rad, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(255, 140, 40, 0.2)`;
+                ctx.fill();
+            }
+            ctx.globalCompositeOperation = 'source-over';
+            
+            requestAnimationFrame(updateAndDrawFlame);
+        }
+        
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            initFlame();
+        }
+        
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+        
+        resizeCanvas();
+        updateAndDrawFlame();
+        
+        // 额外增加鼠标微效 —— 不影响内容，但为了让火焰更温柔 (仅轻微移动飘浮粒子但非彩蛋，只增加氛围)
+        // 为了保持静谧，不做任何点击弹窗，完全只有火焰视觉。
+        // 但是为了响应式与性能，确保canvas背景舒适
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>爱丽丝梦游仙境 · 迷境兔子洞 | minimum</title>
+    <!-- 粉红暗黑哥特风 + 爱丽丝梦游仙境主题 | 纯视觉装饰，无任何交互彩蛋/ARG点击触发 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0c0b0f;
+            background-image: radial-gradient(circle at 15% 30%, rgba(255, 105, 180, 0.08) 2%, transparent 2.5%),
+                              radial-gradient(circle at 75% 70%, rgba(210, 0, 100, 0.1) 1.5%, transparent 2%);
+            background-size: 45px 45px, 60px 60px;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #f2e9f0;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            position: relative;
+        }
+
+        /* 粉红暗黑主滤镜 + 哥特复古扫描线装饰 (纯视觉) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 8px);
+            z-index: 1;
+        }
+
+        /* 故事主卡片 */
+        .story-container {
+            max-width: 860px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+            background: rgba(20, 15, 25, 0.75);
+            backdrop-filter: blur(3px);
+            border-radius: 2.5rem;
+            border: 1px solid rgba(255, 105, 180, 0.6);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 0 2px rgba(255, 20, 147, 0.2) inset, 0 0 0 4px rgba(0,0,0,0.3) inset;
+            padding: 2rem 2rem 2.5rem;
+        }
+
+        /* 标题 MINIMUM 区域 */
+        .minimum-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .minimum-title h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.8rem;
+            font-weight: 800;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ff69b4, #b83b5e, #4a0e2e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 12px rgba(255,105,180,0.5), 0 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 0.5rem;
+        }
+        .minimum-title .sub {
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            color: #ffbfd9;
+            border-top: 1px dashed #ff69b480;
+            display: inline-block;
+            padding-top: 8px;
+            font-weight: 400;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+        }
+        /* 爱丽丝风格装饰: 扑克牌/茶匙/怀表 纯静态 */
+        .alice-deco {
+            position: absolute;
+            font-size: 1.8rem;
+            opacity: 0.3;
+            bottom: -20px;
+            left: 10%;
+            filter: drop-shadow(0 0 2px hotpink);
+            pointer-events: none;
+        }
+        .alice-deco-right {
+            right: 10%;
+            left: auto;
+            bottom: -20px;
+        }
+
+        /* 故事文本基本样式 */
+        .story-text {
+            font-size: 1rem;
+            line-height: 1.68;
+            color: #f0e6f0;
+            font-weight: 300;
+        }
+        .story-text p {
+            margin-bottom: 1.2rem;
+            text-indent: 2em;
+            text-shadow: 0 0 0.5px #dcd0ff;
+        }
+
+        /* 高亮区块 — 粉红暗黑诡异高亮，对应童话后半段 */
+        .highlight-section {
+            margin-top: 0.5rem;
+            border-left: 5px solid #ff1493;
+            padding-left: 1.2rem;
+            background: linear-gradient(90deg, rgba(255,20,147,0.12), rgba(255,20,147,0));
+            border-radius: 0 12px 12px 0;
+        }
+        .highlight-p {
+            color: #ffe0f0;
+            font-weight: 500;
+            text-shadow: 0 0 2px #ff66aa, 0 0 1px #ff3399;
+            background: transparent;
+            margin-bottom: 1.2rem;
+            text-indent: 2em;
+            letter-spacing: 0.01em;
+        }
+
+        /* 纯装饰：无任何交互 */
+        .clock-ghost {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            font-size: 2rem;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+            font-family: monospace;
+        }
+        .rabbit-track {
+            position: fixed;
+            top: 20%;
+            right: 15px;
+            font-size: 1.2rem;
+            writing-mode: vertical-rl;
+            opacity: 0.15;
+            letter-spacing: 8px;
+            pointer-events: none;
+        }
+        /* 滚动条暗黑风格 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            background: #1f1722;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff69b4;
+            border-radius: 8px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #aa7a8a;
+            letter-spacing: 1px;
+            font-style: italic;
+            border-top: 1px dashed rgba(255,105,180,0.3);
+            padding-top: 1.2rem;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 650px) {
+            body { padding: 1rem; }
+            .story-container { padding: 1.5rem; }
+            .minimum-title h1 { font-size: 3rem; letter-spacing: 3px; }
+            .story-text p, .highlight-p { font-size: 0.9rem; text-indent: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 静态装饰元素 (怀表/兔子爪印 无交互) -->
+<div class="clock-ghost">🕰️ ⌛ 🐇</div>
+<div class="rabbit-track">🐾 🐇 🐾 🐇 🐾</div>
+
+<div class="story-container">
+    <div class="minimum-title">
+        <h1>minimum</h1>
+        <div class="sub">✦ 爱丽丝梦游仙境 ✦</div>
+        <div class="alice-deco">♠️ 🃏 🎩</div>
+        <div class="alice-deco alice-deco-right">🐇 ⏳ 🌹</div>
+    </div>
+
+    <div class="story-text">
+        <!-- 童话正文：完全依照原文本，无任何增减 -->
+        <p>盛夏的午后格外沉闷，凝滞的热风裹着潮湿的气息层层漫开，空气闷得让人喘不过气。暖洋洋的日光铺在草地上，晃得人眼皮发沉，爱丽丝靠在树荫下，浑身慵懒无力，脑袋昏昏沉沉的，思绪也变得慢悠悠、钝沉沉的，连转动一下都觉得费力。她百无聊赖地望着眼前成片的雏菊丛，细碎洁白的花瓣缀着嫩黄的花心，在微风里轻轻摇曳。她暗自琢磨了许久，到底要不要起身穿过软软的青草地，采摘一束鲜嫩的雏菊，亲手编一串好看的雏菊花环，可周身的困意缠得人动弹不得，总觉得这份小小的快乐，抵不过慵懒的睡意，迟迟拿不定主意。</p>
+        <p>就在她陷在纠结与困倦中时，一抹雪白的身影骤然从身侧的草丛间窜过，打破了午后的沉闷。那是一只格外精致的小白兔，一对粉嫩透亮的圆眼睛格外醒目，灵动又乖巧。</p>
+        <p>起初，爱丽丝只淡淡瞥了一眼，丝毫没觉得眼前的景象有任何怪异。哪怕听见那只小白兔一边飞快地奔跑，一边慌慌张张地小声念叨着：“天啊！天啊！我要迟到了！来不及了！”，她也只是漫不经心地听着，心里毫无波澜，只当是寻常的小动物声响，任由兔子匆匆跑远。彼时的她，完全沉浸在慵懒的睡意里，对这反常的一幕毫无察觉，只觉得一切都平平无奇，理所当然。直到后来一切落幕，她回头细细回想这段开端，才猛然发觉这一刻的荒诞与古怪。</p>
+        <p>可当那只白兔猛地停下脚步，小巧的爪子娴熟地伸进贴身的背心口袋里，掏出一块精致锃亮的银色怀表，低头匆匆瞥了一眼表盘，又瞬间合上怀表、加快脚步仓皇赶路时，爱丽丝浑身一震，猛地从树荫下跳了起来。她骤然清醒，心底涌起巨大的惊愕——她长这么大，从未见过这般与众不同的兔子！这只兔子不仅穿着整洁的小背心，身上还有专属的口袋，更能像人一样掏出怀表查看时间，一举一动鲜活又灵动，全然不像普通的小动物。</p>
+        <p>浓烈的好奇心瞬间席卷了爱丽丝的心底，驱散了所有的困意。她再也按捺不住，立刻起身提起裙摆，快步穿过松软的青草地，紧紧追着白兔的身影狂奔。她一路快步追赶，终于在树篱边看清了它的踪迹，只见那只雪白的兔子身形一闪，灵巧地钻进了树篱下方一个黑漆漆的大兔子洞里，转瞬便消失了踪影。</p>
+        <p>爱丽丝没有丝毫犹豫，俯身便钻进了兔子洞，顺着幽深曲折的通道一路追逐下去。洞穴弯弯绕绕，幽深又静谧，沿途满是新奇的景致，她目不转睛地盯着前方那道白色的小身影，始终紧紧跟随。追了许久，她终于瞅准时机，快步上前，精准地抓住了那只身穿小背心的白兔，将它稳稳地带出了幽深的兔子洞。</p>
+        
+        <!-- 高亮区块：从 "为了留住这只神奇的兔子" 到结尾 全部高亮 -->
+        <div class="highlight-section">
+            <p class="highlight-p">为了留住这只神奇的兔子，爱丽丝特意找来一个精致的小木笼，将白兔轻轻放了进去，仔细扣牢笼门。第一天格外安稳，被关在笼子里的白兔十分温顺乖巧，安安静静地低头啃食着爱丽丝采摘的新鲜青草，不吵不闹，模样温顺又可爱。看着安稳休憩的兔子，爱丽丝彻底放下心来，伴着午后温柔的晚风，踏实又安稳地沉沉睡去。</p>
+            <p class="highlight-p">可这份安稳并没有持续太久。第二天清晨，爱丽丝早早起身跑去查看兔笼，却赫然发现原本紧闭的笼门完好无损，笼子里的白兔却消失得无影无踪，空荡荡的笼子孤零零摆在原地，只剩零星的青草碎屑，让她满心疑惑与诧异，百思不得其解。</p>
+            <p class="highlight-p">她失落又不解地怅惘了一整天，怪事却并未就此停歇。等到第三天清晨，爱丽丝再次走近兔笼时，瞬间怔住了——空荡荡的笼子里，竟然凭空出现了三只一模一样的小白兔！它们有着一模一样的雪白绒毛、一模一样的粉红眼睛，身上都穿着同款精致的小背心，神态、模样、身形分毫不差，根本分辨不出任何不同。</p>
+            <p class="highlight-p">极致的诧异涌上爱丽丝的心头，她满心疑惑，愈发觉得这只兔子充满诡异与神秘。为了摸清其中的缘由，弄清楚兔子消失又出现的秘密，她下定决心，一整天都寸步不离地守在兔笼旁边，紧紧盯着笼中的三只兔子，不敢有丝毫松懈。可洞穴周边的空气依旧沉闷慵懒，连日的疲惫与午后厚重的困意不断侵袭，哪怕她强撑着精神坚守，最终还是眼前一黑，直直晕倒在了兔笼前。</p>
+            <p class="highlight-p">不知过了多久，爱丽丝缓缓睁开双眼，头脑一片空白，守在笼子前的所有记忆、兔子消失又重现的诡异经历，全都被彻底清空，仿佛从未发生过一般。而当她懵懂地抬眼望向眼前的兔笼时，更诡异的一幕出现了：笼子里的三只兔子已然不见，取而代之的是整整八只一模一样、身着背心的粉红眼睛白兔，正安安静静地待在笼中。</p>
+        </div>
+        <!-- 童话结束 -->
+    </div>
+    
+    <footer>
+        ❀ 爱丽丝梦游仙境 · 白兔奇谭 ❀
+    </footer>
+</div>
+
+<!-- 无任何JavaScript彩蛋 / ARG触发 / 控制台输出 / 交互弹窗 / 鼠标特效 -->
+</body>
+</html>
