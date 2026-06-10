@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Object a</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Open Sans', sans-serif; background: #ffffff; color: #222222; line-height: 1.6; }
+        .top-bar { background: #1a1a2e; color: #fff; padding: 8px 0; font-size: 12px; }
+        .top-bar-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .top-bar-links a { color: #ccc; text-decoration: none; margin-right: 20px; transition: color 0.3s; }
+        .top-bar-links a:hover { color: #fff; }
+        .top-bar-right { display: flex; align-items: center; gap: 15px; }
+        .top-bar-right a { color: #ccc; text-decoration: none; font-size: 11px; }
+        .search-box { background: #2a2a4e; border: 1px solid #444; border-radius: 3px; padding: 4px 10px; color: #fff; font-size: 12px; width: 220px; }
+        .search-box::placeholder { color: #888; }
+        .search-btn { background: #c41e3a; color: #fff; border: none; padding: 4px 12px; border-radius: 3px; font-size: 11px; cursor: pointer; margin-left: 5px; }
+        .search-btn:hover { background: #a01830; }
+        .header { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 20px 0; }
+        .header-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Merriweather', serif; font-size: 32px; font-weight: 700; color: #1a1a2e; letter-spacing: 1px; cursor: pointer; }
+        .logo span { color: #c41e3a; }
+        .header-right { display: flex; align-items: center; gap: 25px; }
+        .header-right a { color: #1a1a2e; text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .header-right a:hover { color: #c41e3a; }
+        .subscribe-btn { background: #c41e3a; color: #fff !important; padding: 8px 20px; border-radius: 3px; font-size: 12px !important; }
+        .nav-bar { background: #fff; border-bottom: 2px solid #1a1a2e; padding: 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; }
+        .nav-item { padding: 14px 20px; color: #1a1a2e; text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .nav-item:hover { border-bottom-color: #c41e3a; color: #c41e3a; }
+        .nav-item.active { border-bottom-color: #c41e3a; color: #c41e3a; }
+        .search-results { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .search-header { margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid #e0e0e0; }
+        .search-header h2 { font-family: 'Merriweather', serif; font-size: 24px; color: #1a1a2e; }
+        .search-header p { font-size: 14px; color: #666; margin-top: 5px; }
+        .result-item { padding: 20px 0; border-bottom: 1px solid #f0f0f0; }
+        .result-item:hover .result-title { color: #c41e3a; }
+        .result-title { font-family: 'Merriweather', serif; font-size: 18px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; cursor: pointer; text-decoration: none; display: block; }
+        .result-meta { font-size: 13px; color: #888; margin-bottom: 8px; }
+        .result-abstract { font-size: 14px; color: #555; line-height: 1.6; }
+        .result-tag { display: inline-block; background: #f5f5f5; padding: 2px 8px; border-radius: 3px; font-size: 11px; color: #666; margin-right: 5px; margin-top: 5px; }
+        .footer { background: #1a1a2e; color: #ccc; padding: 40px 0 20px; margin-top: 60px; }
+        .footer-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+        .footer-column h4 { color: #fff; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; }
+        .footer-column a { display: block; color: #aaa; text-decoration: none; font-size: 12px; margin-bottom: 8px; transition: color 0.3s; }
+        .footer-column a:hover { color: #fff; }
+        .footer-bottom { max-width: 1200px; margin: 30px auto 0; padding: 20px 20px 0; border-top: 1px solid #333; text-align: center; font-size: 11px; color: #777; }
+        @media (max-width: 768px) { .footer-container { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <div class="top-bar-links">
+                <a href="object_a_home.html">Object a</a>
+                <a href="#">Object a Letters</a>
+            </div>
+            <div class="top-bar-right">
+                <a href="#">Login</a>
+                <a href="#">Register</a>
+                <input type="text" class="search-box" id="searchInput" placeholder="Supports Chinese keyword search">
+                <button class="search-btn" onclick="performSearch()">Search</button>
+            </div>
+        </div>
+    </div>
+    <div class="header">
+        <div class="header-container">
+            <div class="logo" onclick="window.location.href='object_a_home.html'">Object <span>a</span></div>
+            <div class="header-right">
+                <a href="#">About</a>
+                <a href="#">Submit</a>
+                <a href="#" class="subscribe-btn">Subscribe</a>
+            </div>
+        </div>
+    </div>
+    <div class="nav-bar">
+        <div class="nav-container">
+            <a href="object_a_home.html" class="nav-item">Home</a>
+            <a href="#" class="nav-item">News</a>
+            <a href="#" class="nav-item">Research</a>
+            <a href="#" class="nav-item">Reviews</a>
+            <a href="#" class="nav-item">Letters</a>
+            <a href="#" class="nav-item">Comment</a>
+            <a href="#" class="nav-item">Careers</a>
+        </div>
+    </div>
+    <div class="search-results">
+        <div class="search-header">
+            <h2>Search Results</h2>
+            <p id="searchQueryText">Query: <span id="querySpan"></span> &nbsp;|&nbsp; <span id="resultCount"></span> results found</p>
+        </div>
+        <div id="resultsContainer"></div>
+    </div>
+    <div class="footer">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h4>Journal</h4>
+                <a href="#">About Us</a><a href="#">Editorial Team</a><a href="#">Contact</a><a href="#">Careers</a>
+            </div>
+            <div class="footer-column">
+                <h4>Authors</h4>
+                <a href="#">Submit</a><a href="#">Guidelines</a><a href="#">Open Access</a><a href="#">Policies</a>
+            </div>
+            <div class="footer-column">
+                <h4>Librarians</h4>
+                <a href="#">Subscriptions</a><a href="#">Institutional Access</a><a href="#">Archive</a>
+            </div>
+            <div class="footer-column">
+                <h4>Connect</h4>
+                <a href="#">Twitter/X</a><a href="#">Facebook</a><a href="#">RSS</a><a href="#">Newsletter</a>
+            </div>
+        </div>
+        <div class="footer-bottom">© 2025 Object a. All rights reserved. | Privacy Policy | Terms of Use | Accessibility</div>
+    </div>
+    <script>
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name) || '';
+        }
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                window.location.href = 'object_a_search.html?q=' + encodeURIComponent(query);
+            }
+        }
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        const query = decodeURIComponent(getQueryParam('q'));
+        document.getElementById('querySpan').textContent = query || 'None';
+
+        const resultsContainer = document.getElementById('resultsContainer');
+        const q = query.toLowerCase();
+        let resultsHTML = '';
+        let count = 0;
+
+        // Sigma/Zeta particle search
+        if (q.includes('ζ') || q.includes('zeta') || q.includes('sigma') || q.includes('阈值') || q.includes('threshold')) {
+            resultsHTML += `
+                <div class="result-item">
+                    <a href="object_a_article.html" class="result-title">Sigma Particles and Molecular-Level Threshold Space Replication: Mechanism, Consistency, and Inherent Deviation</a>
+                    <div class="result-meta">Cullen Kate · Los Angeles Institute of High Energy Physics · January 5, 2025 · DOI: 10.1038/s41586-025-00001-x</div>
+                    <div class="result-abstract">Based on simulated radiation experiments with deep-space particle samples, this study verifies that sigma particles possess a unique molecular-level threshold space replication capability. The replication achieves 99% synchronization of all molecular structures and physical laws, yet invariably contains a 1% uncontrollable unknown deviation domain...</div>
+                    <span class="result-tag">Frontier Physics</span><span class="result-tag">Exotic Particles</span><span class="result-tag">Space Replication</span>
+                </div>`;
+            count++;
+            resultsHTML += `
+                <div class="result-item">
+                    <a href="object_a_article_naming.html" class="result-title">On the Nomenclature of ζ-Particles: Why "Sigma" Prevails Over "Zeta" in Contemporary Physics</a>
+                    <div class="result-meta">Dr. Aris Thorne · CERN · February 14, 2025 · DOI: 10.1038/s41586-025-00018-x</div>
+                    <div class="result-abstract">This paper examines the historical and disciplinary reasons behind the adoption of "Sigma" (Σ) rather than "Zeta" (ζ) as the canonical designation for ζ-particles. Through archival analysis of the Los Angeles Institute's internal documentation and cross-referencing with international particle physics conventions, we demonstrate that the naming convention was deliberately chosen to avoid confusion with the Riemann zeta function in quantum field theory calculations...</div>
+                    <span class="result-tag">Frontier Physics</span><span class="result-tag">History of Science</span><span class="result-tag">Nomenclature</span>
+                </div>`;
+            count++;
+            resultsHTML += `
+                <div class="result-item">
+                    <a href="#" class="result-title" onclick="alert('This article is not available for public access.'); return false;">Zeta Particle Fields and Quantum Threshold Dynamics: A Theoretical Framework</a>
+                    <div class="result-meta">Dr. Aris Thorne · CERN · March 12, 2025 · DOI: 10.1038/s41586-025-00045-x</div>
+                    <div class="result-abstract">This theoretical paper proposes a quantum field model for zeta particle interactions, suggesting that ζ-particles may represent a transitional state between matter and threshold space phenomena...</div>
+                    <span class="result-tag">Frontier Physics</span><span class="result-tag">Quantum Field Theory</span>
+                </div>`;
+            count++;
+            resultsHTML += `
+                <div class="result-item">
+                    <a href="#" class="result-title" onclick="alert('This article is not available for public access.'); return false;">On the Lacanian Significance of Particle Deviation: A Psychoanalytic Reading of Sigma Field Experiments</a>
+                    <div class="result-meta">Prof. Jean-Pierre Moreau · Paris Psychoanalytic Institute · February 28, 2025 · DOI: 10.1038/s41586-025-00032-x</div>
+                    <div class="result-abstract">This interdisciplinary study examines the 1% deviation domain in sigma particle threshold spaces through the lens of Lacanian psychoanalysis...</div>
+                    <span class="result-tag">Psychoanalysis</span><span class="result-tag">Interdisciplinary</span>
+                </div>`;
+            count++;
+        }
+
+        // Particle Void Launch Field - ONLY exact match
+        if (q.includes('particle void launch field') || q.includes('particle void launch')) {
+            resultsHTML += `
+                <div class="result-item">
+                    <a href="object_a_article_void.html" class="result-title">Site Selection Demonstration for London Particle Void Launch Site</a>
+                    <div class="result-meta">Jacques Lalida, Monk Slutu, Sabanna · Particle Void Launch Field · 2025 · DOI: 10.1038/s41586-025-00099-x</div>
+                    <div class="result-abstract">The survey commenced on the waterway south of London Airport, with the team travelling east by boat. Upon reaching the city boundary, a large museum and hotel complex came into view on the port side, marking the exit from London. A stretch of marshland lay on the starboard side of the waterway. After comprehensive evaluation, this area was designated as the candidate construction site for the particle void launch experiments...</div>
+                    <span class="result-tag">Frontier Physics</span><span class="result-tag">Infrastructure</span><span class="result-tag">London</span>
+                </div>`;
+            count++;
+        }
+
+        if (q.includes('精神') || q.includes('psycho') || q.includes('lacan') || q.includes('拉康')) {
+            resultsHTML += `
+                <div class="result-item">
+                    <a href="#" class="result-title" onclick="alert('This article is not available for public access.'); return false;">Lacanian Topology and the Structure of Neural Networks: An Interdisciplinary Synthesis</a>
+                    <div class="result-meta">Prof. Jean-Pierre Moreau · 2025</div>
+                    <div class="result-abstract">A comprehensive review exploring the structural isomorphism between Lacanian psychoanalytic topology and modern neural network architectures...</div>
+                    <span class="result-tag">Psychoanalysis</span><span class="result-tag">Neuroscience</span>
+                </div>`;
+            count++;
+        }
+        if (q.includes('脑') || q.includes('neuro') || q.includes('brain') || q.includes('conscious')) {
+            resultsHTML += `
+                <div class="result-item">
+                    <a href="#" class="result-title" onclick="alert('This article is not available for public access.'); return false;">Quantum Decoherence in Prefrontal Cortex: A Novel Model of Consciousness Collapse</a>
+                    <div class="result-meta">Dr. Elena Voss · 2025</div>
+                    <div class="result-abstract">This original article proposes a quantum decoherence model for consciousness collapse mechanisms in the prefrontal cortex...</div>
+                    <span class="result-tag">Neuroscience</span><span class="result-tag">Quantum Biology</span>
+                </div>`;
+            count++;
+        }
+        if (q.includes('哲学') || q.includes('philosophy') || q.includes('deleuze') || q.includes('德勒兹')) {
+            resultsHTML += `
+                <div class="result-item">
+                    <a href="#" class="result-title" onclick="alert('This article is not available for public access.'); return false;">Deleuze's Difference and Repetition: Implications for Machine Learning Algorithms</a>
+                    <div class="result-meta">Prof. Marcus Webb · 2025</div>
+                    <div class="result-abstract">A review article examining Deleuzian concepts of difference and repetition as they apply to contemporary machine learning paradigms...</div>
+                    <span class="result-tag">Philosophy</span><span class="result-tag">Machine Learning</span>
+                </div>`;
+            count++;
+        }
+        if (q.includes('临床') || q.includes('clinical') || q.includes('pain') || q.includes('medicine')) {
+            resultsHTML += `
+                <div class="result-item">
+                    <a href="#" class="result-title" onclick="alert('This article is not available for public access.'); return false;">The Phenomenology of Pain: A Heideggerian Approach to Chronic Pain Management</a>
+                    <div class="result-meta">Dr. Sarah Chen · 2025</div>
+                    <div class="result-abstract">An original article applying Heideggerian phenomenology to the clinical management of chronic pain conditions...</div>
+                    <span class="result-tag">Clinical Medicine</span><span class="result-tag">Phenomenology</span>
+                </div>`;
+            count++;
+        }
+        if (q.includes('伽马') || q.includes('gamma') || q.includes('γ')) {
+            resultsHTML += `
+                <div class="result-item">
+                    <a href="#" class="result-title" onclick="alert('This article is not available for public access.'); return false;">Gamma-Ray Burst Polarization and the Geometry of Spacetime Singularities</a>
+                    <div class="result-meta">Dr. Hiroshi Tanaka · Kavli Institute · 2025</div>
+                    <div class="result-abstract">High-precision polarization measurements of gamma-ray burst afterglows reveal non-trivial geometric structures near spacetime singularities...</div>
+                    <span class="result-tag">Frontier Physics</span><span class="result-tag">Astrophysics</span>
+                </div>
+                <div class="result-item">
+                    <a href="#" class="result-title" onclick="alert('This article is not available for public access.'); return false;">Gamma Particle Resonance in High-Energy Collisions: Evidence for a New Force Carrier</a>
+                    <div class="result-meta">Dr. Lena Petrova · Fermilab · 2025</div>
+                    <div class="result-abstract">Anomalous resonance peaks observed in gamma particle collision spectra suggest the existence of a previously unknown force carrier...</div>
+                    <span class="result-tag">Frontier Physics</span><span class="result-tag">Particle Physics</span>
+                </div>`;
+            count += 2;
+        }
+        if (count === 0) {
+            resultsHTML = `<div class="result-item"><div class="result-title">No results found for "${query}"</div><div class="result-meta">Please try different keywords or browse our categories.</div></div>`;
+        }
+
+        resultsContainer.innerHTML = resultsHTML;
+        document.getElementById('resultCount').textContent = count;
+    </script>
+</body>
+</html>

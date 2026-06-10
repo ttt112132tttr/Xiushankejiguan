@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object a</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Open Sans', sans-serif; background: #ffffff; color: #222222; line-height: 1.6; }
+        .top-bar { background: #1a1a2e; color: #fff; padding: 8px 0; font-size: 12px; }
+        .top-bar-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .top-bar-links a { color: #ccc; text-decoration: none; margin-right: 20px; transition: color 0.3s; }
+        .top-bar-links a:hover { color: #fff; }
+        .top-bar-right { display: flex; align-items: center; gap: 15px; }
+        .top-bar-right a { color: #ccc; text-decoration: none; font-size: 11px; }
+        .search-box { background: #2a2a4e; border: 1px solid #444; border-radius: 3px; padding: 4px 10px; color: #fff; font-size: 12px; width: 220px; }
+        .search-box::placeholder { color: #888; }
+        .search-btn { background: #c41e3a; color: #fff; border: none; padding: 4px 12px; border-radius: 3px; font-size: 11px; cursor: pointer; margin-left: 5px; }
+        .search-btn:hover { background: #a01830; }
+        .header { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 20px 0; }
+        .header-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Merriweather', serif; font-size: 32px; font-weight: 700; color: #1a1a2e; letter-spacing: 1px; cursor: pointer; }
+        .logo span { color: #c41e3a; }
+        .header-right { display: flex; align-items: center; gap: 25px; }
+        .header-right a { color: #1a1a2e; text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .header-right a:hover { color: #c41e3a; }
+        .subscribe-btn { background: #c41e3a; color: #fff !important; padding: 8px 20px; border-radius: 3px; font-size: 12px !important; }
+        .nav-bar { background: #fff; border-bottom: 2px solid #1a1a2e; padding: 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; }
+        .nav-item { padding: 14px 20px; color: #1a1a2e; text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .nav-item:hover { border-bottom-color: #c41e3a; color: #c41e3a; }
+        .nav-item.active { border-bottom-color: #c41e3a; color: #c41e3a; }
+        .home-page { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .home-header { text-align: center; margin-bottom: 50px; }
+        .home-header h1 { font-family: 'Merriweather', serif; font-size: 36px; color: #1a1a2e; margin-bottom: 15px; }
+        .home-header p { font-size: 16px; color: #666; max-width: 700px; margin: 0 auto; line-height: 1.8; }
+        .focus-areas { display: flex; justify-content: center; gap: 30px; margin-top: 25px; flex-wrap: wrap; }
+        .focus-area { background: #fafafa; border: 1px solid #e0e0e0; padding: 15px 25px; border-radius: 4px; font-size: 14px; font-weight: 600; color: #1a1a2e; text-transform: uppercase; letter-spacing: 0.5px; cursor: default; }
+        .focus-area:hover { border-color: #c41e3a; color: #c41e3a; }
+        .featured-section { margin-top: 50px; }
+        .section-title { font-family: 'Merriweather', serif; font-size: 22px; color: #1a1a2e; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #c41e3a; display: inline-block; }
+        .article-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .article-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden; transition: box-shadow 0.3s; }
+        .article-card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .article-card-img { height: 160px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 13px; font-style: italic; }
+        .article-card-body { padding: 20px; }
+        .article-card-type { color: #c41e3a; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .article-card-title { font-family: 'Merriweather', serif; font-size: 16px; font-weight: 700; color: #1a1a2e; line-height: 1.4; margin-bottom: 10px; }
+        .article-card-meta { font-size: 12px; color: #888; }
+        .footer { background: #1a1a2e; color: #ccc; padding: 40px 0 20px; margin-top: 60px; }
+        .footer-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+        .footer-column h4 { color: #fff; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; }
+        .footer-column a { display: block; color: #aaa; text-decoration: none; font-size: 12px; margin-bottom: 8px; transition: color 0.3s; }
+        .footer-column a:hover { color: #fff; }
+        .footer-bottom { max-width: 1200px; margin: 30px auto 0; padding: 20px 20px 0; border-top: 1px solid #333; text-align: center; font-size: 11px; color: #777; }
+        @media (max-width: 768px) { .article-grid { grid-template-columns: 1fr; } .footer-container { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <div class="top-bar-links">
+                <a href="object_a_home.html">Object a</a>
+                <a href="#">Object a Letters</a>
+            </div>
+            <div class="top-bar-right">
+                <a href="#">Login</a>
+                <a href="#">Register</a>
+                <input type="text" class="search-box" id="searchInput" placeholder="Supports Chinese keyword search">
+                <button class="search-btn" onclick="performSearch()">Search</button>
+            </div>
+        </div>
+    </div>
+    <div class="header">
+        <div class="header-container">
+            <div class="logo">Object <span>a</span></div>
+            <div class="header-right">
+                <a href="#">About</a>
+                <a href="#">Submit</a>
+                <a href="#" class="subscribe-btn">Subscribe</a>
+            </div>
+        </div>
+    </div>
+    <div class="nav-bar">
+        <div class="nav-container">
+            <a href="object_a_home.html" class="nav-item active">Home</a>
+            <a href="#" class="nav-item">News</a>
+            <a href="#" class="nav-item">Research</a>
+            <a href="#" class="nav-item">Reviews</a>
+            <a href="#" class="nav-item">Letters</a>
+            <a href="#" class="nav-item">Comment</a>
+            <a href="#" class="nav-item">Careers</a>
+        </div>
+    </div>
+    <div class="home-page">
+        <div class="home-header">
+            <h1>Object a</h1>
+            <p>A peer-reviewed open-access journal publishing cutting-edge research across multiple disciplines, bridging the gap between theoretical inquiry and empirical investigation.</p>
+            <div class="focus-areas">
+                <div class="focus-area">Philosophy</div>
+                <div class="focus-area">Frontier Physics</div>
+                <div class="focus-area">Neuroscience</div>
+                <div class="focus-area">Clinical Medicine</div>
+                <div class="focus-area">Psychoanalysis</div>
+            </div>
+        </div>
+        <div class="featured-section">
+            <h2 class="section-title">Latest Articles</h2>
+            <div class="article-grid">
+                <div class="article-card">
+                    <div class="article-card-img"><img src="6846f9f5ba684c1ca7928e89291327f9.jpeg~tplv-a9rns2rl98-image_raw_b.png" style="width:100%;height:100%;object-fit:cover;"></div>
+                    <div class="article-card-body">
+                        <div class="article-card-type">Original Article</div>
+                        <div class="article-card-title">Quantum Decoherence in Prefrontal Cortex: A Novel Model of Consciousness Collapse</div>
+                        <div class="article-card-meta">Dr. Elena Voss · Neuroscience · 2025</div>
+                    </div>
+                </div>
+                <div class="article-card">
+                    <div class="article-card-img"><img src="7969a89201c14927b1ed5105ad0638df.jpeg~tplv-a9rns2rl98-image_raw_b.png" style="width:100%;height:100%;object-fit:cover;"></div>
+                    <div class="article-card-body">
+                        <div class="article-card-type">Review</div>
+                        <div class="article-card-title">Lacanian Topology and the Structure of Neural Networks: An Interdisciplinary Synthesis</div>
+                        <div class="article-card-meta">Prof. Jean-Pierre Moreau · Psychoanalysis · 2025</div>
+                    </div>
+                </div>
+                <div class="article-card">
+                    <div class="article-card-img"><img src="6f0e1b525eca4154a2250f46d389cf1a.jpeg~tplv-a9rns2rl98-image_raw_b.png" style="width:100%;height:100%;object-fit:cover;"></div>
+                    <div class="article-card-body">
+                        <div class="article-card-type">Letter</div>
+                        <div class="article-card-title">Observations on Non-Local Correlations in Gamma-Ray Burst Afterglows</div>
+                        <div class="article-card-meta">Dr. Hiroshi Tanaka · Frontier Physics · 2025</div>
+                    </div>
+                </div>
+                <div class="article-card">
+                    <div class="article-card-img"><img src="9c1cff1645114ad6bbe34b1ca8f73841.jpeg~tplv-a9rns2rl98-image_raw_b.png" style="width:100%;height:100%;object-fit:cover;"></div>
+                    <div class="article-card-body">
+                        <div class="article-card-type">Original Article</div>
+                        <div class="article-card-title">The Phenomenology of Pain: A Heideggerian Approach to Chronic Pain Management</div>
+                        <div class="article-card-meta">Dr. Sarah Chen · Clinical Medicine · 2025</div>
+                    </div>
+                </div>
+                <div class="article-card">
+                    <div class="article-card-img"><img src="ec9fa27b417b457496a343e38347148d.jpeg~tplv-a9rns2rl98-image_raw_b.png" style="width:100%;height:100%;object-fit:cover;"></div>
+                    <div class="article-card-body">
+                        <div class="article-card-type">Review</div>
+                        <div class="article-card-title">Deleuze's Difference and Repetition: Implications for Machine Learning Algorithms</div>
+                        <div class="article-card-meta">Prof. Marcus Webb · Philosophy · 2025</div>
+                    </div>
+                </div>
+                <div class="article-card">
+                    <div class="article-card-img"><img src="050aacdfaeb64680aef27a12208f61d8.jpeg~tplv-a9rns2rl98-image_raw_b.png" style="width:100%;height:100%;object-fit:cover;"></div>
+                    <div class="article-card-body">
+                        <div class="article-card-type">Original Article</div>
+                        <div class="article-card-title">Gamma Particle Resonance in High-Energy Collisions: Evidence for a New Force Carrier</div>
+                        <div class="article-card-meta">Dr. Lena Petrova · Frontier Physics · 2025</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="footer-container">
+            <div class="footer-column"><h4>Journal</h4><a href="#">About Us</a><a href="#">Editorial Team</a><a href="#">Contact</a><a href="#">Careers</a></div>
+            <div class="footer-column"><h4>Authors</h4><a href="#">Submit</a><a href="#">Guidelines</a><a href="#">Open Access</a><a href="#">Policies</a></div>
+            <div class="footer-column"><h4>Librarians</h4><a href="#">Subscriptions</a><a href="#">Institutional Access</a><a href="#">Archive</a></div>
+            <div class="footer-column"><h4>Connect</h4><a href="#">Twitter/X</a><a href="#">Facebook</a><a href="#">RSS</a><a href="#">Newsletter</a></div>
+        </div>
+        <div class="footer-bottom">© 2025 Object a. All rights reserved. | Privacy Policy | Terms of Use | Accessibility</div>
+    </div>
+    <script>
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                window.location.href = 'object_a_search.html?q=' + encodeURIComponent(query);
+            }
+        }
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performSearch();
+        });
+    </script>
+</body>
+</html>
