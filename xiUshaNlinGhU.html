@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵狐搜索 - LINGHU SEARCH</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #0a0e1a;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* 粒子背景画布 */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* 主容器 */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 艺术字标题 */
+        .logo {
+            font-size: 4.5rem;
+            font-weight: 900;
+            letter-spacing: 0.3em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ff8a80 0%, #ff5252 25%, #80deea 50%, #b2ebf2 75%, #e0f7fa 100%);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 8s ease infinite;
+            text-shadow: 0 0 40px rgba(255, 138, 128, 0.2);
+            cursor: default;
+            user-select: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #b0bec5;
+            letter-spacing: 0.5em;
+            margin-bottom: 50px;
+            opacity: 0.7;
+        }
+
+        /* 搜索框 */
+        .search-box {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 25px;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 138, 128, 0.3);
+            border-radius: 50px;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(255, 138, 128, 0.1), inset 0 0 20px rgba(128, 222, 234, 0.05);
+        }
+
+        .search-input:focus {
+            border-color: rgba(128, 222, 234, 0.6);
+            box-shadow: 0 0 30px rgba(255, 138, 128, 0.2), 0 0 40px rgba(128, 222, 234, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .search-input::placeholder {
+            color: #78909c;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 12px 25px;
+            background: linear-gradient(135deg, rgba(255, 138, 128, 0.8), rgba(128, 222, 234, 0.8));
+            border: none;
+            border-radius: 50px;
+            color: #0a0e1a;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 138, 128, 0.4);
+        }
+
+        /* 搜索结果区域 */
+        .results-area {
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 138, 128, 0.15);
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, #ff8a80, #80deea);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .result-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(128, 222, 234, 0.4);
+            transform: translateX(5px);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3), 0 0 15px rgba(128, 222, 234, 0.1);
+        }
+
+        .result-card:hover::before {
+            opacity: 1;
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            color: #ffccbc;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .result-meta {
+            font-size: 0.8rem;
+            color: #78909c;
+        }
+
+        .no-result {
+            text-align: center;
+            color: #546e7a;
+            padding: 40px;
+            font-size: 0.95rem;
+            letter-spacing: 0.1em;
+        }
+
+        /* 模态框 - 文件查看器 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(255, 138, 128, 0.3);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 50px rgba(255, 138, 128, 0.15), 0 0 80px rgba(128, 222, 234, 0.1);
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            color: #ffccbc;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 138, 128, 0.2);
+            border-color: #ff8a80;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+            line-height: 1.8;
+            color: #cfd8dc;
+            font-size: 0.95rem;
+        }
+
+        .modal-body h3 {
+            color: #ffab91;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .modal-body p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        .modal-image {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-image.full {
+            max-width: 100%;
+            margin: 0;
+        }
+
+        /* 笑脸密码翻译器 */
+        .translator-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .translator-inputs {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .translator-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 138, 128, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            text-align: center;
+        }
+
+        .translator-input:focus {
+            border-color: #80deea;
+            box-shadow: 0 0 15px rgba(128, 222, 234, 0.2);
+        }
+
+        .smiley-face {
+            font-size: 3rem;
+            color: #ffcc80;
+            animation: pulse 2s infinite;
+            user-select: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .translate-btn {
+            padding: 12px 40px;
+            background: linear-gradient(135deg, #ff8a80, #80deea);
+            border: none;
+            border-radius: 25px;
+            color: #0a0e1a;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.2em;
+        }
+
+        .translate-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 138, 128, 0.4);
+        }
+
+        .translate-result {
+            min-height: 30px;
+            font-size: 1.2rem;
+            color: #80deea;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-align: center;
+        }
+
+        .translate-result.error {
+            color: #ff8a80;
+        }
+
+        /* 锁定模态框特殊样式 */
+        .lock-field {
+            margin-bottom: 15px;
+        }
+        .lock-field label {
+            display: block;
+            color: #80deea;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .lock-field input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 138, 128, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .lock-field input:focus {
+            border-color: #80deea;
+            box-shadow: 0 0 15px rgba(128, 222, 234, 0.2);
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #ff8a80, #80deea);
+            border-radius: 4px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .logo {
+                font-size: 2.8rem;
+                letter-spacing: 0.2em;
+            }
+            .translator-inputs {
+                flex-direction: column;
+            }
+            .smiley-face {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="container">
+        <div class="logo">灵狐搜索</div>
+        <div class="subtitle">LINGHU SEARCH ENGINE</div>
+
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="输入关键词进行精确检索..." autocomplete="off">
+            <button class="search-btn" onclick="performSearch()">检索</button>
+        </div>
+
+        <div class="results-area" id="resultsArea"></div>
+    </div>
+
+    <!-- 文件查看模态框 -->
+    <div class="modal-overlay" id="fileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">文件标题</div>
+                <button class="modal-close" onclick="closeModal('fileModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- 笑脸密码翻译器模态框 -->
+    <div class="modal-overlay" id="translatorModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title">:) 笑脸密码翻译器</div>
+                <button class="modal-close" onclick="closeModal('translatorModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="translator-box">
+                    <div class="translator-inputs">
+                        <input type="text" class="translator-input" id="leftInput" placeholder="左侧输入...">
+                        <div class="smiley-face">:)</div>
+                        <input type="text" class="translator-input" id="rightInput" placeholder="右侧输入...">
+                    </div>
+                    <button class="translate-btn" onclick="translateSmiley()">翻译</button>
+                    <div class="translate-result" id="translateResult"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 锁定验证模态框 -->
+    <div class="modal-overlay" id="lockedModal">
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <div class="modal-title" style="color: #ff8a80;">⚠ 访问受限</div>
+                <button class="modal-close" onclick="closeModal('lockedModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: #ffab91; margin-bottom: 25px; line-height: 1.6;">该档案已被网站管理员锁定。<br>请输入三个粒子发射场的位置以验证身份。</p>
+                <div style="margin-bottom: 25px;">
+                    <div class="lock-field">
+                        <label>英国：</label>
+                        <input type="text" id="ukInput" placeholder="输入地点...">
+                    </div>
+                    <div class="lock-field">
+                        <label>日本：</label>
+                        <input type="text" id="jpInput" placeholder="输入地点...">
+                    </div>
+                    <div class="lock-field">
+                        <label>大云市：</label>
+                        <input type="text" id="dyInput" placeholder="输入地点...">
+                    </div>
+                </div>
+                <div id="lockError" style="color: #ff8a80; text-align: center; min-height: 24px; margin-bottom: 15px; font-size: 0.9rem; font-weight: 600;"></div>
+                <button class="translate-btn" onclick="verifyLock()" style="width: 100%;">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 粒子特效系统 ====================
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
+                this.life = 0;
+                this.maxLife = Math.random() * 200 + 100;
+                
+                const colors = [
+                    'rgba(255, 138, 128, 0.6)',
+                    'rgba(255, 107, 107, 0.5)',
+                    'rgba(128, 222, 234, 0.6)',
+                    'rgba(178, 235, 242, 0.5)',
+                    'rgba(255, 204, 188, 0.4)',
+                    'rgba(224, 247, 250, 0.5)'
+                ];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life++;
+                
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+                
+                if (this.life >= this.maxLife) {
+                    this.reset();
+                }
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        for (let i = 0; i < 120; i++) {
+            particles.push(new Particle());
+        }
+
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 120) {
+                        const opacity = (1 - distance / 120) * 0.15;
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(128, 222, 234, ${opacity})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, 'rgba(255, 138, 128, 0.03)');
+            gradient.addColorStop(0.5, 'rgba(128, 222, 234, 0.03)');
+            gradient.addColorStop(1, 'rgba(255, 138, 128, 0.03)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            drawConnections();
+            
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // ==================== 搜索数据库 ====================
+        const database = {
+            "休山科技馆": [
+                {
+                    id: 1,
+                    title: "贺休山科技馆2026年正式开馆",
+                    type: "doc",
+                    content: `
+                        <h3>贺休山科技馆2026年正式开馆</h3>
+                        <p><strong>2026年6月8日 | 休山科技馆 |</strong></p>
+                        <p>时序更迭，科创致远。值此2026年崭新开局、科技赋能高质量发展的蓬勃时节，备受全城期盼的休山科技馆正式揭牌开馆、对外开放！在此，谨向休山科技馆的圆满落成、盛大开馆致以最热烈的祝贺！向长期以来关心支持场馆建设、科普事业发展的各级单位、社会各界人士，以及所有攻坚克难、匠心筑馆的建设者、工作者致以最诚挚的敬意！</p>
+                        <p>科技兴则城市兴，创新强则未来强。科技馆是普及科学知识、传播科学思想、弘扬科学精神、涵养创新素养的核心科普阵地，是一座城市的科创文化窗口与全民科学教育的重要载体，更是落实全民科学素质提升行动、赋能区域创新发展的关键基础设施。长久以来，休山深耕科普事业、厚植创新土壤，始终致力于搭建全民共享的科技体验平台、人才培育平台。历经精心规划、精细打磨、匠心建设，休山科技馆终于全新亮相，为城市科创版图增添了崭新地标，为全民科普服务补齐了关键短板，为青少年追梦科学、大众探索未知搭建了优质平台。</p>
+                        <p>全新启幕的休山科技馆，承载着传播科学、启迪未来的初心使命，凝聚着赋能发展、惠及民生的责任担当。场馆立足新时代科普工作要求，融合前沿科技成果与沉浸式科普体验，打造集科技展示、科学实验、互动体验、研学教育、科普交流于一体的综合性科普空间，让深奥的科学原理可视化、鲜活的科技成果可感知、前沿的创新理念可触摸。这里既是青少年探索科学奥秘、点燃科创梦想的启蒙课堂，也是广大市民走近科技、了解科技、乐享科技的公共空间，更是休山培育创新氛围、汇聚科创力量、彰显城市活力的重要窗口。</p>
+                        <p>科创之路，步履不停；科普之行，久久为功。2026年的全新开篇，为休山科技馆开启了逐光前行的新征程。衷心祝愿休山科技馆以此为起点，坚守科普惠民初心，深耕科普服务主业，持续优化展陈内容、创新科普形式、丰富研学活动，不断拓宽科学传播的广度与深度，全力打造有温度、有活力、有特色的科普教育品牌。愿场馆以科技为翼、以创新为魂，点亮全民科学探索之路，深耕青少年创新梦想沃土，持续提升全民科学素养，激活城市创新内生动力，为休山科技创新发展、社会高质量发展注入源源不断的科普动能与创新活力！</p>
+                        <p>最后，再次热烈祝贺休山科技馆2026年正式开馆、圆满启航！愿以科学之光，照亮休山未来；以科创之力，赋能城市新篇！</p>
+                        <p><strong>王崇明</strong></p>
+                    `
+                }
+            ],
+            "阿尔法号": [
+                {
+                    id: 2,
+                    title: "星海落幕，器物归航：阿尔法号飞船正式移交洛杉矶团队完成全权回收",
+                    type: "doc",
+                    content: `
+                        <h3>星海落幕，器物归航：阿尔法号飞船正式移交洛杉矶团队完成全权回收</h3>
+                        <p><strong>本报大云市2025年4月3日讯 记者：刘尧勋</strong></p>
+                        <p>在"阿尔法号"载人火星探测任务圆满落地、却伴随着两名核心科研人员殉职的悲壮落幕之后，本次跨境联合航天工程的后续收尾工作正式尘埃落定。根据大云市与洛杉矶市此前签订的跨境民用航天合作协议，圆满完成火星登陆科考任务的"阿尔法号"载人飞船，已于今日正式移交美方，由洛杉矶科研团队全权接管、整体回收、转运封存与后续技术复盘工作。</p>
+                        <p>据悉，"阿尔法号"民用载人飞船由大云市航天领域资深专家赵立文教授，携手洛杉矶市顶尖航天科学家阿迪金森·帕特及其团队联合耗时数年打磨研制，是两市跨国科创协作的标志性成果。飞船全程在大云市航天发射区完成装配、调试、核验与发射任务，承载着两地科研团队的心血与期许，顺利完成火星登陆、实地探测、数据采集、星际环境取样等一系列高难度既定任务，创下民用载人航天火星探测的全新纪录。</p>
+                        <p>本次星际航行任务由大云市市委书记、休山科技馆馆主王崇明全程统筹保障，林夜冬担任项目统筹负责人，赵立文担任总技术负责人，三人共同随船执行本次火星探测科考任务。漫长的深空航行与复杂的星际环境，对人体机能造成了不可逆的剧烈损耗，返航落地后，三名随行人员均出现不同程度的深空辐射反应与身体机能紊乱症状。</p>
+                        <p>经过大云市医疗专班紧急救治，王崇明身体各项指标逐步趋于平稳，已脱离危险，持续接受后续医学观察。但林夜冬、赵立文二人因长期高强度攻坚科研工作，叠加深空极端环境损伤，多脏器严重衰竭，伤情危重，经医疗团队全力抢救数小时后，最终不幸宣告殉职，为这场盛大的星海探索付出了生命的代价。</p>
+                        <p>英雄落幕，器物归航。在悲痛与缅怀的氛围中，阿尔法号飞船的后续处置工作严格依照跨国合作协议稳步推进。作为本次火星探测任务唯一的在轨载体，阿尔法号储存了完整的火星地表探测数据、星际航行环境数据、深空影像资料与珍贵科研样本，是整项工程最核心的实物成果。</p>
+                        <p>按照合作权责划分，洛杉矶团队已完成对阿尔法号飞船的现场核验、设备清点、整体封存与专业转运工作，实现全流程闭环回收。后续美方科研团队将对飞船船体、机载探测系统、航行记录终端、生命保障设备等核心装置进行全方位拆解检测、技术复盘与数据分析，系统研判民用载人深空航行的设备损耗规律、深空环境影响参数，持续优化民用航天载人技术、长距离星际续航与深空安全防护体系。</p>
+                        <p>此次跨国回收工作全程公开规范，大云市科创部门全程同步备案、留存核心备份数据，确保两地科研成果共享互通、技术经验双向沉淀。一边是两名科研工作者以生命赴使命的悲壮牺牲，一边是跨境科创协作稳步推进、航天技术持续迭代的行业突破。</p>
+                        <p>王崇明在受访中表示，阿尔法号的成功返航与完整回收，印证了跨境民用航天合作的可行性与先进性，而林夜冬与赵立文的牺牲，是本次探索之路最沉重、也最珍贵的勋章。未来大云市将持续传承科研人员不畏艰险、奔赴未知的探索精神，依托休山科技馆科创平台，持续深耕深空科普与航天科研领域，让每一次星海奔赴、每一份热血付出，都成为人类探索宇宙的前行微光。</p>
+                        <p>截至目前，飞船回收转运工作全部完成，相关科研复盘工作即将启动，殉职人员善后抚恤与事迹梳理工作同步有序推进。</p>
+                    `
+                }
+            ],
+            "王崇明": [
+                {
+                    id: 3,
+                    title: "王崇明个人资料",
+                    type: "doc",
+                    content: `
+                        <h3>王崇明个人资料</h3>
+                        <p>王崇明，<<strong>1992</strong>年出生，青年实干型干部，现任大云市市委书记、休山科技馆馆主，深耕地方治理与科普文旅建设领域多年，凭借创新的发展理念、务实的工作作风，统筹推进大云市城市发展、民生建设与科创科普事业融合发展，是兼顾城市治理现代化与特色文化科技赋能的核心带头人。</p>
+                        <p>在城市治理工作中，王崇明担任大云市市委书记以来，立足大云市区域发展定位，锚定城市高质量发展目标，统筹城市经济建设、生态保护、民生服务、产业升级等重点工作。始终坚持以人为本的治理理念，结合大云市本土资源特色，推动城市建设与生态保护协同发展，着力破解城市发展痛点、民生难点，持续优化城市发展格局，提升城市综合竞争力与群众幸福感，助力大云市打造宜居、宜业、宜创新的现代化城市。</p>
+                        <p>同时，王崇明兼任休山科技馆馆主，全权负责科技馆的整体运营、规划建设、品牌打造与科普体系完善工作。任职期间，深度挖掘休山得天独厚的万亩原生森林生态资源，确立科技馆<strong>"山林为幕，科技为芯"</strong>的核心发展理念，打造出自然静谧与未来科技锋芒共生的区域性标杆科普地标，让藏于休山腹地的现代化科技馆，成为大云市科创科普、文旅融合的核心名片。</p>
+                        <p><strong>大云市政府</strong></p>
+                    `
+                },
+                {
+                    id: 4,
+                    title: "阿尔法号载人飞船顺利登陆火星，返航后两名科研人员不幸殉职",
+                    type: "doc",
+                    content: `
+                        <h3>阿尔法号载人飞船顺利登陆火星，返航后两名科研人员不幸殉职</h3>
+                        <p><strong>本报大云市2025年4月3日讯 记者：诗云</strong></p>
+                        <p>北京时间2025年4月3日，由大云市与洛杉矶市联合攻关研制的民用载人航天飞船"阿尔法号"圆满完成火星登陆探测任务，顺利返航落地大云市航天发射中心。此次任务实现了民用载人航天火星探测的突破性进展，刷新了民间航天探索的全新纪录，但任务落幕之余，一场突如其来的身体险情，让这场辉煌的航天壮举蒙上悲壮色彩，两名核心科研人员经全力抢救无效不幸离世。</p>
+                        <p>此次"阿尔法号"载人火星探测工程，由大云市知名航天科研专家赵立文教授，联合洛杉矶市顶尖航天科学家阿迪金森·帕特及其专业团队共同牵头研发。作为国内少见的民用载人航天项目，整个研发团队历经数年攻坚克难，突破了民用飞船载人防护、长距离星际航行续航、火星自适应着陆等多项核心技术瓶颈。项目落地于大云市航天发射区，依托大云市成熟的科创资源与休山科技馆前沿科普科研体系支撑，完成飞船总装、调试、模拟试飞与正式发射全流程工作，是大云市"科技赋能城市发展、科创探索走向深空"的标志性重大成果。</p>
+                        <p>大云市市委书记、休山科技馆馆主王崇明全程统筹督办本次航天探测项目，深度协调地方资源、科研力量与发射保障工作，为跨境科研合作、民用航天项目落地搭建了坚实的保障平台。本次登陆探测任务机组核心随行人员包含项目统筹负责人林夜冬、总技术负责人赵立文，二人全程参与火星登陆实地探测、数据采集、设备调试等核心工作，全程坚守岗位，圆满完成各项既定科研任务。</p>
+                        <p>据现场监测数据显示，"阿尔法号"全程航行状态稳定，登陆火星姿态精准，在轨探测、样本采集、星际数据传输等各项工作均完美收官，登陆任务取得圆满成功。飞船顺利返航着陆后，地面保障团队第一时间接入机组人员状态监测，发现参与本次任务的所有随行人员均出现不同程度的星际航行不适症状。受长期深空辐射、微重力环境、星际气压差异等多重太空环境影响，众人普遍存在头晕乏力、脏器负荷过重、身体机能紊乱等不良反应，现场医护团队立刻启动紧急医疗预案，对全体人员开展全面检查与紧急救治。</p>
+                        <p>其中，王崇明身体症状相对轻微，经医护人员紧急检查与对症处理后，生命体征逐步恢复平稳，暂无生命危险，目前仍在医院接受后续观察休养。但林夜冬、赵立文二人因全程牵头统筹、高强度超负荷开展科研作业，长期处于高压工作与深空恶劣环境中，身体损耗最为严重，出现了多脏器功能衰竭、急性星际辐射损伤等危重症状，病情进展迅猛，情况十分危急。</p>
+                        <p>险情发生后，大云市第一时间调集全市顶尖医疗资源，成立专项抢救小组，开启全天候全力救治，针对二人的特殊太空病症制定专项治疗方案，竭尽全力挽留生命。然而，因深空航行带来的身体不可逆损伤过重，加之长期高强度科研透支身体，经过数小时不间断的全力抢救，医护团队最终无力回天。林夜冬、赵立文两位同志不幸抢救无效，因公殉职。</p>
+                        <p>两位科研工作者的离世，是本次阿尔法号火星探测任务最为沉痛的遗憾。赵立文教授深耕航天科研领域数十年，潜心钻研民用航天技术，跨越地域携手海外科研团队，倾尽心血推动阿尔法号项目落地，为民间载人航天探索事业奉献了全部力量。林夜冬全程统筹项目落地与航行保障工作，恪尽职守、攻坚克难，用坚守与担当为火星探测任务的顺利完成筑牢根基。二人以生命为炬，奔赴星海之约，用热血与坚守铸就了大云市民用航天探索的里程碑。</p>
+                        <p>王崇明在得知噩耗后深表痛惜，坦言本次火星探测的成功，离不开两位同志的无私奉献与硬核担当，他们是大云市科创事业的开拓者，更是中国民间航天探索的无名英雄。此次阿尔法号载人飞船火星登陆任务的圆满成功，见证了跨境科创合作的强大力量，也彰显了大云市深耕科技前沿、探索未知未来的城市初心。</p>
+                        <p>目前，相关善后工作正在有序开展，航天部门与科研团队将持续梳理本次任务科研成果，传承两位殉职科研人员的探索精神，持续深耕深空航天领域研究，延续星海探索之路，以科研硕果告慰逝者、致敬平凡而伟大的航天追光者。</p>
+                    `
+                }
+            ],
+            "赵立文": [
+                {
+                    id: 5,
+                    title: "赵立文同志讣告",
+                    type: "doc",
+                    hasImage: true,
+                    imageUrl: "https://temp.aoki.dpdns.org/temp/20bea13cbad973ef9172a7d1a8f3d8d9.png",
+                    content: `
+                        <h3>赵立文同志讣告</h3>
+                        <p><strong>本报大云市2025年4月3日讯 记者：谭越光</strong></p>
+                        <p>我国知名密码学领域顶尖专家、原大云市科学院核心科研骨干赵立文同志，因参与阿尔法号星际科考任务，遭遇深空极端环境损伤，经全力抢救无效，于2025年4月3日不幸殉职，终年33岁。</p>
+                        <p>赵立文同志生于1992年，毕生深耕密码学、信息安全、航天数据加密防护领域，拥有扎实的理论功底与顶尖的科研能力，是国内星际密码安全与高端保密技术领域不可多得的核心人才。任职期间，赵立文同志长期供职于大云市科学院，潜心钻研前沿密码破译、数据加密、星际通讯安全技术，数十年如一日躬身科研、深耕不辍。</p>
+                        <p>在大云市科学院工作期间，赵立文同志始终坚守科研初心，立足本土科创发展需求，聚焦高端信息安全短板攻坚突破，主导多项省市重点保密科研项目，成功攻克多项密码加密与数据防护技术难题。其研发的星际数据加密系统、抗干扰保密传输技术，填补了市民用航天信息安全领域的多项技术空白，长期为大云市科创产业、前沿科技、航天探索事业筑牢信息安全屏障，为地方科技安全体系建设作出了不可替代的重要贡献。</p>
+                        <p>赵立文同志一生淡泊名利、潜心治学，深耕密码学基础研究与落地应用，摒弃浮躁、深耕冷门硬核科研领域，始终以严谨务实的科研态度对待每一项研究工作。他不仅专注于传统密码体系优化升级，更率先开拓星际深空通讯密码防护新赛道，精准攻克深空信号干扰、远距离数据泄密、星际传输失真等行业痛点，为我国民用航天星际信息安全领域奠定了重要的技术基础。</p>
+                        <p>为全力投身跨境民用航天科研攻坚，助力阿尔法号载人火星探测项目突破技术瓶颈，赵立文同志于<strong>2025年4月2日</strong>正式辞去大云市科学院全部公职，卸下多年体制内任职身份，以纯粹科研从业者的姿态，全身心投入项目最后阶段的技术攻坚与实地科考工作。他主动奔赴科研一线，以毕生所学赋能星际探索，用极致的专业能力搭建起阿尔法号全程星际航行的加密安全防线，保障了全程科考数据的安全、完整、精准传输。</p>
+                        <p>本次星际科考任务中，长期高强度的科研攻坚叠加深空极端辐射、微重力环境带来的不可逆身体损伤，让赵立文同志身体机能严重受损。任务圆满完成、返航落地后，赵立文同志突发多脏器功能衰竭与急性深空辐射损伤，病情危重。大云市第一时间调集全域顶尖医疗力量开展专项抢救，倾尽全城医疗资源全力施救，最终因身体损伤过重、病情无法逆转，赵立文同志不幸因公殉职。</p>
+                        <p>赵立文同志的一生，是深耕科研、甘于奉献的一生，是潜心钻研、为国拓路的一生。他扎根密码学领域数十年，默默深耕、久久为功，在小众且关键的信息安全、航天密码防护领域默默拓荒，用专业与坚守守护科技安全、赋能前沿探索。他褪去公职光环、义无反顾奔赴星海攻坚的赤诚担当，彰显了新时代科研工作者的家国情怀与探索精神。</p>
+                        <p>赵立文同志的不幸离世，是大云市乃至全国密码学与航天信息安全领域的重大损失。其严谨的治学态度、深耕不辍的科研精神、无私无畏的奉献品格，将永远被铭记。目前，相关善后事宜正有序推进。</p>
+                        <p>特此讣告，寄以哀思。</p>
+                    `
+                }
+            ],
+            "笑脸密码": [
+                {
+                    id: 6,
+                    title: ":) 笑脸密码翻译程序",
+                    type: "translator",
+                    desc: "加密通讯解密工具"
+                }
+            ],
+            "麓睢市": [
+                {
+                    id: 7,
+                    title: "麓睢市影像资料",
+                    type: "image",
+                    imageUrl: "https://temp.aoki.dpdns.org/temp/1596187b9fcfb4a704afc529fb7f0b3b.jpg"
+                },
+                {
+                    id: 8,
+                    title: "《月鸣游》",
+                    type: "doc",
+                    content: `
+                        <h3>《月鸣游》</h3>
+                        <p>苍溟浮霭，灵墟隐幽。</p>
+                        <p>【渤海东隅，有邑名麓睢，常蒙重雾，一水经其地，号曰冥河】。</p>
+                        <p>泠蟾振响，随波远游。 寒烟覆岸，玄苇盈洲。 冥川澹澹，是闻月鸣。</p>
+                        <p>风凝雾寂，万籁俱收。 孤光赴水，长辞世陬。</p>
+                    `
+                }
+            ],
+            "大云市科学院": [
+                {
+                    id: 9,
+                    title: "大云市科学院官方网站",
+                    type: "link",
+                    url: "https://ttt112132tttr.github.io/Xiushankejiguan/dayun_academy.html"
+                }
+            ],
+            "休谟阿尔金": [
+                {
+                    id: 10,
+                    title: "伦敦地质学家休谟·阿尔金到访大云市学术交流纪实",
+                    type: "doc",
+                    content: `
+                        <h3>伦敦地质学家休谟·阿尔金到访大云市学术交流纪实</h3>
+                        <p>休谟·阿尔金是英国伦敦知名资深地质学家，担任伦敦地质学会终身理事、伦敦大学地球深部构造学科首席教授，常年深耕深海地层演变、板块运动动力学与地下深层地质结构研究，是全球深地深海研究领域的权威学者。应大云市科学院与休山地质实验中心诚挚邀请，休谟·阿尔金携伦敦地质研究所科研团队一行抵达大云市，开启为期数日的专业学术访问与科研交流工作。作为拥有完整滨海沉积地质剖面、顶尖深地探测实验设备的科创城市，大云市在海陆交互地质研究、地下空间地质勘测、近海板块动态监测等领域拥有独特的资源优势与科研实力，也是阿尔金此次亚洲学术调研行程中的核心站点。</p>
+                        <p>抵达大云市后，休谟·阿尔金团队第一时间参与市内地质科研座谈交流。大云市科研团队详细介绍了本地地质地貌特征与科研布局，依托独特的滨海丘陵地形，大云市完整保留了多纪元海陆交替岩层遗迹，配套建设的地下恒温标本库、深海岩芯分析平台、深部地质模拟装置，为近海地质研究、城市地下基建安全勘测、地热资源开发研究提供了坚实支撑。阿尔金结合自身数十年大西洋深海探测、英伦群岛海底断裂带研究经验，现场对比了大西洋与西太平洋板块运动的差异特征，针对大云市近海地层滑移风险、深层地下工程地质稳定性等关键问题，分享了国际前沿研究思路与勘测技术经验，为本地地质科研与城市安全建设提供了全新参考。</p>
+                        <p>在市科研团队的陪同下，阿尔金团队实地走访参观了大云市核心科研载体，重点考察了休山地下镜面实验大厅与深海岩芯标本馆。面对可模拟深海高压环境的深部实验装置、可实现地层精准观测的镜面监测系统，以及馆藏齐全的西太平洋海底钻探岩芯、本地山体变质岩标本，阿尔金给予了高度评价。他细致观察岩层样本、记录实验设备参数，充分认可大云市深地模拟实验技术的国际先进性，认为本地完整的地质标本体系，有效弥补了欧洲近海地质模拟研究的短板，具备极高的科研价值。双方科研人员围绕岩层年代测定、同位素检测、岩芯样本分析等核心实验技术展开深入交流，初步达成跨国岩芯样本共享、实验技术互通的合作意向。</p>
+                        <p>为贴近实地地质研究场景，团队一同前往大云南郊野外地质剖面带开展实地踏勘。此处裸露的山体岩层清晰留存着古海陆变迁痕迹，层次分明的海相沉积岩层与褶皱结构，完整记录了百万年来的地质演化过程，是极为稀缺的天然地质研究样本。阿尔金在野外现场开展实操交流，细致讲解岩层褶皱、海蚀夹层的形成机理，对比东西方同地质纪元的地层演化差异，带领两地青年科研人员采集岩石标本、记录地层剖面数据，在实地勘探中完成学术交流与技术传帮带。</p>
+                        <p>访问期间，休谟·阿尔金在大云市科学院开展公开学术报告，面向全市地质科研从业者、高校相关专业师生，分享了大西洋洋壳深部构造研究成果与数十年深海探测数据。他结合国际前沿研究理论，结合大云本地地质勘探实际，深度剖析了板块俯冲运动对滨海城市地下地质结构的长期影响，针对城市深层地下室、地下隧道等基建工程的地质勘测标准、风险预警体系提出优化建议。报告结束后，现场开展深度研讨交流，参会人员围绕深海资源勘探、地质灾害防控、地下空间安全开发等核心课题积极提问，与阿尔金展开热烈探讨，催生多项全新的科研合作思路。</p>
+                        <p>此次访问尾声，伦敦地质研究所与大云市科学院正式达成长期战略合作，签署科研合作备忘录。双方约定共建大洋深部地质联合实验室，常态化开展学者互访、科考数据共享、联合海上地质科考等项目，搭建稳定的国际学术交流平台，持续培育地质领域青年科研人才。</p>
+                        <p>临别之际，休谟·阿尔金对此次大云之行给予高度肯定。他表示，大云市得天独厚的完整地质露头、顶尖的深地深海科研设备、成熟的地质研究体系，让人印象深刻，尤其是休山地下实验空间与完备的岩芯馆藏，为全球板块动力学研究提供了独一无二的研究样本。他期待两地能够持续深化跨洋科研联动，整合双方技术与资源优势，共同深耕大洋地壳演化、滨海地质安全等前沿领域，助力全球深地深海地质研究实现新突破。此次国际学术访问，有效打通了伦敦与大云的地质科研交流通道，推动国际前沿地质理论与本地科研实践深度融合，为大云市打造世界级海陆地质科研高地筑牢了坚实的国际合作基础。</p>
+                    `
+                },
+                {
+                    id: 11,
+                    title: "喜报！我市科学家陈爱伦与国际权威学者休谟·阿尔金联合发表高水平学术成果",
+                    type: "doc",
+                    content: `
+                        <h3>喜报！我市科学家陈爱伦与国际权威学者休谟·阿尔金联合发表高水平学术成果</h3>
+                        <p>喜讯传来！在大云市与伦敦地质科研领域深度联动、跨国学术交流取得丰硕成果的关键阶段，我市优秀地质科研工作者陈爱伦与英国伦敦知名权威地质学家休谟·阿尔金携手合作，依托双方深耕深地深海地质研究的扎实积淀，顺利在《Object a》权威学术期刊联合发表重磅科研论文，为我市国际地质科研合作再添标志性成果。</p>
+                        <p>休谟·阿尔金作为伦敦地质学会终身理事、伦敦大学地球深部构造学科首席教授，是全球板块动力学、大洋基底岩层演化领域的顶尖学者，拥有数十年深海地质探测与地层研究经验。陈爱伦研究员深耕大云市海陆交互地质、地下深层地质安全研究一线多年，长期依托大云市得天独厚的地质样本资源与顶尖深地实验平台，聚焦滨海地层演化、近海板块运动、地下空间地质风险防控等核心课题开展专项研究，积累了大量本土实测数据与扎实研究成果。</p>
+                        <p>自休谟·阿尔金到访大云市开展学术交流以来，两位学者依托跨国科研合作平台，深度对接研究方向，整合大西洋深海探测数据与大云本地野外地质踏勘、实验室模拟实验成果，针对西太平洋滨海地层演化规律、板块俯冲对沿海城市地质结构的影响等核心难题，开展跨地域、跨体系联合攻关。双方反复打磨研究思路、核验实验数据、完善研究体系，最终形成高质量学术成果，成功在《Object a》期刊正式刊发。</p>
+                        <p>此次联合发文，既是大云市本土科研团队与国际顶尖学术力量深度融合、协同创新的重要成果，也是我市地质科研实力走向国际、获得全球学术领域认可的有力证明。成果有效打通了东西方深海地质研究的学术壁垒，弥补了滨海城市深部地质研究的部分技术短板，对深化大洋地壳演化研究、提升沿海城市地质安全防控能力、推动深地深海资源科学开发具有重要的理论价值与实践意义。</p>
+                        <p>下一步，大云市科学院将持续深化与伦敦地质研究所的长期战略合作，依托共建的大洋深部地质联合实验室平台，持续推进跨国科研攻关、学术交流、人才培育等多项工作，鼓励本土科研人员深耕前沿、接轨国际，持续产出更多高水平、高价值的学术成果，全力助推大云市打造世界级海陆地质科研高地。</p>
+                    `
+                }
+            ],
+            "小保泽钢": [
+                {
+                    id: 12,
+                    title: "小保泽钢敲定代々木公園为粒子死亡发生场科研选址",
+                    type: "doc",
+                    content: `
+                        <h3>小保泽钢敲定代々木公園为粒子死亡发生场科研选址</h3>
+                        <p>日本知名粒子物理研究员小保泽钢，正式完成核心科研装置选址工作，将东京都渋谷区的代々木公園，确定为新一代<strong>粒子死亡发生场</strong>的落地建设场地。该装置核心用途聚焦基础粒子衰变全域研究，通过精准捕捉、观测微观粒子自然衰变、湮灭、能级衰减全过程，解析基础粒子的生命周期与衰变规律，为微观粒子物理、量子动力学、基础物质结构研究提供核心实验数据支撑。</p>
+                        <p>此次选址经过多轮实地勘测、环境测算与科研适配性论证，小保泽钢团队最终摒弃东京多处传统科研园区，选定区位与环境条件极具优势的代々木公園。作为东京中心城区规模宏大的都立绿地，代々木公園占地广阔、植被繁茂，区域内磁场稳定、地面震动干扰极低，远离高密度工业设备与电磁辐射源，能够最大程度规避外界环境对微观粒子实验的干扰，完美适配粒子衰变实验对环境精度的严苛要求。相较于封闭实验室，开放式且环境纯净的代々木公園，可实现全天候、无遮挡的粒子衰变观测，有效提升实验数据的真实性与完整性。</p>
+                        <p>据小保泽钢团队介绍，粒子死亡发生场并非攻击性装置，而是专攻粒子衰变研究的高端科研设备，可精准追踪不同粒子的衰变周期、能量损耗与湮灭轨迹，攻克当前粒子物理领域中微弱衰变信号捕捉难、环境干扰误差大的行业难题。依托代々木公園稳定的自然场域与优越的地理环境，装置建成后，将持续开展常态化粒子衰变观测、基础物质演化模拟、微观粒子动力学分析等系列科研实验，补齐日本在基础粒子长效观测领域的研究短板。</p>
+                        <p>此次选址落地，标志着日本粒子衰变基础研究迈入全新阶段。小保泽钢团队将依托代々木公園的天然科研优势，稳步推进装置搭建、调试与常态化实验工作，持续深耕基础粒子科学前沿领域，为全球微观物理研究积累珍贵的实测数据与科研成果。</p>
+                    `
+                }
+            ],
+            "object a": [
+                {
+                    id: 13,
+                    title: "Object a 学术期刊主页",
+                    type: "link",
+                    url: "https://ttt112132tttr.github.io/Xiushankejiguan/object_a_home.html"
+                }
+            ],
+            "punchia密码": [
+                {
+                    id: 14,
+                    title: "Punchia密码",
+                    type: "doc",
+                    content: `
+                        <h3>Punchia密码</h3>
+                        <p><strong>一．名称来源：</strong>Punch（敲击打孔）+ia，是一种敲击键盘置换的加密体系。</p>
+                        <p><strong>二．字符库：</strong></p>
+                        <p>基础词根：P u n c h i a</p>
+                        <p>偏移库：1234567890（循环）QWERTYUIOPASDFGHJKLZXCVBNM（循环）</p>
+                        <p>打孔符号：_</p>
+                        <p><strong>三．Punchia密码加密规则：</strong></p>
+                        <p>1. <strong>词根置换：</strong>如果一串字符（如hC8In99U）中含有基础词根的任意一个，则将其换成打孔符号_，比如hC8In99U变为_C8I_99U（如果大小写不同无需替换）。</p>
+                        <p>2. <strong>偏移置换：</strong>根据打孔符号的多少，每个字母偏移n+1位。如_C8I_99U有两个打孔符号，则偏移3位。偏移规则是按照26qwerty键盘设计的，如C→N，8→1......_C8I_99U加密后则变为_N1A_22P。</p>
+                        <p>3. <strong>复原：</strong>将打孔符号删除，即N1A22P</p>
+                        <p>4. <strong>结果：</strong>hC8In99U加密为N1A22P，而反向解密无法操作，因为打孔符号的数量和位置未知，换而言之，如果知道打孔符号的位置和数量，便可反向解密。</p>
+                    `
+                }
+            ],
+            "林夜冬": [
+                {
+                    id: 15,
+                    title: "休山科技馆顾问林夜冬助力大云市敲定空眬山粒子中枢发生场选址",
+                    type: "doc",
+                    content: `
+                        <h3>休山科技馆顾问林夜冬助力大云市敲定空眬山粒子中枢发生场选址</h3>
+                        <p>依托顶尖科研智库支撑，大云市深部粒子物理科研布局再落关键一子。休山科技馆特聘顾问林夜冬全程主导专项选址论证与技术统筹工作，经过多轮环境勘测、物理模型推演、科研适配性核验，成功协助大云市科学院敲定<strong>粒子中枢发生场</strong>落地选址，将核心科研装置定点于大云市空眬山区域，为国内前沿粒子试验研究搭建起核心中枢平台。</p>
+                        <p>作为休山科技馆核心技术顾问，林夜冬长期深耕微观粒子传输、粒子场构建、高能物理试验环境适配等前沿领域，拥有丰富的大型粒子科研装置选址与搭建统筹经验，对各类粒子试验的环境要求、技术壁垒与安全标准有着精准且系统的研究认知。此次受大云市科学院专项邀约，全程牵头粒子中枢发生场的选址研判工作，结合大云市全域地形地貌、磁场分布、空间环境等核心数据，对比市内多处备选场地的优劣条件，最终锁定空眬山为最优建设场地。</p>
+                        <p>相较于常规科研场地，大云市空眬山地质结构稳定、地磁扰动微弱、空间开阔无遮挡，远离城市密集建筑群与电磁干扰源，能够承载大规模、长周期的粒子汇聚与试验作业，完美契合粒子中枢发生场的特殊运行需求。据悉，粒子中枢发生场区别于常规粒子试验装置，拥有独一无二的核心功能，可通过远程粒子传导技术，精准采集、传送全球各地的游离粒子、衰变粒子与高能粒子，统一汇聚至空眬山中枢场域，开展集中式粒子发生试验与深度数据分析。</p>
+                        <p>该装置的建成落地，彻底打破了传统粒子试验地域受限、粒子样本单一、试验场景局限的行业痛点。以往各地粒子试验只能依托本地环境采集样本、开展局部试验，数据碎片化、差异性大，难以形成全域系统性研究成果。而空眬山粒子中枢发生场建成后，可整合全球多区域、多类型、多状态的粒子资源，实现粒子汇聚、触发、衰变、演化、观测分析一体化闭环试验，极大提升粒子物理试验的全面性、精准性与权威性。</p>
+                        <p>在林夜冬的专业统筹指导下，本次选址工作同步完成场地安全评估、场域模型搭建、试验方案初步规划等配套工作。大云市科学院表示，空眬山绝佳的天然科研环境，搭配粒子中枢发生场的核心技术优势，将与此前大云市深海深地地质科研体系形成互补，构建起"地质深部研究+微观粒子前沿试验"的双向科研格局。未来将依托该中枢平台，持续开展高端粒子物理科研攻关，联动全球前沿科研成果，不断突破微观物理领域研究瓶颈，助力大云市打造复合型、国际化的顶尖科研高地。</p>
+                    `
+                },
+                {
+                    id: 16,
+                    title: "【已锁定】粒子发射场核心档案",
+                    type: "locked",
+                    desc: "需要验证访问权限"
+                }
+            ]
+        };
+
+        // ==================== 搜索功能 ====================
+        function performSearch() {
+            const rawQuery = document.getElementById('searchInput').value.trim();
+            const resultsArea = document.getElementById('resultsArea');
+            
+            if (!rawQuery) {
+                resultsArea.innerHTML = '';
+                return;
+            }
+
+            // 精确匹配（大小写不敏感）
+            const query = rawQuery.toLowerCase();
+            const results = database[query];
+            
+            if (!results || results.length === 0) {
+                resultsArea.innerHTML = '<div class="no-result">未检索到与 "' + rawQuery + '" 完全匹配的记录<br>请确认关键词准确性</div>';
+                return;
+            }
+
+            let html = '';
+            results.forEach(item => {
+                if (item.type === 'translator') {
+                    html += `
+                        <div class="result-card" onclick="openTranslator()">
+                            <div class="result-title">${item.title}</div>
+                            <div class="result-meta">${item.desc} | 点击启动程序</div>
+                        </div>
+                    `;
+                } else if (item.type === 'link') {
+                    html += `
+                        <div class="result-card" onclick="window.open('${item.url}', '_blank')">
+                            <div class="result-title">${item.title}</div>
+                            <div class="result-meta">外部链接 | 点击跳转</div>
+                        </div>
+                    `;
+                } else if (item.type === 'locked') {
+                    html += `
+                        <div class="result-card" onclick="openLockedModal()">
+                            <div class="result-title">${item.title}</div>
+                            <div class="result-meta">${item.desc} | 点击验证访问</div>
+                        </div>
+                    `;
+                } else if (item.type === 'image') {
+                    html += `
+                        <div class="result-card" onclick="openImage(${item.id})">
+                            <div class="result-title">${item.title}</div>
+                            <div class="result-meta">影像档案: IMG-${String(item.id).padStart(3, '0')} | 点击查看原图</div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="result-card" onclick="openFile(${item.id})">
+                            <div class="result-title">${item.title}</div>
+                            <div class="result-meta">档案编号: DOC-${String(item.id).padStart(3, '0')} | 点击查阅详情</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            resultsArea.innerHTML = html;
+        }
+
+        // 回车搜索
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        // ==================== 文件查看器 ====================
+        function openFile(id) {
+            let file = null;
+            for (let key in database) {
+                const found = database[key].find(item => item.id === id && item.type === 'doc');
+                if (found) {
+                    file = found;
+                    break;
+                }
+            }
+            
+            if (!file) return;
+
+            document.getElementById('modalTitle').textContent = file.title;
+            
+            let bodyContent = file.content;
+            if (file.hasImage && file.imageUrl) {
+                bodyContent += `<img src="${file.imageUrl}" alt="配图" class="modal-image" onerror="this.style.display='none'">`;
+            }
+            
+            document.getElementById('modalBody').innerHTML = bodyContent;
+            document.getElementById('fileModal').classList.add('active');
+        }
+
+        function openImage(id) {
+            let file = null;
+            for (let key in database) {
+                const found = database[key].find(item => item.id === id && item.type === 'image');
+                if (found) {
+                    file = found;
+                    break;
+                }
+            }
+            
+            if (!file) return;
+
+            document.getElementById('modalTitle').textContent = file.title;
+            document.getElementById('modalBody').innerHTML = `
+                <img src="${file.imageUrl}" alt="${file.title}" class="modal-image full" onerror="this.parentElement.innerHTML='<p style=\\'text-align:center;color:#ff8a80\\'>图片加载失败</p>'">
+            `;
+            document.getElementById('fileModal').classList.add('active');
+        }
+
+        function openTranslator() {
+            document.getElementById('translatorModal').classList.add('active');
+            document.getElementById('translateResult').textContent = '';
+            document.getElementById('leftInput').value = '';
+            document.getElementById('rightInput').value = '';
+        }
+
+        function openLockedModal() {
+            document.getElementById('lockedModal').classList.add('active');
+            document.getElementById('ukInput').value = '';
+            document.getElementById('jpInput').value = '';
+            document.getElementById('dyInput').value = '';
+            document.getElementById('lockError').textContent = '';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // 点击遮罩关闭
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // ==================== 笑脸密码翻译器 ====================
+        function translateSmiley() {
+            const left = document.getElementById('leftInput').value.trim();
+            const right = document.getElementById('rightInput').value.trim();
+            const result = document.getElementById('translateResult');
+
+            if (left === 'Hello' && right === 'We see you') {
+                result.textContent = '麓睢市';
+                result.classList.remove('error');
+            } else {
+                result.textContent = '无法翻译';
+                result.classList.add('error');
+            }
+        }
+
+        document.getElementById('rightInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') translateSmiley();
+        });
+
+        // ==================== 锁定验证 ====================
+        function verifyLock() {
+            const uk = document.getElementById('ukInput').value.trim().toUpperCase();
+            const jp = document.getElementById('jpInput').value.trim();
+            const dy = document.getElementById('dyInput').value.trim();
+            const error = document.getElementById('lockError');
+            
+            if (uk === 'DARTFORD MARSHES' && jp === '代々木公园' && dy === '空眬山') {
+                window.location.href = 'https://ttt112132tttr.github.io/Xiushankejiguan/Sorawave.html';
+            } else {
+                error.textContent = '验证失败，请检查答案是否正确。';
+            }
+        }
+
+        // 锁定框回车触发
+        document.getElementById('dyInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') verifyLock();
+        });
+    </script>
+</body>
+</html>
