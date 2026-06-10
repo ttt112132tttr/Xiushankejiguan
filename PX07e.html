@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天才俱乐部 · 加密聊天记录 #PX-07</title>
+    <style>
+        :root {
+            --red: #c41e3a;
+            --red-bright: #e63946;
+            --red-glow: #ff4444;
+            --blue: #1a3a5c;
+            --blue-bright: #2563eb;
+            --blue-glow: #60a5fa;
+            --white: #f8f5f0;
+            --marble-gray: #d5d0c8;
+            --marble-dark: #b8b0a5;
+            --gold: #c9a96e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            background-color: #0d0d0d;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(180, 160, 145, 0.25) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 35%, rgba(190, 175, 160, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 70%, rgba(170, 155, 140, 0.22) 0%, transparent 60%),
+                radial-gradient(ellipse at 60% 10%, rgba(200, 185, 170, 0.2) 0%, transparent 45%),
+                repeating-linear-gradient(12deg, transparent, transparent 4px, rgba(140, 130, 115, 0.08) 4px, rgba(140, 130, 115, 0.08) 4.5px),
+                repeating-linear-gradient(-22deg, transparent, transparent 9px, rgba(150, 140, 122, 0.05) 9px, rgba(150, 140, 122, 0.05) 9.6px),
+                linear-gradient(40deg, transparent 68%, rgba(140, 125, 108, 0.06) 68.5%, transparent 69%),
+                radial-gradient(ellipse at 50% 50%, rgba(30, 25, 20, 0.75) 0%, rgba(10, 8, 6, 0.95) 100%);
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 粒子画布 */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.55;
+        }
+
+        .chat-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 700px;
+            background: rgba(18, 15, 12, 0.65);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border-radius: 28px;
+            border: 1px solid rgba(200, 180, 160, 0.4);
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.7),
+                0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+                0 0 40px rgba(228, 30, 50, 0.15),
+                0 0 80px rgba(37, 99, 235, 0.1);
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-container::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 80px,
+                    rgba(200, 40, 40, 0.02) 80px,
+                    rgba(200, 40, 40, 0.02) 85px,
+                    transparent 85px,
+                    transparent 160px),
+                repeating-linear-gradient(-45deg,
+                    transparent,
+                    transparent 80px,
+                    rgba(37, 99, 235, 0.02) 80px,
+                    rgba(37, 99, 235, 0.02) 85px,
+                    transparent 85px,
+                    transparent 160px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .chat-content {
+            position: relative;
+            z-index: 2;
+            padding: 25px 30px 35px;
+        }
+        @media (max-width: 500px) {
+            .chat-content {
+                padding: 15px 15px 25px;
+            }
+        }
+
+        /* 聊天头部 */
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(200, 160, 130, 0.35);
+            padding-bottom: 18px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: #f0e6d8;
+            letter-spacing: 0.04em;
+        }
+        .chat-title .icon {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4eff4e;
+            box-shadow: 0 0 12px #4eff4e;
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        .chat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #c41e3a;
+            color: #ff7b7b;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: rgba(200, 30, 40, 0.1);
+            box-shadow: 0 0 12px rgba(200, 30, 40, 0.25);
+        }
+        .encryption-note {
+            font-size: 0.7rem;
+            color: #b8a898;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        /* 消息区域 */
+        .messages {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 5px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(200,160,130,0.4) transparent;
+        }
+        .messages::-webkit-scrollbar {
+            width: 4px;
+        }
+        .messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .messages::-webkit-scrollbar-thumb {
+            background: rgba(200,160,130,0.4);
+            border-radius: 4px;
+        }
+
+        .msg-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            animation: fadeIn 0.25s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .msg-row.right {
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .avatar.red {
+            background: linear-gradient(135deg, #c41e3a, #e63946);
+        }
+        .avatar.blue {
+            background: linear-gradient(135deg, #1a3a5c, #2563eb);
+        }
+        .avatar.gold {
+            background: linear-gradient(135deg, #7a6030, #c9a96e);
+        }
+        .avatar.white {
+            background: linear-gradient(135deg, #8a8075, #d5d0c8);
+            color: #2a2018;
+        }
+
+        .msg-bubble {
+            max-width: 75%;
+            padding: 10px 16px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            line-height: 1.55;
+            position: relative;
+            word-break: break-word;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+        .msg-row.left .msg-bubble {
+            background: rgba(30, 28, 26, 0.8);
+            border: 1px solid rgba(200, 160, 130, 0.25);
+            color: #e0d5c5;
+            border-bottom-left-radius: 6px;
+        }
+        .msg-row.right .msg-bubble {
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            color: #d0e0ff;
+            border-bottom-right-radius: 6px;
+        }
+        .msg-sender {
+            font-weight: 700;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sender-name {
+            opacity: 0.9;
+        }
+        .timestamp {
+            font-size: 0.6rem;
+            opacity: 0.5;
+            font-weight: 400;
+        }
+
+        .code-snippet {
+            background: rgba(0,0,0,0.4);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #ffb07c;
+        }
+        .highlight-red {
+            color: #ff9090;
+            font-weight: 600;
+        }
+        .highlight-blue {
+            color: #8ab4f8;
+            font-weight: 600;
+        }
+
+        /* 底部状态 */
+        .chat-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(200, 160, 130, 0.25);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #7a6e62;
+            letter-spacing: 0.04em;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="chat-wrapper">
+        <div class="chat-container">
+            <div class="chat-content">
+                <!-- 聊天头部 -->
+                <div class="chat-header">
+                    <div class="chat-title">
+                        <span class="icon"></span>
+                        # 休山异常讨论组
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <div class="chat-badge">端到端加密 · Punchia协议</div>
+                        <div class="encryption-note">🔒 安全信道 · 仅5人</div>
+                    </div>
+                </div>
+
+                <!-- 消息列表 -->
+                <div class="messages">
+                    <!-- 消息1 -->
+                    <div class="msg-row left">
+                        <div class="avatar red">神</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">神</span><span class="timestamp">02:14</span></div>
+                            我失忆一段时间后，突然会了医术
+                        </div>
+                    </div>
+
+                    <!-- 消息2 -->
+                    <div class="msg-row left">
+                        <div class="avatar blue">哀</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">哀吾错</span><span class="timestamp">02:15</span></div>
+                            最近这种事情越来越多了，让我怀疑这不是一个真实的世界
+                        </div>
+                    </div>
+
+                    <!-- 消息3 -->
+                    <div class="msg-row right">
+                        <div class="avatar red">神</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">神</span><span class="timestamp">02:15</span></div>
+                            但是我们起码活着挺真实的，不是吗？
+                        </div>
+                    </div>
+
+                    <!-- 消息4 -->
+                    <div class="msg-row left">
+                        <div class="avatar gold">月</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">月相轮转</span><span class="timestamp">02:16</span></div>
+                            不见得，没这么简单，<span class="highlight-red">休山不仅仅是不存在这么简单</span>
+                        </div>
+                    </div>
+
+                    <!-- 消息5 -->
+                    <div class="msg-row right">
+                        <div class="avatar red">神</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">神</span><span class="timestamp">02:16</span></div>
+                            哦，怎么说
+                        </div>
+                    </div>
+
+                    <!-- 消息6 -->
+                    <div class="msg-row left">
+                        <div class="avatar white">空</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">空无</span><span class="timestamp">02:17</span></div>
+                            月相老弟，你最近说话这么飘吗
+                        </div>
+                    </div>
+
+                    <!-- 消息7 -->
+                    <div class="msg-row left">
+                        <div class="avatar gold">月</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">月相轮转</span><span class="timestamp">02:17</span></div>
+                            我也是在试，你们没发现吗？所有与<span class="highlight-red">大山市</span>有关的资料全都是<span class="highlight-blue">1992或者2025年</span>的，只有<span class="highlight-red">Punchia密码</span>是19世纪的产物
+                        </div>
+                    </div>
+
+                    <!-- 消息8 -->
+                    <div class="msg-row left">
+                        <div class="avatar blue">哀</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">哀吾错</span><span class="timestamp">02:18</span></div>
+                            所以呢？
+                        </div>
+                    </div>
+
+                    <!-- 消息9 -->
+                    <div class="msg-row left">
+                        <div class="avatar gold">月</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">月相轮转</span><span class="timestamp">02:18</span></div>
+                            所以我试了试将Punchia密码用于带<span class="code-snippet">Xiushan</span>或者<span class="code-snippet">Dayun</span>的网站，但是目前还没试出来
+                        </div>
+                    </div>
+
+                    <!-- 消息10 -->
+                    <div class="msg-row right">
+                        <div class="avatar red">神</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">神</span><span class="timestamp">02:19</span></div>
+                            Punchia密码，好像是<span class="highlight-blue">赵立文</span>研究的吧
+                        </div>
+                    </div>
+
+                    <!-- 消息11 -->
+                    <div class="msg-row left">
+                        <div class="avatar gold">月</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">月相轮转</span><span class="timestamp">02:19</span></div>
+                            是的，他不是你同事吗
+                        </div>
+                    </div>
+
+                    <!-- 消息12 -->
+                    <div class="msg-row right">
+                        <div class="avatar red">神</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">神</span><span class="timestamp">02:20</span></div>
+                            不算吧，我只不过是<span class="highlight-red">休山科技馆</span>的员工，他可是大云市科学院的
+                        </div>
+                    </div>
+
+                    <!-- 消息13 -->
+                    <div class="msg-row left">
+                        <div class="avatar white">L</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">L</span><span class="timestamp">02:20</span></div>
+                            额，我刚刚试了试，好像不是解密，是加密，我试了一下<span class="highlight-blue">休山大酒店</span>的，我把<span class="code-snippet">Xiushankejiguan</span>后面的<span class="code-snippet">xiushan_hotel_arg</span>加密又替换了一下，发现真能进
+                        </div>
+                    </div>
+
+                    <!-- 消息14 -->
+                    <div class="msg-row right">
+                        <div class="avatar red">神</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">神</span><span class="timestamp">02:21</span></div>
+                            66666，真的，但是为啥休山科技馆没用
+                        </div>
+                    </div>
+
+                    <!-- 消息15 -->
+                    <div class="msg-row left">
+                        <div class="avatar gold">月</div>
+                        <div class="msg-bubble">
+                            <div class="msg-sender"><span class="sender-name">月相轮转</span><span class="timestamp">02:21</span></div>
+                            因为那是主界面吧，估计只有<span class="code-snippet">Xiushankejiguan</span>后面有东西并且有<span class="code-snippet">xiushan</span>或者<span class="code-snippet">dayun</span>的才能用这个方法
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部状态 -->
+                <div class="chat-footer">
+                    <span>📁 聊天记录已自动销毁 (24h后)</span>
+                    <span>天才俱乐部 · 认知安全部</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 粒子特效脚本 (与档案页面一致) -->
+    <script>
+        (function() {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            let W, H;
+            let particles = [];
+            let beams = [];
+            let fragments = [];
+            let time = 0;
+
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+                const target = Math.max(40, Math.floor(W * H / 22000));
+                while (particles.length < target) particles.push(createParticle());
+                while (particles.length > target) particles.pop();
+                initBeams();
+            }
+
+            function createParticle() {
+                return {
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.25,
+                    size: Math.random() * 1.8 + 0.4,
+                    alpha: Math.random() * 0.4 + 0.2,
+                    flicker: Math.random() * Math.PI * 2,
+                    color: Math.random() < 0.5 ? { r: 210, g: 190, b: 200 } : { r: 180, g: 195, b: 225 }
+                };
+            }
+
+            function initBeams() {
+                beams = [
+                    { ox: W*0.3, oy: H*0.4, angle: 0.7, speed: 0.25, len: Math.min(W,H)*0.7, width: 14, color:'red' },
+                    { ox: W*0.7, oy: H*0.6, angle: 3.8, speed: -0.3, len: Math.min(W,H)*0.65, width: 12, color:'blue' },
+                    { ox: W*0.5, oy: H*0.5, angle: 2.1, speed: 0.2, len: Math.min(W,H)*0.55, width: 11, color:'mixed' }
+                ];
+            }
+
+            function beamPos(beam, t) {
+                const dist = (t-0.5)*beam.len;
+                const wave = Math.sin(dist*0.035 + time*2.5)*4;
+                const px = beam.ox + Math.cos(beam.angle)*dist - Math.sin(beam.angle)*wave;
+                const py = beam.oy + Math.sin(beam.angle)*dist + Math.cos(beam.angle)*wave;
+                return {x:px, y:py};
+            }
+
+            function update(dt) {
+                time += dt;
+                beams.forEach(b => b.angle += b.speed * dt);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.flicker += 0.02;
+                    if(p.x<-20) p.x=W+20; if(p.x>W+20) p.x=-20;
+                    if(p.y<-20) p.y=H+20; if(p.y>H+20) p.y=-20;
+                });
+                const toRemove = [];
+                particles.forEach((p, idx) => {
+                    for(let b of beams) {
+                        for(let i=0; i<20; i++) {
+                            const pos = beamPos(b, i/20);
+                            if(Math.hypot(p.x-pos.x, p.y-pos.y) < b.width*1.1) {
+                                toRemove.push(idx);
+                                for(let j=0;j<6;j++) fragments.push({
+                                    x:p.x, y:p.y, vx:(Math.random()-0.5)*5, vy:(Math.random()-0.5)*5,
+                                    life:1, decay:0.03, size:Math.random()*1.2+0.3,
+                                    color:b.color==='red'?{r:255,g:80,b:70}:b.color==='blue'?{r:70,g:140,b:255}:{r:210,g:130,b:210}
+                                });
+                                break;
+                            }
+                        }
+                    }
+                });
+                for(let i=toRemove.length-1; i>=0; i--) particles.splice(toRemove[i],1);
+                while(particles.length < Math.max(40, Math.floor(W*H/22000))) particles.push(createParticle());
+                fragments.forEach(f=>{ f.x+=f.vx*dt; f.y+=f.vy*dt; f.life-=f.decay; });
+                fragments = fragments.filter(f=>f.life>0 && f.x>0 && f.x<W && f.y>0 && f.y<H);
+                if(fragments.length>150) fragments.splice(0, fragments.length-150);
+            }
+
+            function draw() {
+                ctx.clearRect(0,0,W,H);
+                beams.forEach(b=>{
+                    const col = b.color==='red'?{r:255,g:70,b:55}:b.color==='blue'?{r:55,g:120,b:255}:{r:200,g:100,b:190};
+                    for(let i=0;i<25;i++){
+                        const pos = beamPos(b, i/25);
+                        const grd = ctx.createRadialGradient(pos.x,pos.y,0,pos.x,pos.y,b.width*1.7);
+                        grd.addColorStop(0, `rgba(${col.r},${col.g},${col.b},0.5)`);
+                        grd.addColorStop(0.4, `rgba(${col.r},${col.g},${col.b},0.2)`);
+                        grd.addColorStop(1, 'transparent');
+                        ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(pos.x,pos.y,b.width*1.7,0,Math.PI*2); ctx.fill();
+                    }
+                });
+                fragments.forEach(f=>{
+                    ctx.fillStyle = `rgba(${f.color.r},${f.color.g},${f.color.b},${f.life})`;
+                    ctx.beginPath(); ctx.arc(f.x,f.y,f.size,0,2*Math.PI); ctx.fill();
+                });
+                particles.forEach(p=>{
+                    const flick = Math.sin(p.flicker)*0.2+0.8;
+                    ctx.fillStyle = `rgba(${p.color.r},${p.color.g},${p.color.b},${p.alpha*flick})`;
+                    ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill();
+                });
+            }
+
+            let lastTime;
+            function loop(ts) {
+                const dt = lastTime ? Math.min((ts-lastTime)/1000, 0.1) : 0.016;
+                lastTime = ts;
+                update(dt);
+                draw();
+                requestAnimationFrame(loop);
+            }
+
+            resize();
+            window.addEventListener('resize', resize);
+            requestAnimationFrame(loop);
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绝密档案 M3Je12J6t13a1d704a520a8c81h8N9v2 | 天才俱乐部</title>
+    <style>
+        :root {
+            --red: #c41e3a;
+            --red-bright: #e63946;
+            --blue: #1a3a5c;
+            --blue-bright: #2563eb;
+            --white: #f8f5f0;
+            --marble-gray: #d5d0c8;
+            --marble-dark: #b8b0a5;
+            --gold: #c9a96e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            background-color: #0d0d0d;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(180, 160, 145, 0.25) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 35%, rgba(190, 175, 160, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 70%, rgba(170, 155, 140, 0.22) 0%, transparent 60%),
+                radial-gradient(ellipse at 60% 10%, rgba(200, 185, 170, 0.2) 0%, transparent 45%),
+                repeating-linear-gradient(12deg, transparent, transparent 4px, rgba(140, 130, 115, 0.08) 4px, rgba(140, 130, 115, 0.08) 4.5px),
+                repeating-linear-gradient(-22deg, transparent, transparent 9px, rgba(150, 140, 122, 0.05) 9px, rgba(150, 140, 122, 0.05) 9.6px),
+                linear-gradient(40deg, transparent 68%, rgba(140, 125, 108, 0.06) 68.5%, transparent 69%),
+                radial-gradient(ellipse at 50% 50%, rgba(30, 25, 20, 0.75) 0%, rgba(10, 8, 6, 0.95) 100%);
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .main-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .dossier-card {
+            width: 100%;
+            max-width: 880px;
+            background: rgba(18, 15, 12, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px;
+            border: 1px solid rgba(200, 180, 160, 0.35);
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.7),
+                0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+                0 0 40px rgba(228, 30, 50, 0.15),
+                0 0 80px rgba(37, 99, 235, 0.1);
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            color: #e8e0d5;
+        }
+
+        .dossier-card::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 80px,
+                    rgba(200, 40, 40, 0.03) 80px,
+                    rgba(200, 40, 40, 0.03) 85px,
+                    transparent 85px,
+                    transparent 160px),
+                repeating-linear-gradient(-45deg,
+                    transparent,
+                    transparent 80px,
+                    rgba(37, 99, 235, 0.025) 80px,
+                    rgba(37, 99, 235, 0.025) 85px,
+                    transparent 85px,
+                    transparent 160px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+            padding: 35px 40px 45px;
+        }
+        @media (max-width: 600px) {
+            .card-content {
+                padding: 20px 18px 28px;
+            }
+        }
+
+        .dossier-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(200, 160, 130, 0.35);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .dossier-id {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff7b7b;
+            text-shadow: 0 0 12px rgba(255, 60, 60, 0.6);
+            letter-spacing: 0.04em;
+            word-break: break-all;
+        }
+        .dossier-stamp {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1.5px solid #c41e3a;
+            color: #c41e3a;
+            padding: 5px 18px;
+            border-radius: 30px;
+            font-weight: 900;
+            font-size: 0.9rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            background: rgba(180, 30, 40, 0.08);
+            box-shadow: 0 0 16px rgba(200, 30, 40, 0.25);
+        }
+        .dossier-stamp.blue {
+            border-color: #2563eb;
+            color: #60a5fa;
+            background: rgba(37, 99, 235, 0.08);
+            box-shadow: 0 0 16px rgba(37, 99, 235, 0.25);
+        }
+
+        .meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-top: 15px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #b8a898;
+        }
+        .meta-row span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .meta-row i {
+            font-style: normal;
+            opacity: 0.7;
+        }
+
+        .dossier-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #f5f0e8;
+            margin: 18px 0 10px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2), 0 4px 8px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .dossier-title .redacted-bar {
+            flex: 1;
+            height: 4px;
+            background: linear-gradient(90deg, #c41e3a, #2563eb, transparent);
+            border-radius: 2px;
+        }
+
+        .section-label {
+            color: #c9a96e;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.75rem;
+            margin: 30px 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(200, 160, 120, 0.3);
+        }
+        p {
+            line-height: 1.8;
+            margin-bottom: 16px;
+            color: #d6ccbf;
+            font-size: 0.98rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .highlight {
+            color: #ff9090;
+            font-weight: 600;
+            background: rgba(180, 40, 40, 0.15);
+            padding: 0 4px;
+            border-radius: 3px;
+        }
+        .highlight-blue {
+            color: #8ab4f8;
+            font-weight: 600;
+            background: rgba(37, 99, 235, 0.15);
+            padding: 0 4px;
+            border-radius: 3px;
+        }
+        .classified-note {
+            background: rgba(30, 25, 20, 0.7);
+            border-left: 4px solid #c41e3a;
+            padding: 15px 20px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #e8c8b0;
+            border-radius: 0 8px 8px 0;
+        }
+        .origin-note {
+            background: rgba(20, 30, 45, 0.7);
+            border-left: 4px solid #2563eb;
+            padding: 12px 18px;
+            margin: 20px 0;
+            font-style: normal;
+            color: #b0c8e8;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .dossier-footer {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px dashed rgba(200, 160, 130, 0.35);
+            display: flex;
+            justify-content: space-between;
+            color: #7a6e62;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 500px) {
+            .dossier-id {
+                font-size: 1.1rem;
+            }
+            .dossier-title {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="main-wrapper">
+        <div class="dossier-card">
+            <div class="card-content">
+                <div class="dossier-header">
+                    <div class="dossier-id">M3Je12J6t13a1d704a520a8c81h8N9v2</div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <div class="dossier-stamp">绝密 · 最高权限</div>
+                        <div class="dossier-stamp blue">天才俱乐部保管</div>
+                    </div>
+                </div>
+                <div class="meta-row">
+                    <span>📅 原始归档日期：2025-04-05 (大云市科学院)</span>
+                    <span>🔒 当前安全等级：Ω-5</span>
+                    <span>📂 项目代号：THE HILL THAT ISN'T</span>
+                </div>
+
+                <!-- 来源说明 -->
+                <div class="origin-note">
+                    📄 档案来源说明：本文件原始版本由<strong>大云市科学院研究员赵栎</strong>于2025年4月5日撰写。该院所有相关记录已于2025年4月7日被强制删除，赵栎本人亦被大云市当局以-数据删除-判处死刑。现存副本由天才俱乐部认知安全部从碎片数据中恢复，并作为绝密档案永久封存。
+                </div>
+
+                <div class="dossier-title">
+                    休山不存在假说与γζ衍金晶空间畸变报告
+                    <div class="redacted-bar"></div>
+                </div>
+
+                <div class="classified-note">
+                    ⚠️ 以下内容涉及地外文明痕迹及空间假说，未经天才俱乐部理事会授权严禁查阅。任何泄露将触发ζ粒子追踪协议。
+                </div>
+
+                <div class="section-label">I. 休山观测异常——自发发现的“不存在”</div>
+                <p>
+                    自<span class="highlight">2025年</span>起，全球地质监测网在东亚板块交汇带持续捕捉到一系列难以解释的引力波动。卫星遥感数据显示，<span class="highlight">休山山脉（坐标35.72°N, 118.45°E）</span>在可见光及合成孔径雷达图像中呈现出“幽灵式存在”——其山体轮廓完整，但质量读数与同等体积花岗岩山体相比缺失约<span class="highlight">73.4%</span>。这一反常现象引发了科学界的广泛怀疑。
+                </p>
+                <p>
+                    值得注意的是，休山在人们日常认知中始终是一座真实存在的山脉，所有地图、教科书及居民记忆均包含它。然而，当科学家们带着上述观测数据重新审视时，却发现<span class="highlight">没有任何客观证据能够证明休山具有实体质量或地质历史</span>。这类似于“缸中之脑”式的认知冲突：我们集体相信休山存在，但所有精密测量都指向一个结论——<strong>休山可能根本不存在</strong>。它更像是一个<span class="highlight-blue">额外空间</span>在我们现实中的“压痕”，而我们长久以来生活在它的投影之中。
+                </p>
+
+                <div class="section-label">II. γζ衍金晶的发现与超常凝聚</div>
+                <p>
+                    2025年4月2日，<span class="highlight">大云市科学院研究员张涵及其同行</span>在对休山异常区进行实地考察时，于山体腹地发掘出一枚<span class="highlight">γζ衍金晶</span>。该晶体呈现非欧几里得几何结构，常温下表面温度维持在绝对零度附近，却能辐射出可见光波段的高能粒子流。其质量、密度均违反现有物理模型。
+                </p>
+                <p>
+                    更为诡异的事件发生在<span class="highlight">2025年4月3日凌晨</span>：γζ衍金晶在无任何外部能量输入的情况下，以超指数速率<span class="highlight">自发凝聚</span>，在不到3.7秒内坍缩为一团直径2.3厘米的“内容物”。该内容物呈现全光谱干涉色，任何接触的探测设备均被<span class="highlight">瞬间量子退相干</span>，无法获取数据。至今，科学团队仍无法解释其构成与原理。
+                </p>
+                <p>
+                    初步研究显示，γζ衍金晶释放出一种被命名为<span class="highlight-blue">ζ粒子</span>的玻色子。<strong>单个ζ粒子的空间扭曲能力极其微弱，仅能以母空间为蓝本复制出分子尺度的子空间</strong>。然而，这枚衍金晶内部似乎经历过<span class="highlight">难以计数的迭代过程</span>，其最终发射的ζ粒子数量与能量密度已达到天文数字级别。据此推测，正是这种经过无数次迭代放大的ζ粒子流，才得以编织出如同休山乃至整个大云市这般规模的<span class="highlight-blue">宏观额外空间</span>。
+                </p>
+
+                <div class="section-label">III. 大云市——原地球不存在的坐标</div>
+                <p>
+                    根据测绘数据，我们推断<span class="highlight">大云市</span>是一个真实却又虚假的地点，它在场却又缺失了一部分象征。；大云市是一座拥有230万人口、工业体系完整的城市，且居民记忆、历史脉络均自然延续。通过ζ粒子示踪，我们发现大云市的空间拓扑结构并非原生，而是由γζ衍金晶的能量场在<span class="highlight">-数据删除-之后</span>逐步“编织”而成。
+                </p>
+                <p>
+                    换言之，<strong>我们当前已经因为γζ衍金晶的激活而多出了一整个城市</strong>。这种规模的空间改写，远非人类科技所能触及。我们怀疑地外生命用γζ衍金晶与其伴生的ζ粒子<span class="highlight-blue">以原地球为母本</span>，构建出了大云市这个地球。
+                </p>
+
+                <div class="section-label">IV. 实施者与地外生命关联</div>
+                <p>
+                    在γζ衍金晶内容物内部，检测到重复的编码信号，经破译与已知地外文明语言学数据库比对，匹配度高达<span class="highlight">61.7%</span>。信号指向一种可能存在于高维空间的智慧实体。据此推断，<span class="highlight">具体实施者极有可能与地外生命有关</span>，而γζ衍金晶是其部署的空间锚点，用于在两个地球之间搭建桥梁。
+                </p>
+
+                <div class="section-label">V. 麓睢市——连接母体空间的桥梁</div>
+                <p>
+                    <span class="highlight-blue">麓睢市</span>，位于<span class="highlight">渤海以东，太平洋东北部海域</span>（大致坐标42°N, 155°E附近），是一座在常规地图上被刻意模糊的海上都市。它呈现出奇特的双重空间特征：在某些特定时间窗口，麓睢市的某些区域会与“母体地球”的对应位置发生<span class="highlight-blue">量子纠缠态重叠</span>。这使得麓睢市成为目前已知唯一能够<span class="highlight">沟通原地球（母体空间）与此地球（有大云市）的稳定通道</span>。
+                </p>
+                <p>
+                    天才俱乐部已在该市设立观测站，严密监控跨空间物质交换。我们警告：如果麓睢市的桥梁作用被人为破坏或加强，两个地球的空间平衡将被打破，后果无法估量。休山、大云市、γζ衍金晶与麓睢市，共同构成了一套精密的空间重写系统，其最终目的尚不明确。
+                </p>
+
+                <div class="classified-note">
+                    📋 本档案由天才俱乐部从大云市科学院被毁数据中恢复，并永久封存。原撰写者<span class="highlight">赵栎</span>已被处决。任何关于“休山不存在”、“大云市凭空产生”的公开讨论均被视为对现实稳定的威胁。若您未通过认知过滤测试而阅读至此，请立即联系最近的记忆清除站点。
+                </div>
+
+                <div class="dossier-footer">
+                    <span>天才俱乐部 · 认知安全部</span>
+                    <span>档案恢复封装：███-██</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            let W, H;
+            let particles = [];
+            let beams = [];
+            let fragments = [];
+            let time = 0;
+
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+                const target = Math.max(40, Math.floor(W * H / 22000));
+                while (particles.length < target) particles.push(createParticle());
+                while (particles.length > target) particles.pop();
+                initBeams();
+            }
+
+            function createParticle() {
+                return {
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: (Math.random() - 0.5) * 0.25,
+                    size: Math.random() * 1.8 + 0.4,
+                    alpha: Math.random() * 0.4 + 0.2,
+                    flicker: Math.random() * Math.PI * 2,
+                    color: Math.random() < 0.5 ? { r: 210, g: 190, b: 200 } : { r: 180, g: 195, b: 225 }
+                };
+            }
+
+            function initBeams() {
+                beams = [
+                    { ox: W*0.3, oy: H*0.4, angle: 0.7, speed: 0.25, len: Math.min(W,H)*0.7, width: 14, color:'red' },
+                    { ox: W*0.7, oy: H*0.6, angle: 3.8, speed: -0.3, len: Math.min(W,H)*0.65, width: 12, color:'blue' },
+                    { ox: W*0.5, oy: H*0.5, angle: 2.1, speed: 0.2, len: Math.min(W,H)*0.55, width: 11, color:'mixed' }
+                ];
+            }
+
+            function beamPos(beam, t) {
+                const dist = (t-0.5)*beam.len;
+                const wave = Math.sin(dist*0.035 + time*2.5)*4;
+                const px = beam.ox + Math.cos(beam.angle)*dist - Math.sin(beam.angle)*wave;
+                const py = beam.oy + Math.sin(beam.angle)*dist + Math.cos(beam.angle)*wave;
+                return {x:px, y:py};
+            }
+
+            function update(dt) {
+                time += dt;
+                beams.forEach(b => b.angle += b.speed * dt);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.flicker += 0.02;
+                    if(p.x<-20) p.x=W+20; if(p.x>W+20) p.x=-20;
+                    if(p.y<-20) p.y=H+20; if(p.y>H+20) p.y=-20;
+                });
+                const toRemove = [];
+                particles.forEach((p, idx) => {
+                    for(let b of beams) {
+                        for(let i=0; i<20; i++) {
+                            const pos = beamPos(b, i/20);
+                            if(Math.hypot(p.x-pos.x, p.y-pos.y) < b.width*1.1) {
+                                toRemove.push(idx);
+                                for(let j=0;j<6;j++) fragments.push({
+                                    x:p.x, y:p.y, vx:(Math.random()-0.5)*5, vy:(Math.random()-0.5)*5,
+                                    life:1, decay:0.03, size:Math.random()*1.2+0.3,
+                                    color:b.color==='red'?{r:255,g:80,b:70}:b.color==='blue'?{r:70,g:140,b:255}:{r:210,g:130,b:210}
+                                });
+                                break;
+                            }
+                        }
+                    }
+                });
+                for(let i=toRemove.length-1; i>=0; i--) particles.splice(toRemove[i],1);
+                while(particles.length < Math.max(40, Math.floor(W*H/22000))) particles.push(createParticle());
+                fragments.forEach(f=>{ f.x+=f.vx*dt; f.y+=f.vy*dt; f.life-=f.decay; });
+                fragments = fragments.filter(f=>f.life>0 && f.x>0 && f.x<W && f.y>0 && f.y<H);
+                if(fragments.length>150) fragments.splice(0, fragments.length-150);
+            }
+
+            function draw() {
+                ctx.clearRect(0,0,W,H);
+                beams.forEach(b=>{
+                    const col = b.color==='red'?{r:255,g:70,b:55}:b.color==='blue'?{r:55,g:120,b:255}:{r:200,g:100,b:190};
+                    for(let i=0;i<25;i++){
+                        const pos = beamPos(b, i/25);
+                        const grd = ctx.createRadialGradient(pos.x,pos.y,0,pos.x,pos.y,b.width*1.7);
+                        grd.addColorStop(0, `rgba(${col.r},${col.g},${col.b},0.5)`);
+                        grd.addColorStop(0.4, `rgba(${col.r},${col.g},${col.b},0.2)`);
+                        grd.addColorStop(1, 'transparent');
+                        ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(pos.x,pos.y,b.width*1.7,0,Math.PI*2); ctx.fill();
+                    }
+                });
+                fragments.forEach(f=>{
+                    ctx.fillStyle = `rgba(${f.color.r},${f.color.g},${f.color.b},${f.life})`;
+                    ctx.beginPath(); ctx.arc(f.x,f.y,f.size,0,2*Math.PI); ctx.fill();
+                });
+                particles.forEach(p=>{
+                    const flick = Math.sin(p.flicker)*0.2+0.8;
+                    ctx.fillStyle = `rgba(${p.color.r},${p.color.g},${p.color.b},${p.alpha*flick})`;
+                    ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,2*Math.PI); ctx.fill();
+                });
+            }
+
+            let lastTime;
+            function loop(ts) {
+                const dt = lastTime ? Math.min((ts-lastTime)/1000, 0.1) : 0.016;
+                lastTime = ts;
+                update(dt);
+                draw();
+                requestAnimationFrame(loop);
+            }
+
+            resize();
+            window.addEventListener('resize', resize);
+            requestAnimationFrame(loop);
+        })();
+    </script>
+</body>
+</html>
