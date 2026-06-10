@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【绝密·中等密级】γζ衍金晶异常物质勘探档案 - 大云市科学院</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .top-bar {
+            background: #1a3a6c;
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 0;
+        }
+
+        .top-bar .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .top-bar a {
+            color: #a8c5e8;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: #1a3a6c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            color: #1a3a6c;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .logo-text p {
+            font-size: 13px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .search-box {
+            display: flex;
+            border: 2px solid #1a3a6c;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .search-box input {
+            width: 280px;
+            padding: 10px 15px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .search-box button {
+            background: #1a3a6c;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .main-nav {
+            background: #1a3a6c;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            padding: 0 20px;
+        }
+
+        .nav-item > a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            padding: 15px 25px;
+            font-size: 15px;
+            cursor: default;
+        }
+
+        .breadcrumb {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #1a3a6c;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .archive-container {
+            max-width: 900px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .archive-header {
+            background: #fff;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            border-top: 5px solid #c0392b;
+        }
+
+        .secret-badge {
+            display: inline-block;
+            background: #c0392b;
+            color: #fff;
+            padding: 4px 15px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .archive-header h1 {
+            font-size: 22px;
+            color: #1a3a6c;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .archive-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 14px;
+            color: #666;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 20px;
+        }
+
+        .archive-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .archive-meta .label {
+            color: #999;
+        }
+
+        .archive-meta .value {
+            color: #1a3a6c;
+            font-weight: 600;
+        }
+
+        .archive-status {
+            background: #fff3cd;
+            padding: 15px 20px;
+            border-radius: 4px;
+            border-left: 4px solid #c0392b;
+            margin-bottom: 20px;
+        }
+
+        .archive-status h3 {
+            font-size: 15px;
+            color: #c0392b;
+            margin-bottom: 5px;
+        }
+
+        .archive-status p {
+            font-size: 14px;
+            color: #856404;
+        }
+
+        .archive-body {
+            background: #fff;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .archive-body h2 {
+            font-size: 20px;
+            color: #1a3a6c;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8ecf1;
+        }
+
+        .archive-body h2:first-child {
+            margin-top: 0;
+        }
+
+        .archive-body h3 {
+            font-size: 17px;
+            color: #333;
+            margin: 25px 0 12px;
+        }
+
+        .archive-body p {
+            font-size: 15px;
+            color: #444;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .archive-body .highlight {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+
+        .archive-body .highlight-red {
+            background: #ffebee;
+            color: #c0392b;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+
+        .archive-body ol, .archive-body ul {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        .archive-body li {
+            font-size: 15px;
+            color: #444;
+            margin-bottom: 8px;
+            line-height: 1.8;
+        }
+
+        .archive-footer {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-top: 30px;
+            text-align: center;
+            border-top: 3px solid #c0392b;
+        }
+
+        .archive-footer p {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .archive-footer .warning {
+            color: #c0392b;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .footer {
+            background: #1a3a6c;
+            color: #a8c5e8;
+            padding: 50px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-section h4 {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #a8c5e8;
+            font-size: 14px;
+            line-height: 2;
+            text-decoration: none;
+            display: block;
+            cursor: default;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            padding: 20px 20px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            font-size: 13px;
+            color: #7a9bc4;
+        }
+
+        .stamp {
+            display: inline-block;
+            border: 2px solid #c0392b;
+            color: #c0392b;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin-top: 15px;
+            transform: rotate(-5deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="container">
+            <span>大云市科学院官方网站</span>
+            <div>
+                <a>English</a>
+                <a>邮箱登录</a>
+                <a>OA系统</a>
+                <a>联系我们</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-main">
+            <div class="logo">
+                <div class="logo-icon">云</div>
+                <div class="logo-text">
+                    <h1>大云市科学院</h1>
+                    <p>DAYUN ACADEMY OF SCIENCES</p>
+                </div>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="支持搜索人名或档案编号" id="searchInput">
+                <button onclick="doSearch()">搜索</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-item"><a>首页</a></div>
+            <div class="nav-item"><a>院况介绍</a></div>
+            <div class="nav-item"><a>科学研究</a></div>
+            <div class="nav-item"><a>人才教育</a></div>
+            <div class="nav-item"><a>合作交流</a></div>
+            <div class="nav-item"><a>信息公开</a></div>
+            <div class="nav-item"><a>专题专栏</a></div>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="dayun_academy.html">首页</a> &gt; <a href="search_archive.html">搜索结果</a> &gt; 档案详情
+    </div>
+
+    <div class="archive-container">
+        <div class="archive-header">
+            <div class="secret-badge">绝密 · 中等密级</div>
+            <h1>γζ衍金晶异常物质勘探档案</h1>
+            <div class="archive-meta">
+                <span><span class="label">档案编号：</span><span class="value">43ce22a3773a1d7041ae9520caf8c817</span></span>
+                <span><span class="label">建档单位：</span><span class="value">大云市科学院异常物质勘探科</span></span>
+                <span><span class="label">建档日期：</span><span class="value">2025年4月2日</span></span>
+                <span><span class="label">归档状态：</span><span class="value">封存、禁止二次调取、永久涉密</span></span>
+            </div>
+            <div class="archive-status">
+                <h3>⚠ 档案状态</h3>
+                <p>本档案已封存，禁止二次调取。知悉范围：仅搜索档案名称可知悉。</p>
+            </div>
+        </div>
+
+        <div class="archive-body">
+            <h2>一、事件梗概</h2>
+            <p>2025年4月2日上午9时17分，大云市休山山顶深层地质勘探作业中，本院野外勘探小队于休山主峰岩层裂隙深处，挖掘出一块<span class="highlight">成分完全脱离地球已知元素周期体系、结构无法解析的未知结晶矿石</span>。</p>
+            <p>该晶石通体通透温润，原生质感高度近似高纯黄金，常态下持续弥散微弱、无热源式淡金色辉光。经现场便携射线检测仪瞬时扫描确认：该未知晶石<span class="highlight">持续自主辐射γ粒子与ζ粒子</span>，辐射波段稳定、无衰减规律，且不依托任何外界能量输入，属于地球自然矿物从未出现的自主放射特性。</p>
+            <p>因结合其辐射粒子类型与外观金相特征，勘探组现场将该未知物质正式定名：<span class="highlight">γζ衍金晶</span>。</p>
+
+            <h2>二、专项研究小组组建</h2>
+            <p>为彻底解析γζ衍金晶的物质构成、理化属性、辐射机理及结构来源，大云市科学院紧急联动国际材料科研协作体系，连夜组建跨国专项勘研小组，成员全部为金属物理、未知物质解析领域顶尖学者：</p>
+            <ol>
+                <li><strong>张涵</strong>（大云市）：特种金属相变研究首席研究员，主攻未知合金与异常矿物物理结构解析；</li>
+                <li><strong>休谟阿尔金</strong>（伦敦市）：国际地质晶体结构学权威，擅长极端条件下物质化学性质溯源；</li>
+                <li><strong>小保泽钢</strong>（东京市）：动态物质变量记录专家，专精可变形态物质的系统性建档、编号与轨迹追踪。</li>
+            </ol>
+            <p>三人于4月2日当日抵达休山科技馆特级保密实验室，对γζ衍金晶开展封闭式隔离研究。</p>
+
+            <h2>三、核心异常发现</h2>
+            <p>研究启动数小时内，团队即观测到颠覆经典理化体系的重大异常：</p>
+            <p><span class="highlight">γζ衍金晶具备自主形态跃迁能力，无固定触发条件、无规律时间周期，可自主完成形体重塑、结构重组。</span></p>
+            <p>且每一次形态变换完成后，该晶石的全部物理参数、化学性质、辐射强度、粒子溢出频率、晶体稳定性均会发生彻底更迭，等同于"同一块物质，每次蜕变后都是全新的未知物质"。</p>
+            <p>针对该无法复刻、无规律可循的诡异特性，东京市研究员小保泽钢提出硬性科研要求：</p>
+            <p>对γζ衍金晶每一次形态蜕变、每一组全新理化数据、每一种粒子辐射特征，进行逐一记录、分级归档、序列编号，建立专属动态物质谱系，用于后续溯源研究。</p>
+            <p>三人全程轮班值守，不间断监测晶石状态、记录蜕变数据，是人类首次系统性接触并记录该类超自然未知矿物。</p>
+
+            <h2>四、全员神秘失踪事件</h2>
+            <p><span class="highlight-red">2025年4月3日凌晨，休山特级保密实验室监控系统出现全域黑屏、数据断连、设备静默现象</span>，安保与后勤人员例行巡查时发现：</p>
+            <p>整个封闭式实验室完好无损，门禁无撬动痕迹、监控无外人闯入记录、设备无损毁、晶石样本原位留存。</p>
+            <p>但参与本次研究的三名核心科研人员——<span class="highlight-red">张涵、休谟阿尔金、小保泽钢，全员神秘失踪，踪迹全无</span>。</p>
+            <p>实验室内部保留未写完的观测日志、未归档的形态编号草稿、未整理的粒子辐射数据，水杯、纸笔、科研设备均保持工作状态，无任何挣扎、出逃、外力胁迫痕迹。</p>
+            <p>三人自失踪时刻起，手机信号、定位终端、身份芯片全部静默，全域搜查无任何生命体征反馈，彻底消失于休山保密实验室封闭空间内。</p>
+
+            <h2>五、当前封存结论</h2>
+            <ol>
+                <li>γζ衍金晶为非地球原生未知异常物质，理化体系不受现有自然科学规律约束；</li>
+                <li>晶石具备自主形态迭代、属性重置的未知超自然能力，风险等级不可评估；</li>
+                <li>三名顶尖科研人员失踪原因不明，排除人为作案、外力入侵、设备事故、环境灾害；</li>
+                <li>疑似晶石形态跃迁伴随未知场域坍缩、空间异常、维度扰动，大概率导致接触人员全域湮灭或异位剥离。</li>
+            </ol>
+
+            <h2>六、处置指令</h2>
+            <ol>
+                <li>样本原地封存，永久禁止拆解、转移、近距离持续观测；</li>
+                <li>本次事件全程保密，所有相关资料、监控、日志全部加密封存；</li>
+                <li>终止一切γζ衍金晶研究项目，不再组建勘研团队；</li>
+                <li>三名科研人员失踪事件列为永久未解涉密事件，禁止公开调查。</li>
+            </ol>
+        </div>
+
+        <div class="archive-footer">
+            <p class="warning">密级：绝密 | 封存期限：永久 | 知悉范围：仅搜索档案名称可知悉</p>
+            <p>本文档版权归大云市科学院所有 | 未经授权禁止任何形式的复制、传播或引用</p>
+            <div class="stamp">永久封存</div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>大云市科学院</h4>
+                <p>地址：大云市休山区科学院路1号</p>
+                <p>邮政编码：300000</p>
+                <p>总机：025-XXXXXXXX</p>
+            </div>
+            <div class="footer-section">
+                <h4>快速链接</h4>
+                <a>中国科学院</a>
+                <a>国家自然科学基金</a>
+                <a>科技部</a>
+            </div>
+            <div class="footer-section">
+                <h4>院内导航</h4>
+                <a>研究生院</a>
+                <a>图书馆</a>
+                <a>信息中心</a>
+            </div>
+            <div class="footer-section">
+                <h4>相关服务</h4>
+                <a>科技查新</a>
+                <a>文献检索</a>
+                <a>专利服务</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>大云市科学院 版权所有 | 京ICP备XXXXXXXX号</p>
+        </div>
+    </footer>
+
+    <script>
+        function doSearch() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (keyword === '赵立文') {
+                window.location.href = 'search_zhaoliwen.html';
+            } else if (keyword === '43ce22a3773a1d7041ae9520caf8c817') {
+                window.location.href = 'search_archive.html';
+            } else {
+                alert('未找到相关结果');
+            }
+        }
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') doSearch();
+        });
+    </script>
+</body>
+</html>

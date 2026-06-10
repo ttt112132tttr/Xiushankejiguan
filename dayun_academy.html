@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大云市科学院 - 首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 顶部导航栏 */
+        .top-bar {
+            background: #1a3a6c;
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 0;
+        }
+
+        .top-bar .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .top-bar a {
+            color: #a8c5e8;
+            text-decoration: none;
+            margin-left: 20px;
+            transition: color 0.3s;
+        }
+
+        .top-bar a:hover {
+            color: #fff;
+        }
+
+        /* 头部区域 */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: #1a3a6c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            color: #1a3a6c;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .logo-text p {
+            font-size: 13px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .search-box {
+            display: flex;
+            border: 2px solid #1a3a6c;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .search-box input {
+            width: 280px;
+            padding: 10px 15px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .search-box button {
+            background: #1a3a6c;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .search-box button:hover {
+            background: #0f2650;
+        }
+
+        /* 主导航 */
+        .main-nav {
+            background: #1a3a6c;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            padding: 0 20px;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-item > a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            padding: 15px 25px;
+            font-size: 15px;
+            transition: background 0.3s;
+            cursor: default;
+        }
+
+        .nav-item:hover > a {
+            background: #0f2650;
+        }
+
+        .nav-item:hover .dropdown {
+            display: block;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #fff;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-top: 3px solid #1a3a6c;
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s;
+            cursor: default;
+        }
+
+        .dropdown a:hover {
+            background: #f5f8fc;
+            color: #1a3a6c;
+            padding-left: 25px;
+        }
+
+        /* 轮播图区域 */
+        .banner {
+            position: relative;
+            height: 450px;
+            overflow: hidden;
+            background: #1a3a6c;
+        }
+
+        .banner-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .banner-slide.active {
+            opacity: 1;
+        }
+
+        .banner-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+        }
+
+        .banner-content {
+            position: absolute;
+            max-width: 1200px;
+            width: 100%;
+            padding: 0 20px;
+            color: #fff;
+            z-index: 2;
+        }
+
+        .banner-content h2 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .banner-content p {
+            font-size: 18px;
+            opacity: 0.9;
+            max-width: 600px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .banner-dots {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 3;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: #fff;
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        /* 内容区域 */
+        .content-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #1a3a6c;
+            padding-bottom: 10px;
+        }
+
+        .section-header h3 {
+            font-size: 22px;
+            color: #1a3a6c;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header h3::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 22px;
+            background: #1a3a6c;
+        }
+
+        .section-header .more {
+            color: #1a3a6c;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+            cursor: default;
+        }
+
+        .section-header .more:hover {
+            color: #0f2650;
+        }
+
+        /* 新闻卡片 */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .news-card {
+            background: #fff;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .news-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+
+        .news-card .card-img {
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .news-card .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .news-card:hover .card-img img {
+            transform: scale(1.05);
+        }
+
+        .news-card .card-body {
+            padding: 20px;
+        }
+
+        .news-card .date {
+            color: #1a3a6c;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .news-card h4 {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .news-card p {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        /* 列表样式 */
+        .news-list {
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+
+        .news-list li {
+            list-style: none;
+            padding: 12px 0;
+            border-bottom: 1px dashed #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: padding-left 0.3s;
+            cursor: default;
+        }
+
+        .news-list li:last-child {
+            border-bottom: none;
+        }
+
+        .news-list li:hover {
+            padding-left: 10px;
+            background: #f5f8fc;
+        }
+
+        .news-list li span {
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+            transition: color 0.3s;
+        }
+
+        .news-list li:hover span {
+            color: #1a3a6c;
+        }
+
+        .news-list .list-date {
+            color: #999;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        /* 两栏布局 */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        /* 底部 */
+        .footer {
+            background: #1a3a6c;
+            color: #a8c5e8;
+            padding: 50px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-section h4 {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #a8c5e8;
+            font-size: 14px;
+            line-height: 2;
+            text-decoration: none;
+            display: block;
+            transition: color 0.3s;
+            cursor: default;
+        }
+
+        .footer-section a:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            padding: 20px 20px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            font-size: 13px;
+            color: #7a9bc4;
+        }
+
+        /* 快速入口 */
+        .quick-links {
+            background: #fff;
+            padding: 30px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .quick-links-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+        }
+
+        .quick-link-item {
+            text-align: center;
+            padding: 20px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            cursor: default;
+        }
+
+        .quick-link-item:hover {
+            background: #f5f8fc;
+            transform: translateY(-2px);
+        }
+
+        .quick-link-item .icon {
+            width: 50px;
+            height: 50px;
+            background: #1a3a6c;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 20px;
+        }
+
+        .quick-link-item span {
+            font-size: 14px;
+            color: #333;
+            display: block;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .news-grid { grid-template-columns: 1fr; }
+            .two-column { grid-template-columns: 1fr; }
+            .footer-container { grid-template-columns: 1fr; }
+            .quick-links-container { grid-template-columns: repeat(3, 1fr); }
+            .nav-container { flex-wrap: wrap; }
+            .search-box input { width: 150px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部栏 -->
+    <div class="top-bar">
+        <div class="container">
+            <span>大云市科学院官方网站</span>
+            <div>
+                <a>English</a>
+                <a>邮箱登录</a>
+                <a>OA系统</a>
+                <a>联系我们</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 头部 -->
+    <div class="header">
+        <div class="header-main">
+            <div class="logo">
+                <div class="logo-icon">云</div>
+                <div class="logo-text">
+                    <h1>大云市科学院</h1>
+                    <p>DAYUN ACADEMY OF SCIENCES</p>
+                </div>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="支持搜索人名或档案编号" id="searchInput">
+                <button onclick="doSearch()">搜索</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主导航 -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-item">
+                <a>首页</a>
+            </div>
+            <div class="nav-item">
+                <a>院况介绍</a>
+                <div class="dropdown">
+                    <a>科学院简介</a>
+                    <a>院长致辞</a>
+                    <a>组织架构</a>
+                    <a>历史沿革</a>
+                    <a>院士名录</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a>科学研究</a>
+                <div class="dropdown">
+                    <a>科研进展</a>
+                    <a>重点实验室</a>
+                    <a>科研项目</a>
+                    <a>科研成果</a>
+                    <a>学术交流</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a>人才教育</a>
+                <div class="dropdown">
+                    <a>研究生教育</a>
+                    <a>博士后流动站</a>
+                    <a>人才引进</a>
+                    <a>继续教育</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a>合作交流</a>
+                <div class="dropdown">
+                    <a>国际合作</a>
+                    <a>院地合作</a>
+                    <a>产学研合作</a>
+                    <a>科普活动</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a>信息公开</a>
+                <div class="dropdown">
+                    <a>政策法规</a>
+                    <a>采购招标</a>
+                    <a>统计数据</a>
+                    <a>年度报告</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a>专题专栏</a>
+                <div class="dropdown">
+                    <a>学习贯彻</a>
+                    <a>党史学习教育</a>
+                    <a>科技创新</a>
+                    <a>科普园地</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 轮播图 -->
+    <div class="banner">
+        <div class="banner-slide active">
+            <img src="kexueyuan.png" alt="大云市科学院">
+            <div class="banner-content">
+                <h2>大云市科学院</h2>
+                <p>面向世界科技前沿，面向国家重大需求，面向国民经济主战场，率先实现科学技术跨越发展。</p>
+            </div>
+        </div>
+        <div class="banner-slide">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg, #0f2650 0%, #1a3a6c 100%);"></div>
+            <div class="banner-content">
+                <h2>科技创新 引领未来</h2>
+                <p>聚焦关键核心技术攻关，推动高水平科技自立自强，为建设科技强国贡献力量。</p>
+            </div>
+        </div>
+        <div class="banner-slide">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg, #1a3a6c 0%, #2a4a7c 100%);"></div>
+            <div class="banner-content">
+                <h2>人才强院 协同发展</h2>
+                <p>构建一流创新人才高地，打造国家战略科技力量，谱写新时代科技创新新篇章。</p>
+            </div>
+        </div>
+        <div class="banner-dots">
+            <span class="dot active" onclick="changeSlide(0)"></span>
+            <span class="dot" onclick="changeSlide(1)"></span>
+            <span class="dot" onclick="changeSlide(2)"></span>
+        </div>
+    </div>
+
+    <!-- 快速入口 -->
+    <div class="quick-links">
+        <div class="quick-links-container">
+            <div class="quick-link-item">
+                <div class="icon">研</div>
+                <span>科研平台</span>
+            </div>
+            <div class="quick-link-item">
+                <div class="icon">招</div>
+                <span>人才招聘</span>
+            </div>
+            <div class="quick-link-item">
+                <div class="icon">报</div>
+                <span>项目申报</span>
+            </div>
+            <div class="quick-link-item">
+                <div class="icon">合</div>
+                <span>合作交流</span>
+            </div>
+            <div class="quick-link-item">
+                <div class="icon">科</div>
+                <span>科普园地</span>
+            </div>
+            <div class="quick-link-item">
+                <div class="icon">数</div>
+                <span>数据资源</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要内容区 -->
+    <div class="content-section">
+        <div class="two-column">
+            <!-- 院况要闻 -->
+            <div>
+                <div class="section-header">
+                    <h3>院况要闻</h3>
+                    <span class="more">更多 ></span>
+                </div>
+                <div class="news-list">
+                    <li>
+                        <span>大云市科学院召开2026年度工作会议</span>
+                        <span class="list-date">2026-06-09</span>
+                    </li>
+                    <li>
+                        <span>我院与休山市科技馆签署战略合作协议</span>
+                        <span class="list-date">2026-06-05</span>
+                    </li>
+                    <li>
+                        <span>大云市科学院2026年研究生招生简章发布</span>
+                        <span class="list-date">2026-06-01</span>
+                    </li>
+                    <li>
+                        <span>我院量子计算研究中心取得重要突破</span>
+                        <span class="list-date">2026-05-28</span>
+                    </li>
+                    <li>
+                        <span>大云市科学院举办国际学术交流论坛</span>
+                        <span class="list-date">2026-05-20</span>
+                    </li>
+                    <li>
+                        <span>我院新增两个国家重点实验室</span>
+                        <span class="list-date">2026-05-15</span>
+                    </li>
+                    <li>
+                        <span>大云市科学院科普教育基地正式开放</span>
+                        <span class="list-date">2026-05-10</span>
+                    </li>
+                    <li>
+                        <span>我院青年科学家团队获国家级奖项</span>
+                        <span class="list-date">2026-05-05</span>
+                    </li>
+                </div>
+            </div>
+
+            <!-- 通知公告 -->
+            <div>
+                <div class="section-header">
+                    <h3>通知公告</h3>
+                    <span class="more">更多 ></span>
+                </div>
+                <div class="news-list">
+                    <li>
+                        <span>关于2026年度科研项目申报的通知</span>
+                        <span class="list-date">2026-06-08</span>
+                    </li>
+                    <li>
+                        <span>大云市科学院公开招聘工作人员公告</span>
+                        <span class="list-date">2026-06-06</span>
+                    </li>
+                    <li>
+                        <span>关于举办第十届科技创新大赛的通知</span>
+                        <span class="list-date">2026-06-03</span>
+                    </li>
+                    <li>
+                        <span>大云市科学院仪器设备采购招标公告</span>
+                        <span class="list-date">2026-05-30</span>
+                    </li>
+                    <li>
+                        <span>关于调整夏季工作时间的通知</span>
+                        <span class="list-date">2026-05-25</span>
+                    </li>
+                    <li>
+                        <span>大云市科学院学术报告厅使用管理办法</span>
+                        <span class="list-date">2026-05-20</span>
+                    </li>
+                    <li>
+                        <span>关于组织申报省级科技计划项目的通知</span>
+                        <span class="list-date">2026-05-18</span>
+                    </li>
+                    <li>
+                        <span>大云市科学院网络安全管理办法修订</span>
+                        <span class="list-date">2026-05-12</span>
+                    </li>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 科研动态 -->
+    <div class="content-section">
+        <div class="section-header">
+            <h3>科研动态</h3>
+            <span class="more">更多 ></span>
+        </div>
+        <div class="news-grid">
+            <div class="news-card">
+                <div class="card-img">
+                    <img src="1.png" alt="新材料研究">
+                </div>
+                <div class="card-body">
+                    <div class="date">2026-06-09</div>
+                    <h4>我院新材料研究取得重大突破</h4>
+                    <p>大云市科学院材料科学研究所成功研发新型纳米复合材料，在能源存储领域展现巨大应用前景...</p>
+                </div>
+            </div>
+            <div class="news-card">
+                <div class="card-img">
+                    <img src="2.png" alt="人工智能实验室">
+                </div>
+                <div class="card-body">
+                    <div class="date">2026-06-07</div>
+                    <h4>人工智能实验室发布最新研究成果</h4>
+                    <p>大云市科学院人工智能研究中心在深度学习算法优化方面取得新进展，相关论文发表于国际顶级期刊...</p>
+                </div>
+            </div>
+            <div class="news-card">
+                <div class="card-img">
+                    <img src="3.png" alt="生物医学工程">
+                </div>
+                <div class="card-body">
+                    <div class="date">2026-06-05</div>
+                    <h4>生物医学工程团队攻克关键技术难题</h4>
+                    <p>大云市科学院生物医学工程研究所成功突破基因编辑技术瓶颈，为精准医疗提供新方案...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>大云市科学院</h4>
+                <p>地址：大云市休山区科学院路1号</p>
+                <p>邮政编码：300000</p>
+                <p>总机：025-XXXXXXXX</p>
+                <p>邮箱：contact@dayun.cas.cn</p>
+            </div>
+            <div class="footer-section">
+                <h4>快速链接</h4>
+                <a>中国科学院</a>
+                <a>国家自然科学基金</a>
+                <a>科技部</a>
+                <a>大云市政府</a>
+            </div>
+            <div class="footer-section">
+                <h4>院内导航</h4>
+                <a>研究生院</a>
+                <a>图书馆</a>
+                <a>信息中心</a>
+                <a>实验动物中心</a>
+            </div>
+            <div class="footer-section">
+                <h4>相关服务</h4>
+                <a>科技查新</a>
+                <a>文献检索</a>
+                <a>专利服务</a>
+                <a>成果转化</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>大云市科学院 版权所有 | 京ICP备XXXXXXXX号 | 京公网安备XXXXXXXX号</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.banner-slide');
+        const dots = document.querySelectorAll('.dot');
+
+        function changeSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+
+        setInterval(() => {
+            let next = (currentSlide + 1) % slides.length;
+            changeSlide(next);
+        }, 5000);
+
+        function doSearch() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (keyword === '赵立文') {
+                window.location.href = 'search_zhaoliwen.html';
+            } else if (keyword === '43ce22a3773a1d7041ae9520caf8c817') {
+                window.location.href = 'search_archive.html';
+            } else {
+                alert('未找到相关结果');
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                doSearch();
+            }
+        });
+    </script>
+</body>
+</html>

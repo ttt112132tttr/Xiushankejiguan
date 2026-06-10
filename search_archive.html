@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索结果 - 绝密档案 - 大云市科学院</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .top-bar {
+            background: #1a3a6c;
+            color: #fff;
+            font-size: 12px;
+            padding: 6px 0;
+        }
+
+        .top-bar .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .top-bar a {
+            color: #a8c5e8;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: #1a3a6c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            color: #1a3a6c;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .logo-text p {
+            font-size: 13px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .search-box {
+            display: flex;
+            border: 2px solid #1a3a6c;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .search-box input {
+            width: 280px;
+            padding: 10px 15px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .search-box button {
+            background: #1a3a6c;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .main-nav {
+            background: #1a3a6c;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            padding: 0 20px;
+        }
+
+        .nav-item > a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            padding: 15px 25px;
+            font-size: 15px;
+            cursor: default;
+        }
+
+        .breadcrumb {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #1a3a6c;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .search-info {
+            background: #fff;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .search-info h2 {
+            font-size: 20px;
+            color: #1a3a6c;
+            margin-bottom: 10px;
+        }
+
+        .search-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .search-info .keyword {
+            color: #1a3a6c;
+            font-weight: bold;
+        }
+
+        .result-list {
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+
+        .result-item {
+            padding: 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: padding-left 0.3s;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item:hover {
+            padding-left: 10px;
+            background: #f5f8fc;
+        }
+
+        .result-item h3 {
+            font-size: 18px;
+            color: #1a3a6c;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .result-item h3:hover {
+            color: #0f2650;
+            text-decoration: underline;
+        }
+
+        .result-item .meta {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .result-item .meta span {
+            margin-right: 20px;
+        }
+
+        .result-item .abstract {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .result-item .tag {
+            display: inline-block;
+            background: #c0392b;
+            color: #fff;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+
+        .result-item .tag-secret {
+            display: inline-block;
+            background: #8e44ad;
+            color: #fff;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+
+        .footer {
+            background: #1a3a6c;
+            color: #a8c5e8;
+            padding: 50px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-section h4 {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #a8c5e8;
+            font-size: 14px;
+            line-height: 2;
+            text-decoration: none;
+            display: block;
+            cursor: default;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            padding: 20px 20px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            font-size: 13px;
+            color: #7a9bc4;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="container">
+            <span>大云市科学院官方网站</span>
+            <div>
+                <a>English</a>
+                <a>邮箱登录</a>
+                <a>OA系统</a>
+                <a>联系我们</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="header-main">
+            <div class="logo">
+                <div class="logo-icon">云</div>
+                <div class="logo-text">
+                    <h1>大云市科学院</h1>
+                    <p>DAYUN ACADEMY OF SCIENCES</p>
+                </div>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="支持搜索人名或档案编号" value="43ce22a3773a1d7041ae9520caf8c817" id="searchInput">
+                <button onclick="doSearch()">搜索</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-item"><a>首页</a></div>
+            <div class="nav-item"><a>院况介绍</a></div>
+            <div class="nav-item"><a>科学研究</a></div>
+            <div class="nav-item"><a>人才教育</a></div>
+            <div class="nav-item"><a>合作交流</a></div>
+            <div class="nav-item"><a>信息公开</a></div>
+            <div class="nav-item"><a>专题专栏</a></div>
+        </div>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="dayun_academy.html">首页</a> &gt; 搜索结果
+    </div>
+
+    <div class="content-section">
+        <div class="search-info">
+            <h2>搜索结果</h2>
+            <p>关键词：<span class="keyword">43ce22a3773a1d7041ae9520caf8c817</span> | 共找到 <strong>1</strong> 条相关结果</p>
+        </div>
+
+        <div class="result-list">
+            <div class="result-item">
+                <h3 onclick="location.href='archive_43ce22a.html'">【绝密·中等密级】γζ衍金晶异常物质勘探档案</h3>
+                <div class="meta">
+                    <span class="tag-secret">绝密</span>
+                    <span class="tag">中等密级</span>
+                    <span>档案编号：43ce22a3773a1d7041ae9520caf8c817</span>
+                    <span>建档日期：2025-04-02</span>
+                </div>
+                <div class="abstract">
+                    2025年4月2日，大云市休山山顶深层地质勘探作业中，本院野外勘探小队于休山主峰岩层裂隙深处，挖掘出一块成分完全脱离地球已知元素周期体系、结构无法解析的未知结晶矿石。该晶石通体通透温润，原生质感高度近似高纯黄金，常态下持续弥散微弱、无热源式淡金色辉光，持续自主辐射γ粒子与ζ粒子...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>大云市科学院</h4>
+                <p>地址：大云市休山区科学院路1号</p>
+                <p>邮政编码：300000</p>
+                <p>总机：025-XXXXXXXX</p>
+            </div>
+            <div class="footer-section">
+                <h4>快速链接</h4>
+                <a>中国科学院</a>
+                <a>国家自然科学基金</a>
+                <a>科技部</a>
+            </div>
+            <div class="footer-section">
+                <h4>院内导航</h4>
+                <a>研究生院</a>
+                <a>图书馆</a>
+                <a>信息中心</a>
+            </div>
+            <div class="footer-section">
+                <h4>相关服务</h4>
+                <a>科技查新</a>
+                <a>文献检索</a>
+                <a>专利服务</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>大云市科学院 版权所有 | 京ICP备XXXXXXXX号</p>
+        </div>
+    </footer>
+
+    <script>
+        function doSearch() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (keyword === '赵立文') {
+                window.location.href = 'search_zhaoliwen.html';
+            } else if (keyword === '43ce22a3773a1d7041ae9520caf8c817') {
+                window.location.href = 'search_archive.html';
+            } else {
+                alert('未找到相关结果');
+            }
+        }
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') doSearch();
+        });
+    </script>
+</body>
+</html>
