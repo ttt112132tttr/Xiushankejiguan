@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>孙一兵诊疗记录</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0f0808;
+            min-height: 100vh;
+            font-family: "SimSun", "宋体", "Noto Serif SC", serif;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+        .bg-blood {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(circle at 15% 30%, rgba(90, 25, 25, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 60%, rgba(80, 20, 20, 0.1) 0%, transparent 35%);
+        }
+        .noise {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.06) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.25;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+        }
+        .paper {
+            background: #d4c4a8;
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(139,115,85,0.06) 31px, rgba(139,115,85,0.06) 32px);
+            box-shadow: 0 0 50px rgba(40, 15, 15, 0.4);
+            padding: 45px 50px;
+            position: relative;
+        }
+        .paper::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(circle at 8% 15%, rgba(120, 35, 35, 0.06) 0%, transparent 25%),
+                radial-gradient(circle at 92% 85%, rgba(100, 30, 30, 0.05) 0%, transparent 20%);
+            pointer-events: none;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+        }
+        .hospital-name {
+            font-size: 15px;
+            color: #2a5a4a;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+        .doc-title {
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 8px;
+        }
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+        .meta-table td {
+            border: 1px solid #333;
+            padding: 6px 10px;
+            vertical-align: middle;
+        }
+        .meta-label {
+            background: rgba(0,0,0,0.04);
+            font-weight: bold;
+            width: 15%;
+        }
+        .section-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin: 25px 0 12px 0;
+            letter-spacing: 2px;
+            border-left: 3px solid #8b1a1a;
+            padding-left: 10px;
+        }
+        .dialogue {
+            font-size: 14px;
+            line-height: 2;
+            margin-bottom: 18px;
+            text-align: justify;
+        }
+        .speaker {
+            font-weight: bold;
+        }
+        .doctor {
+            color: #1a1a1a;
+        }
+        .patient {
+            color: #5a1a1a;
+        }
+        .summary-list {
+            font-size: 14px;
+            line-height: 2;
+            margin-left: 20px;
+        }
+        .summary-list li {
+            margin-bottom: 8px;
+        }
+        .stamp-area {
+            margin-top: 40px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 40px;
+            font-size: 13px;
+        }
+        .stamp-box {
+            text-align: center;
+            border-top: 1px solid #333;
+            padding-top: 6px;
+            min-width: 120px;
+        }
+        @media (max-width: 768px) {
+            .paper { padding: 25px 20px; }
+            .doc-title { font-size: 20px; letter-spacing: 4px; }
+            .meta-table { font-size: 12px; }
+            .dialogue { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blood"></div>
+    <div class="noise"></div>
+    <div class="scanlines"></div>
+
+    <div class="container">
+        <div class="paper">
+            <div class="header">
+                <div class="hospital-name">大云市人民医院</div>
+                <div class="doc-title">精神科诊疗档案记录</div>
+            </div>
+
+            <table class="meta-table">
+                <tr>
+                    <td class="meta-label">档案编号</td>
+                    <td>JY-92-0817</td>
+                    <td class="meta-label">患者姓名</td>
+                    <td>孙一兵</td>
+                </tr>
+                <tr>
+                    <td class="meta-label">诊断方向</td>
+                    <td colspan="3">重度精神分裂症、重度妄想障碍、时间感知认知障碍</td>
+                </tr>
+                <tr>
+                    <td class="meta-label">处方药物</td>
+                    <td colspan="3">宋餘（极端情况可考虑宋唯）</td>
+                </tr>
+            </table>
+
+            <div class="section-title">【问诊对话实录】</div>
+
+            <div class="dialogue">
+                <span class="speaker doctor">医生</span>：孙一兵，今天状态怎么样？依旧没办法回忆过往、预判未来吗？
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker patient">孙一兵</span>：（眼神空洞，坐姿僵硬，语速平缓且机械）想不起来，也看不见。脑子里面是平的，没有昨天，也没有明天。时间是碎的，是假的。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker doctor">医生</span>：还是坚持你之前的说法，见过四维生物，并且和对方产生过对话？
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker patient">孙一兵</span>：不是幻觉，是真的。我亲眼看见的，它和我说话了。它不在我们的维度里，不遵循长宽高，也不遵循时间。从那之后，我就坏掉了。<strong>物理学不存在了</strong>，时间的规则也不存在了。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker doctor">医生</span>：你可以具体描述一下，那次接触之后，你的认知出现了哪些具体变化？
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker patient">孙一兵</span>：以前我能记得小时候的事，能预想接下来要做什么。见过它之后，我的大脑被抽走了过去和未来。我没办法回忆任何过往细节，不管是开心的、难过的，全部空白。我也没办法去"想"未来，没有预判、没有期待、没有推演。我永远只活着一瞬间，只有当下，悬空的当下。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker doctor">医生</span>：从脑科学角度和你解释你的症状：通过脑部影像学和认知功能测评，你的前额叶认知推演区域、海马体记忆归档区域出现功能性抑制损伤。常人的大脑会自主整合过往记忆、预判未来事件，构建完整时间线，但你的大脑暂时丧失了时序整合能力，这是你无记忆、无未来感知的生理成因。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker patient">孙一兵</span>：不是脑子坏了，是世界的规则坏了。是四维生物告诉我，人类认知的时间、物理规律都是骗局。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker doctor">医生</span>：海德格尔提出，人的存在本质依托"时间性"展开，过去是留存的曾在，未来是先行的将至，当下是二者的统一。你现在的状态，是脱离了世俗时间性存在，陷入了孤立的瞬时虚无，这也是你认知错乱、妄想滋生的核心根源。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker patient">孙一兵</span>：不是我脱离了时间，是时间本来就不存在。你们活在虚假的时序里，只有我看见了真实。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker doctor">医生</span>：结合拉康精神分析理论来看，你目前的重度妄想，属于典型的"实在界侵入"。你主观臆测的四维生物、物理规则崩塌，是你的精神体系无法承接现实秩序，从而滋生的替代性妄想真相，你的大脑用一套虚假的高维认知，填补了时间感知缺失带来的精神空洞。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker patient">孙一兵</span>：是你们不肯承认真相。物理学不存在了，时间不存在了，所有的定律都是人类自欺欺人的枷锁。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker doctor">医生</span>：我理解你的主观感知，但从临床诊疗角度，这是重度精神分裂伴随重度妄想的典型症状。针对你的病情，我为你开具处方药<strong>宋餘</strong>，药物核心成分为喹硫平与碳酸锂。喹硫平可有效抑制大脑异常妄想神经回路，缓解幻觉、虚妄认知；碳酸锂用于稳定情绪心境，修复紊乱的神经节律，双向调控你的精神状态。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker patient">孙一兵</span>：吃药没用的。药物修不好崩塌的物理规则，也找不回我的过去和未来。这个世界的秩序，已经碎了。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker doctor">医生</span>：药物治疗配合心理干预、认知重建，是目前修复你时序认知、纠正妄想的唯一方式。我们会持续通过脑科学监测你的神经功能恢复情况，结合精神分析疏导你的潜意识错乱，逐步帮你重新建立正常的时间感知与现实认知，回归正常的存在秩序。
+            </div>
+
+            <div class="dialogue">
+                <span class="speaker patient">孙一兵</span>：（低声反复呢喃）物理学不存在了......时间不存在了......都是假的......
+            </div>
+
+            <div class="section-title">【诊疗总结记录】</div>
+
+            <ol class="summary-list">
+                <li>患者持续性存在高维生物接触妄想，认知体系完全脱离现实，坚信物理、时间规则失效；</li>
+                <li>存在严重认知障碍，完全无法调取过往记忆、推演未来事件，仅留存瞬时当下感知；</li>
+                <li>确诊重度精神分裂症、重度妄想障碍，已开具宋餘（喹硫平+碳酸锂）对症治疗；</li>
+                <li>后续持续采用脑科学监测、拉康精神分析疏导、海德格尔时间认知矫正三位一体治疗方案，定期复诊观察恢复情况。</li>
+            </ol>
+
+            <div class="stamp-area">
+                <div class="stamp-box">
+                    <div>主治医师</div>
+                    <div style="margin-top:4px; font-weight:bold;">陈晓金</div>
+                </div>
+                <div class="stamp-box">
+                    <div>记录日期</div>
+                    <div style="margin-top:4px; font-weight:bold;">1992.08.17</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
