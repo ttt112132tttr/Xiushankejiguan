@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时间漩涡 | Time Vortex</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #050508;
+            color: #e0e0e0;
+            font-family: "Courier New", "Microsoft YaHei", monospace;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        /* 漩涡背景层 */
+        .vortex-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 120vmax;
+            height: 120vmax;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        .vortex {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-conic-gradient(
+                from 0deg at 50% 50%,
+                transparent 0deg,
+                rgba(20, 40, 80, 0.15) 5deg,
+                transparent 10deg,
+                rgba(40, 20, 80, 0.1) 15deg,
+                transparent 20deg
+            );
+            border-radius: 50%;
+            animation: vortexSpin 20s linear infinite;
+        }
+
+        .vortex:nth-child(2) {
+            animation: vortexSpin 15s linear infinite reverse;
+            opacity: 0.5;
+            background: repeating-conic-gradient(
+                from 45deg at 50% 50%,
+                transparent 0deg,
+                rgba(80, 30, 60, 0.12) 8deg,
+                transparent 16deg
+            );
+        }
+
+        .vortex:nth-child(3) {
+            animation: vortexSpin 25s linear infinite;
+            opacity: 0.3;
+            background: repeating-conic-gradient(
+                from 90deg at 50% 50%,
+                transparent 0deg,
+                rgba(30, 60, 100, 0.1) 12deg,
+                transparent 24deg
+            );
+        }
+
+        @keyframes vortexSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 时间指针 */
+        .clock-hands {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        .hand {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            background: linear-gradient(to top, rgba(100, 150, 200, 0.6), rgba(100, 150, 200, 0.1));
+            transform-origin: bottom center;
+            border-radius: 2px;
+        }
+
+        .hand-hour {
+            width: 4px;
+            height: 80px;
+            margin-left: -2px;
+            margin-top: -80px;
+            animation: handRotate 12s linear infinite;
+        }
+
+        .hand-minute {
+            width: 2px;
+            height: 120px;
+            margin-left: -1px;
+            margin-top: -120px;
+            animation: handRotate 3s linear infinite;
+            background: linear-gradient(to top, rgba(150, 100, 200, 0.5), rgba(150, 100, 200, 0.1));
+        }
+
+        .hand-second {
+            width: 1px;
+            height: 140px;
+            margin-left: -0.5px;
+            margin-top: -140px;
+            animation: handRotate 0.8s linear infinite;
+            background: linear-gradient(to top, rgba(200, 80, 80, 0.4), transparent);
+        }
+
+        @keyframes handRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 中心光点 */
+        .center-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: rgba(150, 180, 220, 0.8);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px 10px rgba(100, 150, 200, 0.3), 0 0 60px 20px rgba(80, 40, 120, 0.2);
+            z-index: 1;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        /* 主内容区 */
+        .main-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        /* 对话区域 */
+        .dialogue-box {
+            max-width: 600px;
+            padding: 40px;
+            opacity: 0;
+            transition: opacity 2s ease-in;
+        }
+
+        .dialogue-box.visible {
+            opacity: 1;
+        }
+
+        .dialogue-text {
+            font-size: 1.4rem;
+            line-height: 2;
+            color: rgba(220, 220, 220, 0.9);
+            text-shadow: 0 0 10px rgba(100, 150, 200, 0.3);
+            letter-spacing: 2px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background: rgba(200, 200, 200, 0.7);
+            margin-left: 4px;
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* 输入区域 */
+        .input-section {
+            margin-top: 50px;
+            opacity: 0;
+            transition: opacity 1.5s ease-in 0.5s;
+        }
+
+        .input-section.visible {
+            opacity: 1;
+        }
+
+        .ct-label {
+            font-size: 1.2rem;
+            color: rgba(180, 180, 200, 0.8);
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+
+        .number-select {
+            background: rgba(10, 10, 20, 0.8);
+            border: 1px solid rgba(100, 120, 160, 0.4);
+            color: rgba(220, 220, 240, 0.9);
+            font-size: 1.5rem;
+            font-family: "Courier New", monospace;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            outline: none;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .number-select:hover {
+            border-color: rgba(120, 160, 220, 0.7);
+            box-shadow: 0 0 15px rgba(100, 150, 200, 0.2);
+        }
+
+        .number-select:focus {
+            border-color: rgba(150, 180, 240, 0.9);
+        }
+
+        .number-select option {
+            background: #0a0a14;
+            color: #d0d0e0;
+        }
+
+        /* 时间船 */
+        .time-ship {
+            margin-top: 40px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 1s ease;
+            pointer-events: none;
+        }
+
+        .time-ship.visible {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .ship-icon {
+            width: 120px;
+            height: 60px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .ship-body {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 30px;
+            background: linear-gradient(180deg, rgba(100, 150, 220, 0.6), rgba(60, 100, 180, 0.3));
+            border-radius: 40px 40px 10px 10px;
+            border: 1px solid rgba(150, 180, 240, 0.4);
+            box-shadow: 0 0 20px rgba(100, 150, 220, 0.3);
+            animation: shipFloat 3s ease-in-out infinite;
+        }
+
+        .ship-sail {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 40px solid rgba(150, 180, 220, 0.4);
+            animation: shipFloat 3s ease-in-out infinite 0.2s;
+        }
+
+        .ship-glow {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 20px;
+            background: radial-gradient(ellipse, rgba(100, 180, 255, 0.4), transparent);
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes shipFloat {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-8px); }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+        }
+
+        .ship-text {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: rgba(150, 180, 220, 0.8);
+            letter-spacing: 3px;
+            text-shadow: 0 0 8px rgba(100, 150, 220, 0.4);
+        }
+
+        /* 跳转特效层 */
+        .warp-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .warp-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .warp-vortex {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(100, 150, 255, 0.5), transparent);
+            box-shadow: 0 0 50px 20px rgba(100, 150, 255, 0.6);
+            animation: warpExpand 2s ease-out forwards;
+            opacity: 0;
+        }
+
+        .warp-overlay.active .warp-vortex {
+            opacity: 1;
+        }
+
+        @keyframes warpExpand {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            30% { opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(30); opacity: 0; }
+        }
+
+        .warp-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            color: rgba(200, 220, 255, 0.9);
+            letter-spacing: 6px;
+            opacity: 0;
+            text-shadow: 0 0 20px rgba(100, 150, 255, 0.8);
+            white-space: nowrap;
+        }
+
+        .warp-overlay.active .warp-text {
+            animation: textFade 2s ease-out forwards;
+        }
+
+        @keyframes textFade {
+            0% { opacity: 0; }
+            40% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* 粒子效果 */
+        .particle {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: rgba(200, 200, 255, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            animation: particleFloat linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
+        }
+
+        /* 提示文字 */
+        .hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: rgba(100, 100, 120, 0.5);
+            letter-spacing: 2px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <!-- 漩涡背景 -->
+    <div class="vortex-container">
+        <div class="vortex"></div>
+        <div class="vortex"></div>
+        <div class="vortex"></div>
+    </div>
+
+    <!-- 时间指针 -->
+    <div class="clock-hands">
+        <div class="hand hand-hour"></div>
+        <div class="hand hand-minute"></div>
+        <div class="hand hand-second"></div>
+    </div>
+
+    <!-- 中心光点 -->
+    <div class="center-glow"></div>
+
+    <!-- 粒子容器 -->
+    <div id="particles"></div>
+
+    <!-- 主内容 -->
+    <div class="main-content">
+        <div class="dialogue-box" id="dialogueBox">
+            <div class="dialogue-text" id="dialogueText"></div>
+        </div>
+
+        <div class="input-section" id="inputSection">
+            <div class="ct-label">Ct : <span id="ctDisplay">--</span></div>
+            <select class="number-select" id="numberSelect">
+                <option value="" disabled selected>--</option>
+            </select>
+        </div>
+
+        <div class="time-ship" id="timeShip">
+            <div class="ship-icon">
+                <div class="ship-sail"></div>
+                <div class="ship-body"></div>
+                <div class="ship-glow"></div>
+            </div>
+            <div class="ship-text">时间船</div>
+        </div>
+    </div>
+
+    <!-- 跳转特效 -->
+    <div class="warp-overlay" id="warpOverlay">
+        <div class="warp-vortex"></div>
+        <div class="warp-text">正在穿越时间漩涡...</div>
+    </div>
+
+    <div class="hint">TIME VORTEX INTERFACE v1.0</div>
+
+    <script>
+        // 生成粒子
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.animationDuration = (Math.random() * 8 + 5) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                particle.style.width = (Math.random() * 2 + 1) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // 填充数字选择器
+        const select = document.getElementById('numberSelect');
+        for (let i = 0; i <= 99; i++) {
+            const option = document.createElement('option');
+            option.value = i.toString().padStart(2, '0');
+            option.textContent = i.toString().padStart(2, '0');
+            select.appendChild(option);
+        }
+
+        // 打字机效果
+        const dialogue = "所以，这是你来这里第几次了？";
+        const dialogueText = document.getElementById('dialogueText');
+        const dialogueBox = document.getElementById('dialogueBox');
+        const inputSection = document.getElementById('inputSection');
+        let charIndex = 0;
+
+        function typeWriter() {
+            if (charIndex < dialogue.length) {
+                dialogueText.innerHTML = dialogue.substring(0, charIndex + 1) + '<span class="cursor"></span>';
+                charIndex++;
+                setTimeout(typeWriter, 120);
+            } else {
+                dialogueText.innerHTML = dialogue + '<span class="cursor"></span>';
+                setTimeout(() => {
+                    inputSection.classList.add('visible');
+                }, 500);
+            }
+        }
+
+        // 页面加载后启动
+        setTimeout(() => {
+            dialogueBox.classList.add('visible');
+            setTimeout(typeWriter, 800);
+        }, 500);
+
+        // 数字选择监听
+        const ctDisplay = document.getElementById('ctDisplay');
+        const timeShip = document.getElementById('timeShip');
+
+        select.addEventListener('change', function() {
+            const val = this.value;
+            ctDisplay.textContent = val;
+
+            if (val === '12') {
+                timeShip.classList.add('visible');
+            } else {
+                timeShip.classList.remove('visible');
+            }
+        });
+
+        // 时间船点击 - 跳转特效
+        const warpOverlay = document.getElementById('warpOverlay');
+
+        timeShip.addEventListener('click', function() {
+            // 加速漩涡
+            const vortexes = document.querySelectorAll('.vortex');
+            vortexes.forEach((v, i) => {
+                v.style.animationDuration = (0.5 + i * 0.2) + 's';
+            });
+
+            // 加速指针
+            const hands = document.querySelectorAll('.hand');
+            hands.forEach(h => {
+                h.style.animationDuration = '0.3s';
+            });
+
+            // 显示跳转特效
+            setTimeout(() => {
+                warpOverlay.classList.add('active');
+            }, 300);
+
+            // 跳转
+            setTimeout(() => {
+                window.location.href = 'https://ttt112132tttr.github.io/Xiushankejiguan/TimeTraveler.html';
+            }, 2500);
+        });
+    </script>
+</body>
+</html>
