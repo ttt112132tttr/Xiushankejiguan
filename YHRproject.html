@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>未知坐标</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #a855f7;
+            font-family: "Courier New", "SimSun", "Noto Serif SC", monospace;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+        }
+
+        .scene {
+            display: none;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .scene.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .typewriter {
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            line-height: 1.8;
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+            min-height: 60px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: #a855f7;
+            animation: blink 1s infinite;
+            vertical-align: text-bottom;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .hint {
+            font-size: 0.9rem;
+            color: #6b21a8;
+            opacity: 0.7;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"] {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #6b21a8;
+            color: #a855f7;
+            font-family: inherit;
+            font-size: 1.2rem;
+            padding: 10px 15px;
+            text-align: center;
+            width: 300px;
+            outline: none;
+            letter-spacing: 2px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-bottom-color: #a855f7;
+            box-shadow: 0 4px 6px -4px rgba(168, 85, 247, 0.3);
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid #6b21a8;
+            color: #a855f7;
+            padding: 12px 30px;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: rgba(168, 85, 247, 0.1);
+            border-color: #a855f7;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .document {
+            text-align: left;
+            border: 1px solid #4c1d95;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 30px rgba(76, 29, 149, 0.2);
+            max-height: 65vh;
+            overflow-y: auto;
+            line-height: 2;
+            font-size: 0.95rem;
+        }
+
+        .document h1, .document h2, .document h3 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            border-bottom: 1px solid #4c1d95;
+            padding-bottom: 15px;
+            color: #c084fc;
+        }
+
+        .document p {
+            margin-bottom: 15px;
+            text-indent: 2em;
+        }
+
+        .document blockquote {
+            margin: 20px 0;
+            padding-left: 20px;
+            border-left: 2px solid #6b21a8;
+            color: #c084fc;
+            font-style: italic;
+        }
+
+        .highlight {
+            color: #ef4444;
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+            font-weight: bold;
+        }
+
+        .confirm-text {
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+            margin: 20px 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .code-hint {
+            font-size: 1rem;
+            line-height: 1.8;
+            max-width: 600px;
+            text-align: left;
+            padding: 20px;
+            border-left: 2px solid #6b21a8;
+        }
+
+        .error-shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .fade-in {
+            animation: fadeIn 2s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.3) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.3;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 60%, rgba(0, 0, 0, 0.8) 100%);
+            pointer-events: none;
+            z-index: 998;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4c1d95;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="scanline"></div>
+    <div class="vignette"></div>
+
+    <div class="container">
+        <!-- 场景0：初始问题 -->
+        <div class="scene active" id="scene0">
+            <div class="typewriter" id="question"></div>
+            <div class="input-group">
+                <div class="hint">提示：输入地球</div>
+                <input type="text" id="firstInput" placeholder="..." autocomplete="off">
+            </div>
+        </div>
+
+        <!-- 场景1：文件1 -->
+        <div class="scene" id="scene1">
+            <div class="document" id="docContent">
+                <h2>养花人计划</h2>
+                
+                <p>2212年，断点猜想被正式推翻。</p>
+                
+                <p>不是因为它不够精巧。恰恰相反——它太精巧了。它用两个林夜冬的生命编织了一个完美的悖论闭环，精确地利用了貅的进食逻辑，在1992年那个节点上打了一个死结。理论上，这个死结应该永远卡在貅的喉咙里。</p>
+                
+                <p>但理论只是理论。貅还在吃。</p>
+                
+                <p>断点猜想建立在一个过于乐观的假设之上：貅会"停住"。它假设吞噬者面对逻辑矛盾时会陷入死锁，就像程序面对无法执行的指令时会停止运行。但时间不是程序。貅不是处理器。它不运算，它只是吃。它面对1992年的悖论时没有停住——它绕过去了。它把两个林夜冬一起吞掉，然后继续往前吃。矛盾没有卡住它的喉咙，矛盾只是让它噎了一下。</p>
+                
+                <p>2025年保住了。2212年保住了。但断点猜想的真正目标——让貅永远停在1992年——失败了。它还在吃，只是吃得慢了一些。照这个速度，它迟早会吃完所有可及的时间。</p>
+                
+                <p>MaSim公司内部为此爆发了激烈的争论。断点派的科学家主张继续在时间线上制造更多的悖论节点，用更多的"林夜冬"去阻塞貅的进食路径。但另一派的声音逐渐占据了上风——他们被称为"养花人"。</p>
+                
+                <p>养花人的核心论点只有一个：断点猜想的根基是错的。它从一开始就误解了时间的本质。</p>
+                
+                <h3>一、破与立：从"此在"发现"本真时间"</h3>
+                
+                <p>断点猜想默认了一个前提：时间线是固定的。一个人从出生到死亡，每一个节点都已写定，只是尚未被翻阅。从公元元年到公元9999年，每一年的位置、内容、因果次序，都像一条早已铺就的轨道。</p>
+                
+                <p>在这个框架下，貅的吞噬就是删除轨道上的路段。林夜冬的穿越就是在轨道上跳跃。悖论就是让貅咬到一个它无法删除的结。一切都是在"时间线"这个隐喻上操作。</p>
+                
+                <p>但养花人学派指出：这个隐喻本身就是问题所在。</p>
+                
+                <p>把时间想象成一条线，就必然把时间当成一种"外在的刻度"——可以被测量、可以被截断、可以被删除、可以被绕过的某种客体。在这种想象中，人站在时间之外看着时间，就像看着一条河从眼前流过，然后试图在河道的某处筑坝、改道、打桩。</p>
+                
+                <p>但如果人从来就不在时间之外呢？</p>
+                
+                <p>2212年的时间哲学，在貅的冲击下，被迫重新回到了一个更古老的源头——海德格尔。这位20世纪的哲学家在《存在与时间》中提出了一个革命性的发现：时间不是外在的刻度，而是人（"此在"）得以存在的根本结构。</p>
+                
+                <p>他称这种本源时间为"绽出的时间性"。"绽出"意味着"出离自身"。时间并非静态的三个"点"——过去、现在、未来——而是此在三种动态的"出位"状态。这三种状态不是先后排列的，而是相互渗透、构成一个统一的整体。</p>
+                
+                <p><span class="highlight">将来</span>，在海德格尔看来，是本真时间的优先维度。这里的"将来"不是尚未到来的"现在点"，不是日历上某个未来的日期。它是此在向其最本己的可能性开放、迎向自身的过程。一个人不是"等着"将来到来，而是在"去成为"中让将来发生。</p>
+                
+                <p><span class="highlight">曾在</span>，也不是已经消失的过去。当我们本真地迎向将来时，我们就能以回返的方式承接并承担起自身被抛的历史处境。海德格尔说："曾在以某种方式源自将来。"这完全颠倒了日常认知——是"将来"决定了我们如何看待和把握自己的"过去"。一个决定成为艺术家的人，会重新理解自己童年时那些无人注意的涂鸦；一个决定直面死亡的人，会把一生的散乱片段重新组织为一部只属于他自己的传记。将来不是跟在过去后面，将来照亮了过去。</p>
+                
+                <p><span class="highlight">当前</span>，则是当此在从"将来"和"曾在"的绽出统一中"到时"，当前才得以显现。它不是孤立的"现在"，不是钟表上的这一秒。它是让事物在场并与之遭遇的方式。当一个人全神贯注地面对眼前的这一刻——不是因为他在追逐即时享乐，而是因为他从将来带回了决断、从曾在带回了承担——这一刻才是真正意义上的"当前"。</p>
+                
+                <p>因此，海德格尔揭示了两种截然不同的时间体验。</p>
+                
+                <p>流俗时间，是由"现在"点组成的线性序列。它的本质是追逐当下，沉沦于日常琐事。人在其中体验到的是时钟测量的刻度，是"活在当下"的麻醉。而本真时间，是"将来-曾在-当前"的绽出统一体。它的本质是面向死亡，正视最本己的可能性。人在其中体验到的不是线，而是一种类似"乡愁"的情感结构——不是对过去的怀念，而是对"本真地存在"的深沉趋近。用海德格尔的话说："曾在着的将来从自身放出当前。"</p>
+                
+                <p>养花人学派从这里找到了破局的钥匙。</p>
+                
+                <p>时间线——那个被貅吞噬的、被断点猜想试图修补的"时间线"——只是流俗时间。它确实可以被吃，因为它从一开始就是外在的、被量化的、异化于人的存在本身的刻度。貅能吃掉刻度，因为它吃的就是流俗时间本身。它沿着ζ粒子浓度最高的节点移动，而ζ粒子能够扭曲时间之弦，恰恰是因为"时间之弦"本身就是流俗时间的结构。貅和时间机器，是同一个层面的产物。</p>
+                
+                <p>但绽出的时间性不同。绽出的时间性不是一条线，而是一个从将来出发、承载曾在、到时当前的动态结构。它不是外在的，而是此在的存在方式本身。你无法"吃掉"一个人迎向将来的决断。你无法"吞噬"一个人承担曾在的方式。你无法"消化"一个人让事物在当下到时的那个瞬间。</p>
+                
+                <p>因为这些东西不在"时间线"上。它们在存在里。</p>
+                
+                <p>这就是养花人计划的理论根基：断点猜想试图在时间线上制造悖论来挡住貅，但貅和时间线是同一个维度的东西，悖论只能延缓它，不能阻止它。真正的防线不在时间线上，而在绽出的时间性里。只有当人不再把自己理解为时间线上的一个点，而是把自己理解为一个从将来出发、承担曾在、到时当前的存在者时，貅才咬不到他。</p>
+                
+                <p>更直白地说：断点猜想打了一场在貅的地盘上的仗。养花人要把仗打到貅进不去的地方。</p>
+                
+                <h3>二、花与养花人</h3>
+                
+                <p>养花人计划的名字，来自克盈的一句话。</p>
+                
+                <p>在断点猜想被推翻后的那次内部会议上，两派争论了整整三天。断点派要求更多的实验体、更多的穿越、更多的悖论节点。克盈一直沉默，直到会议结束前，她站起来，说了唯一一句话：</p>
+                
+                <blockquote>"断点不是结，断点是被吞下去的东西。我们需要的不是更多的结，我们需要的是一颗种子。"</blockquote>
+                
+                <p>她说完就走了。三天后，她提交了一份计划草案，封面只有一行手写的字：<span class="highlight">养花人计划</span>。</p>
+                
+                <p>计划的核心设想是这样的：</p>
+                
+                <p>如果绽出的时间性——本真时间——是貅无法触及的维度，那么人类需要做的不是修补时间线，而是在时间线仍然存在的每一个节点上，培育那些能够"绽出地存在"的人。这些人不是在时间线上活着，而是在本真时间中存在。貅可以吃掉时间线上关于他们的刻度，但它永远无法吃掉他们"迎向将来"的那个动作本身。</p>
+                
+                <p>克盈将这些候选者称为"花"。</p>
+                
+                <p>花不是普通的人类。他们是MaSim公司在数十年基因筛查与心理评估中筛选出来的特殊个体。他们的基因条件足以支撑数百年的寿命，但更重要的是，他们的心理结构被评估为"具备绽出倾向"——能够在极长的时间跨度中始终保持对将来的开放、对曾在的承担、对当前的到时。在流俗时间中，大多数人的存在方式是"等着"：等着明天，等着退休，等着死亡，等着被貅吃掉。而花的存在方式是"去成为"：每一个时刻都是决断的时刻，每一段经历都是被将来照亮的曾在，每一个当下都是绽出的到时。</p>
+                
+                <p>养花人计划选定了四朵花。他们的性别记录为双性或无性——不是为了政治正确，而是因为"性别"本身是一种流俗时间的标记，而花不需要这种标记。他们在绽出的时间性中存在，不依赖任何外在的身份刻度。</p>
+                
+                <p>第一朵花，是MaSim公司指定的：<span class="highlight">夏维诗</span>。档案中只记载了一个代号：黄色的风信子。黄风信子的花语，在某个已经失传的古老传统中，是"与你相伴，我深感幸福"——但也有一层更隐秘的含义："你的幸福就是我的幸福，所以我可以为你而死。"夏维诗是四朵花中最核心的一朵，是养花人计划的轴心。她的基因序列中有一个极为罕见的变异：她的端粒不会缩短。不是修复能力强，而是根本不缩短。理论上，她是永生的。但永生不是她的价值所在。她的价值在于，她在七岁的心理评估中就表现出了一种被评估者称为"极致绽出倾向"的特质——她不是不怕死，她是从来不在"等待死亡"的状态中活着。她的每一个当下都是到时，每一个决断都是从将来出发的承担。她不是活在时间里，她是时间在她身上发生。</p>
+                
+                <p>其余三朵花，是克盈自己选的。</p>
+                
+                <p>第二朵：<span class="highlight">伍雨</span>，代号紫色的风信子。紫风信子的花语是"悲伤"——更精确地说是"请原谅我"。档案记载，伍雨在十二岁那年经历了一次濒死体验。她在那一刻不是恐惧，而是清晰地向后回望了自己的一生，然后向前看到了一个尚未存在但已经在向她走来的将来。从那以后，她的存在方式彻底改变了。克盈在筛选报告中只写了一行评语："她已经在那边站过了。她知道这不是全部。"</p>
+                
+                <p>第三朵：<span class="highlight">郁钦洋</span>，代号白色的风信子。白风信子的花语是"恬适"——不可言说的安静之爱。郁钦洋是四朵花中最沉默的一朵。她几乎不说话，但她的存在方式本身就是一种绽出。她在集体中从不占据位置，但所有人都能在她身上感受到一种奇怪的安宁。克盈的评语是："她不追逐现在。现在追逐她。"</p>
+                
+                <p>第四朵：<span class="highlight">甘眬</span>，代号黑色的风信子。黑风信子在古老的花语中没有固定的解释，只有一个模糊的注脚——"纪念"。甘眬是四朵花中唯一一个不是通过正常筛查渠道进入计划的。她是克盈在计划启动前三年亲自找到的。当时甘眬在南方一座滨海城市做着一份无人知晓的工作：她陪伴临终者。不是医生，不是护士，不是心理咨询师，只是陪伴。她坐在临终者的床边，握着他们的手，在他们的最后一刻到来时注视着他们的眼睛。克盈观察了她整整一年，然后在某个黄昏走到她面前，说了一句话："你知道你在做什么吗？"甘眬的回答是："我在接住他们。"</p>
+                
+                <p>克盈的评语只写了三个字："她到了。"</p>
+                
+                <p>四朵风信子，黄、紫、白、黑。克盈是养花人。</p>
+                
+                <h3>三、种花之处</h3>
+                
+                <p>养花人计划不依赖Vessel设备。这是克盈从一开始就划下的红线。</p>
+                
+                <p>"断点猜想用Vessel胶囊制造悖论，结果悖论被吃了。Vessel胶囊本身就是ζ粒子驱动的，ζ粒子就是貅的进食标记。你用貅的餐具去喂貅，它当然会吃下去。"</p>
+                
+                <p>她不允许任何一朵花进入Vessel胶囊。不允许任何一朵花接触γζ衍金晶。不允许任何一朵花被时间坐标标记。花的存在，必须完全脱离流俗时间的测量系统——不能被追踪、不能被定位、不能被锚定。只有这样，貅才找不到它们。不是物理上的找不到，而是存在论上的找不到：当一个人不在"时间线"上活着，貅用来扫描时间线的所有参数都对它失效。</p>
+                
+                <p>但花不能活在真空中。她们必须在时间线上占据某个位置——她们仍然需要时间线提供的物质基础：空气、水、食物、社会身份。这些都在时间线上，都可以被貅吃掉。</p>
+                
+                <p>克盈的解决方案是：把花种在貅已经吃过的地方。</p>
+                
+                <p>貅的进食路径是从2025年和2212年两头发力，向中间合拢。它吃过的时间段，不再对任何人开放——但只是"不再对观测者开放"。被吃掉的时间仍然存在，就像一本被胶水粘住的书页，字还在，纸张还在，但你翻不开。</p>
+                
+                <p>而养花人计划的核心技术突破，就是让花"翻开"那些被粘住的书页。不是用Vessel设备——那太粗糙了，ζ粒子只会吸引貅的注意。而是用绽出的时间性本身。当一朵花以绽出的方式存在时，她的"当前"不是流俗时间刻度上的现在，而是从将来和曾在的统一中到时的瞬间。这个瞬间不依赖时间线的线性顺序。它在存在论层面与任何时间坐标都是平权的。</p>
+                
+                <p>换句话说：流俗时间中的"1995年"和"2083年"是不同的刻度。但在绽出的时间性中，一个本真的决断发生在哪个刻度上，对它本身的存在方式没有影响。花不需要穿越时间线，她们只需要在自己的绽出结构中到时——而当她们到时的时候，她们就"在"那里了。</p>
+                
+                <p>貅吃掉了1992年到2025年之间的大部分时间。这些时间段对流俗时间中的观测者是不可达的。但花可以在这些被吃掉的时间段中"到时"。因为她们不是通过时间坐标定位自己，而是通过绽出的存在方式"抵达"自己。</p>
+                
+                <p>克盈在计划档案中写道："貅粘住了书页。花不是翻开书页的人。花是长在书页上的。"</p>
+                
+                <h3>四、夏维诗</h3>
+                
+                <p>四朵花中，夏维诗是最重要的。不是因为她永生——虽然这确实是计划的关键条件。而是因为她的绽出结构是四朵花中唯一一个覆盖了全部目标时间区间的。</p>
+                
+                <p>养花人计划的目标时间区间，是从1992年到9999年。这是时间线固定框架内的全部可及范围。计划需要在每一个关键节点上都有一朵花在其绽出的当前中"到时"，从而在存在论层面形成一个完整的绽出网络。这个网络不是时间线上的因果链——因果链可以被貅吃掉。这个网络是绽出的到时结构之间的呼应，是"曾在着的将来从自身放出当前"的共振。</p>
+                
+                <p>夏维诗是这张网的主丝。她的永生意味着她的绽出结构可以覆盖整个时间区间。她不需要跳跃，不需要穿越，不需要悖论。她只需要存在。以绽出的方式存在。每一个到时的瞬间，都是她"去成为"的证明。而这恰好是貅咬不到的东西。</p>
+                
+                <p>其余三朵花——伍雨、郁钦洋、甘眬——是网上的节点。她们的绽出结构各自覆盖不同的时间片段，与夏维诗的主丝交织在一起，在时间线的每一个薄弱处加固。当貅试图吞噬某一段区间时，它会发现那段区间不是空的——不是有时间线内容，而是有绽出的到时结构在。它咬下去的时候咬不到刻度，只能咬到"存在"本身。而存在不是它可以消化的东西。</p>
+                
+                <p>克盈在给总部的最后一份报告中写道：</p>
+                
+                <blockquote>
+                    "断点猜想试图用死结挡住貅。死结是死的，貅是活的。活的会绕过死的。<br><br>
+                    我们换一个方式。我们不给它结。我们给它一张网。网不是用来挡它的，网是用来让它咬不到的。它咬过来的时候，网不在那里。它咬过去之后，网还在。<br><br>
+                    夏维诗不会死。不是因为她永生——永生只是身体的属性。她不死的真正含义是：她的绽出结构永远不会被貅吞没。因为她的'将来'从来不在时间线上等着被吃。她的将来在她每一个到时的决断里。貅能吃掉日子，吃不掉决断。"
+                </blockquote>
+                
+                <h3>尾声</h3>
+                
+                <p>克盈最终没有看到养花人计划的结果。</p>
+                
+                <p>她太老了。两百多年的守望，加上计划筹备的这些年，她的身体已经到了极限。在计划正式启动的当天，她坐在监控台前——不是Vessel设备的监控台，而是一台普通的生命体征监测仪，屏幕上显示着四朵花的实时状态。四朵风信子，黄、紫、白、黑，分别安顿在四个不同的时间片段中。</p>
+                
+                <p>她在最后一页日志上写道：</p>
+                
+                <blockquote>
+                    "我第一次送夜冬回去的时候，我以为我在造一条河。从过去流到现在，因果到头就完了。后来我才知道，那不是河，那是一根线。线会断，会被吃掉。<br><br>
+                    现在我种了花。花不是线。花是从土里长出来的，根往下扎，花往上开，开了谢，谢了再开。貅能吃线，吃不了根。因为根不在线上。根在土里。<br><br>
+                    我就是土。我把自己铺成土，让她们长。"
+                </blockquote>
+                
+                <p>她合上日志。监控仪上，夏维诗的信号灯闪了一下——那是绽出结构到时的标记，不是时间坐标，只是一个存在论事件的记录。</p>
+                
+                <p>克盈闭上了眼睛。</p>
+                
+                <p>花开了。</p>
+            </div>
+            <button class="btn" id="readDoneBtn">阅读完毕</button>
+        </div>
+
+        <!-- 场景2：确认 -->
+        <div class="scene" id="scene2">
+            <div class="confirm-text" id="confirmText"></div>
+            <div class="button-group">
+                <button class="btn" id="backBtn">返回观看</button>
+                <button class="btn" id="continueBtn">继续</button>
+            </div>
+        </div>
+
+        <!-- 场景3：代码提示 -->
+        <div class="scene" id="scene3">
+            <div class="code-hint" id="codeHint"></div>
+            <div class="input-group">
+                <input type="text" id="codeInput" placeholder="输入代码..." autocomplete="off">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scenes = {
+            0: document.getElementById('scene0'),
+            1: document.getElementById('scene1'),
+            2: document.getElementById('scene2'),
+            3: document.getElementById('scene3')
+        };
+
+        let currentScene = 0;
+
+        function switchScene(to) {
+            scenes[currentScene].classList.remove('active');
+            setTimeout(() => {
+                currentScene = to;
+                scenes[to].classList.add('active');
+                if (to === 1) {
+                    document.getElementById('docContent').classList.add('fade-in');
+                }
+            }, 800);
+        }
+
+        function typeWriter(element, text, speed = 80, callback) {
+            element.innerHTML = '';
+            let i = 0;
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor';
+            element.appendChild(cursor);
+            
+            function type() {
+                if (i < text.length) {
+                    const span = document.createElement('span');
+                    span.textContent = text.charAt(i);
+                    element.insertBefore(span, cursor);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    cursor.remove();
+                    if (callback) callback();
+                }
+            }
+            type();
+        }
+
+        // 初始化问题
+        window.onload = () => {
+            const questionEl = document.getElementById('question');
+            typeWriter(questionEl, '所以，我们现在在哪里？', 100, () => {
+                document.getElementById('firstInput').focus();
+            });
+        };
+
+        // 第一阶段输入
+        const firstInput = document.getElementById('firstInput');
+        firstInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const val = firstInput.value.trim();
+                if (val === '地球') {
+                    switchScene(1);
+                } else if (val === '梦境') {
+                    window.location.href = 'https://ttt112132tttr.github.io/Xiushankejiguan/DreamPG.html';
+                } else {
+                    firstInput.classList.add('error-shake');
+                    setTimeout(() => firstInput.classList.remove('error-shake'), 500);
+                    firstInput.value = '';
+                    firstInput.placeholder = '不是这里...';
+                }
+            }
+        });
+
+        // 阅读完毕
+        document.getElementById('readDoneBtn').addEventListener('click', () => {
+            switchScene(2);
+            setTimeout(() => {
+                const confirmEl = document.getElementById('confirmText');
+                typeWriter(confirmEl, '你确定吗？', 120);
+            }, 1000);
+        });
+
+        // 返回观看
+        document.getElementById('backBtn').addEventListener('click', () => {
+            switchScene(1);
+        });
+
+        // 继续
+        document.getElementById('continueBtn').addEventListener('click', () => {
+            switchScene(3);
+            setTimeout(() => {
+                const hintEl = document.getElementById('codeHint');
+                const text = '还记得最开始，休山科技馆的那串代码吗？就是你死活也找不到账号和密码的那个购票通道，但是我记得在拾野论坛有人提到过。';
+                typeWriter(hintEl, text, 60, () => {
+                    document.getElementById('codeInput').focus();
+                });
+            }, 1000);
+        });
+
+        // 代码输入
+        const codeInput = document.getElementById('codeInput');
+        codeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const val = codeInput.value.trim();
+                if (val === 'Yh7I-w510-cu2H') {
+                    codeInput.style.borderBottomColor = '#22c55e';
+                    codeInput.style.color = '#22c55e';
+                    setTimeout(() => {
+                        window.location.href = 'https://ttt112132tttr.github.io/Xiushankejiguan/XiushanEnter.html';
+                    }, 800);
+                } else {
+                    codeInput.classList.add('error-shake');
+                    setTimeout(() => codeInput.classList.remove('error-shake'), 500);
+                    codeInput.value = '';
+                    codeInput.placeholder = '代码不正确...';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
