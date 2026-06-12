@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaSim | 2212</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --neon: #00d4ff;
+            --neon-dim: rgba(0, 212, 255, 0.15);
+            --deep: #050508;
+            --glass: rgba(10, 12, 20, 0.75);
+            --glass-border: rgba(0, 212, 255, 0.12);
+            --text: #e0e6ed;
+            --text-dim: #6b7280;
+            --accent: #a855f7;
+            --alert: #ff0033;
+            --alert-glow: rgba(255, 0, 51, 0.6);
+        }
+
+        body {
+            background: var(--deep);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background Image */
+        .bg-image {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('b1b8402cee0b48f58be6b8fc8f4c73c4.jpeg~tplv-a9rns2rl98-image_raw_b.png') center/cover no-repeat;
+            z-index: -2;
+            opacity: 0.6;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at center, rgba(5,5,16,0.4) 0%, rgba(5,5,16,0.85) 100%);
+            z-index: -1;
+        }
+
+        /* Subtle scanlines */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,212,255,0.015) 3px, rgba(0,212,255,0.015) 6px);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* ===== ROTATING CIRCLES ===== */
+        .orbit-ring {
+            position: fixed;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 212, 255, 0.08);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orbit-ring::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: 50%;
+            width: 6px; height: 6px;
+            background: var(--neon);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--neon), 0 0 24px var(--neon);
+            transform: translateX(-50%);
+        }
+
+        .ring-1 {
+            width: 200px; height: 200px;
+            top: 15%; left: 8%;
+            animation: rotate 20s linear infinite;
+        }
+
+        .ring-2 {
+            width: 320px; height: 320px;
+            bottom: 20%; right: 5%;
+            border-color: rgba(168, 85, 247, 0.08);
+            animation: rotate 35s linear infinite reverse;
+        }
+
+        .ring-2::before {
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent), 0 0 24px var(--accent);
+            width: 4px; height: 4px;
+        }
+
+        .ring-3 {
+            width: 150px; height: 150px;
+            top: 50%; right: 15%;
+            border-color: rgba(255, 0, 51, 0.06);
+            animation: rotate 15s linear infinite;
+        }
+
+        .ring-3::before {
+            background: var(--alert);
+            box-shadow: 0 0 10px var(--alert), 0 0 20px var(--alert);
+            width: 3px; height: 3px;
+        }
+
+        .ring-4 {
+            width: 500px; height: 500px;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-color: rgba(0, 212, 255, 0.04);
+            animation: rotate 60s linear infinite reverse;
+        }
+
+        .ring-4::before {
+            display: none;
+        }
+
+        .ring-5 {
+            width: 80px; height: 80px;
+            bottom: 35%; left: 12%;
+            border-color: rgba(0, 212, 255, 0.1);
+            animation: rotate 10s linear infinite;
+        }
+
+        .ring-5::before {
+            width: 5px; height: 5px;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Logo */
+        .logo-container {
+            position: fixed;
+            top: 40px;
+            left: 50px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            position: relative;
+        }
+
+        .logo-icon svg {
+            width: 100%; height: 100%;
+            filter: drop-shadow(0 0 12px rgba(0,212,255,0.4));
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-main {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 6px;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .logo-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 4px;
+            color: var(--neon);
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        /* Top right info */
+        .top-info {
+            position: fixed;
+            top: 40px;
+            right: 50px;
+            z-index: 100;
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            line-height: 1.8;
+        }
+
+        .top-info span { color: var(--neon); }
+
+        /* Main Content */
+        main {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 120px 40px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: 12px;
+            color: var(--text);
+            margin-bottom: 16px;
+            opacity: 0.9;
+        }
+
+        .hero p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            letter-spacing: 4px;
+        }
+
+        /* Article Cards */
+        .articles {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            max-width: 1000px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .article-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: block;
+        }
+
+        .article-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .article-card:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px var(--neon-dim);
+        }
+
+        .article-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--neon);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            opacity: 0.7;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .card-arrow {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            width: 24px;
+            height: 24px;
+            opacity: 0;
+            transition: all 0.3s;
+            color: var(--neon);
+        }
+
+        .article-card:hover .card-arrow {
+            opacity: 1;
+            transform: translateX(4px);
+        }
+
+        /* ===== BOTTOM ALERT LINE ===== */
+        .bottom-alert {
+            position: fixed;
+            bottom: 60px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            color: var(--alert);
+            text-shadow: 0 0 10px var(--alert-glow), 0 0 30px var(--alert-glow);
+            padding: 12px;
+            background: rgba(255, 0, 51, 0.05);
+            border-top: 1px solid rgba(255, 0, 51, 0.2);
+            border-bottom: 1px solid rgba(255, 0, 51, 0.2);
+        }
+
+        .blink-date {
+            animation: blink-red 1s ease-in-out infinite;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        @keyframes blink-red {
+            0%, 100% { 
+                opacity: 1; 
+                text-shadow: 0 0 10px var(--alert-glow), 0 0 30px var(--alert-glow), 0 0 60px var(--alert-glow);
+            }
+            50% { 
+                opacity: 0.3; 
+                text-shadow: 0 0 5px var(--alert-glow);
+            }
+        }
+
+        /* Footer */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 12px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(5, 5, 16, 0.8);
+            backdrop-filter: blur(10px);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            z-index: 100;
+        }
+
+        .eco-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .eco-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--neon);
+            box-shadow: 0 0 8px var(--neon);
+            animation: breathe 3s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: var(--neon);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.3;
+            animation: float 15s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            20% { opacity: 0.3; }
+            80% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .articles { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2rem; }
+            .logo-container { left: 20px; top: 20px; }
+            .top-info { right: 20px; top: 20px; }
+            .bottom-alert { font-size: 0.7rem; bottom: 50px; }
+            .blink-date { font-size: 0.85rem; }
+            footer { padding: 10px 20px; }
+            .orbit-ring { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+
+    <!-- Rotating circles -->
+    <div class="orbit-ring ring-1"></div>
+    <div class="orbit-ring ring-2"></div>
+    <div class="orbit-ring ring-3"></div>
+    <div class="orbit-ring ring-4"></div>
+    <div class="orbit-ring ring-5"></div>
+
+    <!-- Floating particles -->
+    <div class="particle" style="left: 10%; bottom: 0; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 30%; bottom: 0; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 50%; bottom: 0; animation-delay: 6s;"></div>
+    <div class="particle" style="left: 70%; bottom: 0; animation-delay: 9s;"></div>
+    <div class="particle" style="left: 90%; bottom: 0; animation-delay: 12s;"></div>
+
+    <a href="MaSim.html" class="logo-container">
+        <div class="logo-icon">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24 4L4 14V34L24 44L44 34V14L24 4Z" stroke="url(#grad1)" stroke-width="1.5" fill="none"/>
+                <path d="M24 12L12 18V30L24 36L36 30V18L24 12Z" stroke="url(#grad1)" stroke-width="1" fill="none" opacity="0.6"/>
+                <circle cx="24" cy="24" r="3" fill="url(#grad1)" opacity="0.8"/>
+                <path d="M24 8V16M24 32V40M8 24H16M32 24H40" stroke="url(#grad1)" stroke-width="0.5" opacity="0.4"/>
+                <defs>
+                    <linearGradient id="grad1" x1="0" y1="0" x2="48" y2="48">
+                        <stop offset="0%" stop-color="#00d4ff"/>
+                        <stop offset="100%" stop-color="#a855f7"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        <div class="logo-text">
+            <div class="logo-main">MaSim</div>
+            <div class="logo-sub">EST. 2212</div>
+        </div>
+    </a>
+
+    <div class="top-info">
+        <div>SYS.<span>ONLINE</span></div>
+        <div>ECO.SIM <span>v9.2</span></div>
+        <div>2212.06.12</div>
+    </div>
+
+    <main>
+        <div class="hero">
+            <h1>ARCHIVE</h1>
+            <p>ECOSYSTEM SIMULATION FRAMEWORK // DATA REPOSITORY</p>
+        </div>
+
+        <div class="articles">
+            <a href="article_vessel_intro.html" class="article-card">
+                <div class="card-id">DOC.001 / CLASSIFIED</div>
+                <div class="card-title">Vessel介绍</div>
+                <div class="card-desc">基于ζ粒子特性研发的时间传送装置，核心为时间震荡干预。全球多节点部署，只能回溯不可前瞻。</div>
+                <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+
+            <a href="article_xiu.html" class="article-card">
+                <div class="card-id">DOC.002 / MYTHOLOGY</div>
+                <div class="card-title">上古异兽·貅</div>
+                <div class="card-desc">诸水之阴，有兽焉，形如玄豹而长尾，首生独角。能噬空吞宙，囊括八荒。乃幽澜之主，众溟之司。</div>
+                <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+
+            <a href="article_jian.html" class="article-card">
+                <div class="card-id">DOC.003 / HISTORICAL</div>
+                <div class="card-title">间</div>
+                <div class="card-desc">问间记·月鸣游。苍溟浮霭，灵墟隐幽。渤海东隅，有邑名麓睢，常蒙重雾。一水经其地，号曰冥河。</div>
+                <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+
+            <a href="article_vessel_plan.html" class="article-card">
+                <div class="card-id">DOC.004 / TOP SECRET</div>
+                <div class="card-title">Vessel计划</div>
+                <div class="card-desc">2212年4月2日，MaSim公司启动绝密实验。派遣实验体前往最早时间点，验证时间循环可行性。</div>
+                <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </main>
+
+    <!-- Bottom Alert Line -->
+    <div class="bottom-alert">
+        预定行程 → 选择你想去的日期 → 点击确定 <span class="blink-date">2212.4.2</span>
+    </div>
+
+    <footer>
+        <div class="eco-indicator">
+            <div class="eco-dot"></div>
+            <span>ECOSYSTEM SIMULATION ACTIVE</span>
+        </div>
+        <div>MaSim Corporation // 2212</div>
+    </footer>
+</body>
+</html>

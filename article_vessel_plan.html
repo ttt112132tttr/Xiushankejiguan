@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vessel计划 | MaSim</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --neon: #00d4ff;
+            --deep: #050508;
+            --glass: rgba(10, 12, 20, 0.85);
+            --glass-border: rgba(0, 212, 255, 0.12);
+            --text: #e0e6ed;
+            --text-dim: #6b7280;
+            --red: #ff3366;
+        }
+        body {
+            background: var(--deep);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+        .bg-image {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('b1b8402cee0b48f58be6b8fc8f4c73c4.jpeg~tplv-a9rns2rl98-image_raw_b.png') center/cover no-repeat;
+            z-index: -2;
+            opacity: 0.4;
+        }
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(5,5,16,0.88);
+            z-index: -1;
+        }
+        .logo-container {
+            position: fixed;
+            top: 30px;
+            left: 40px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .logo-icon { width: 36px; height: 36px; }
+        .logo-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 0 8px rgba(0,212,255,0.3)); }
+        .logo-main {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: var(--text);
+        }
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            z-index: 100;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--neon);
+            text-decoration: none;
+            border: 1px solid var(--glass-border);
+            padding: 8px 20px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            letter-spacing: 2px;
+        }
+        .back-btn:hover {
+            border-color: var(--neon);
+            box-shadow: 0 0 20px rgba(0,212,255,0.2);
+        }
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 40px 80px;
+        }
+        .article-header {
+            margin-bottom: 60px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .doc-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--red);
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+        }
+        .meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--neon);
+            margin: 40px 0 16px;
+            letter-spacing: 2px;
+        }
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 30px 0 12px;
+            letter-spacing: 1px;
+        }
+        p {
+            margin-bottom: 20px;
+            text-align: justify;
+            font-size: 0.95rem;
+            line-height: 2;
+        }
+        .quote-box {
+            border-left: 2px solid var(--neon);
+            padding: 20px 24px;
+            margin: 30px 0;
+            background: rgba(0,212,255,0.03);
+            font-style: italic;
+        }
+        .quote-box p {
+            text-indent: 0;
+            margin-bottom: 0;
+        }
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 60px;
+        }
+        @media (max-width: 768px) {
+            main { padding: 100px 20px 60px; }
+            .logo-container { left: 20px; top: 20px; }
+            .back-btn { right: 20px; top: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+
+    <a href="MaSim.html" class="logo-container">
+        <div class="logo-icon">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24 4L4 14V34L24 44L44 34V14L24 4Z" stroke="url(#grad1)" stroke-width="1.5" fill="none"/>
+                <path d="M24 12L12 18V30L24 36L36 30V18L24 12Z" stroke="url(#grad1)" stroke-width="1" fill="none" opacity="0.6"/>
+                <circle cx="24" cy="24" r="3" fill="url(#grad1)" opacity="0.8"/>
+                <defs>
+                    <linearGradient id="grad1" x1="0" y1="0" x2="48" y2="48">
+                        <stop offset="0%" stop-color="#00d4ff"/>
+                        <stop offset="100%" stop-color="#a855f7"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        <div class="logo-main">MaSim</div>
+    </a>
+
+    <a href="MaSim.html" class="back-btn">← RETURN</a>
+
+    <main>
+        <div class="article-header">
+            <div class="doc-id">DOC.004 / TOP SECRET // VESSEL PROJECT DOSSIER</div>
+            <h1>Vessel计划</h1>
+            <div class="meta">ARCHIVED 2212.04.02 // CLEARANCE: LEVEL 5</div>
+        </div>
+
+        <p>2212年4月2日，MaSim公司启动了一项名为"Vessel计划"的绝密实验。该计划的核心目标，是派遣实验体前往Vessel胶囊目前所能抵达的最早时间点，并令其一直存活至2212年，以此验证时间循环的可行性，挑战单向回溯的时间壁垒。</p>
+
+        <h2>计划背景</h2>
+        <p>Vessel胶囊自问世以来，始终面临一个无法突破的限制：只能回到过去，无法去往未来。无论ζ粒子场如何调制，任何指向未来的传送指令都会发生强制折返，将目标送往对称的过去坐标。</p>
+        <p>这一现象被MaSim内部称为"时间非对称壁垒"。理论部门提出了一个假说：未来之所以不可达，或许并非技术缺陷，而是因为尚未被观测者的时间线所"锚定"。如果能够从过去向未来建立一条连续、不可中断的因果链，或许就能在时间长河中钉入一个参照点，从而证明双向传送的可能性。</p>
+        <p>基于此假说，Vessel计划正式立项。</p>
+
+        <h2>实验体的筛选</h2>
+        <p>计划的首要任务，是确定合适的实验体。</p>
+        <p>Vessel胶囊当时所能抵达的最早时间点，经多次校准后确定为1992年。这意味着实验体需要跨越二百二十年的时间，才能活着抵达2212年。</p>
+        <p>2212年的人均寿命虽已大幅延长——男性平均422.24岁，女性平均425.97岁——但这项成果是在22世纪初才逐步实现的。1992年的人类平均寿命尚不足八十岁，即使实验体具备基因优势，二百二十年仍是一个充满不确定性的跨度。</p>
+        <p>同时，Vessel胶囊一次仅能传送一人。这意味着实验体必须独自抵达1992年，以婴儿之身进入一个完全陌生的时代，并被当地社会合法收容。</p>
+        <p>筛选条件极为严苛。MaSim公司通过基因筛查数据库，在全国范围内秘密检索，最终锁定了一名男性婴儿：</p>
+        <p><strong>林夜冬</strong>，出生日期2212年3月，携带一种极为罕见的SIRT6基因变异体，DNA损伤修复能力超常，氧化应激耐受性显著优于普通人群。理论寿命上限评估为常规人口的数倍。其父母信息在档案中被标注为"不详"，实则为公司刻意隐去，以便后续操作。</p>
+        <p>林夜冬被判定为具备跨越两百年以上寿命门槛的生物学潜质。MaSim公司以"孤儿领养"的名义，将其从出生机构中秘密转移至实验部门。</p>
+
+        <h2>主理人的决断</h2>
+        <p>婴儿无法独自在1992年生存。必须有人接住他。</p>
+        <p>Vessel计划的主理人<strong>克盈</strong>，MaSim公司高级项目主管，全权负责计划的设计与执行。在最初的方案论证中，曾考虑过多种方案：将婴儿与看护者绑定传送、寻找公元纪年时代的长寿者就地抚养、甚至尝试以冷冻休眠技术让婴儿跨越时间——均因技术限制或不确定性过高而被否决。</p>
+        <p>最终的方案，是克盈自己提出的。</p>
+        <p>她将亲自前往1992年，在目标地点就近物色一个普通人，说服或操控此人收养林夜冬。</p>
+        
+        <div class="quote-box">
+            <p>"我们不能从2212年派一个随行人员过去，那就只剩一个办法——我去。我在1992年找一个路人。只要这个人身世简单、没有牵挂，我就能让他接住孩子。一个普通人，比任何精心挑选的特工都更不引人注目。"</p>
+        </div>
+
+        <p>公司评估了这一方案的风险：克盈将是唯一一个知道全部计划的人。她若失败，计划便告终结。但她的判断被认可了——在无法携带增援的情况下，就地取材，确实是唯一解。</p>
+
+        <h2>传送执行</h2>
+        <h3>第一次传送：2212年4月2日凌晨</h3>
+        <p><strong>对象：克盈。</strong></p>
+        <p>Vessel胶囊在地下实验室启动。坐标设定：1992年1月1日，大云市休山大酒店负一层。</p>
+        <p>克盈携带伪造的1992年身份文件与一笔当时币值合理的现金，踏入胶囊舱体。ζ粒子场攀升至预定能级。她从2212年消失。</p>
+        <p>追踪器显示：传送成功。克盈于1992年1月1日抵达目标城市。她的身份文件显示她是一名因工作调动迁居此地的公司职员，三十余岁，单身。</p>
+        <p>她没有浪费时间。抵达后第一周，她租下一处住所，开始观察周边的社会环境，寻找合适的目标人物。</p>
+
+        <h3>第二次传送：2212年4月2日凌晨，第一次传送完成后三十七分钟</h3>
+        <p><strong>对象：林夜冬。</strong></p>
+        <p>婴儿被安置于胶囊内的恒温保育舱中，独自进入传送。坐标设定：1992年1月9日，大云市休山大酒店负一层。</p>
+        <p>ζ粒子再次激荡。林夜冬从2212年消失。</p>
+        <p>追踪器显示：传送成功。林夜冬于1992年1月9日清晨出现在目标地点，生命体征正常。</p>
+
+        <h2>路人的选择</h2>
+        <p>在第一次传送与第二次传送之间的八天里，克盈做了唯一一件至关重要的事：找到了一个人。</p>
+        <p>这个人叫<strong>秦鹏生</strong>。</p>
+        <p>时年三十一岁，本地人，父母早亡，无兄弟姐妹，未婚，无子女。在一家国营工厂做仓库管理员，住工厂分配的单身宿舍，人际关系极为简单——同事评价他"老实，话少，不怎么和人往来"。</p>
+        <p>克盈在工厂附近的一家面馆偶遇了他。她以"刚调到本地、人生地不熟"为由与他搭话。秦鹏生不善言辞，但对这个彬彬有礼的陌生女人没有排斥。之后的几天里，克盈又"恰好"遇见了他两次，每次只是简单寒暄，没有提出任何请求。</p>
+        <p>她在建立信任。虽然时间极短，但足够了。</p>
+        <p>1月9日清晨，克盈拨通了秦鹏生宿舍的公用电话。</p>
+        
+        <div class="quote-box">
+            <p>"秦先生，抱歉这么早打扰您。我在公园晨跑，长椅上有个婴儿。我不知道该怎么办。您能来一趟吗？"</p>
+        </div>
+
+        <p>秦鹏生来了。</p>
+        <p>他看见长椅上的襁褓，看见站在一旁神色焦急的克盈，犹豫了很久。克盈没有催促。她只是轻声说了一句："这么冷的天，放在这里不行。"</p>
+        <p>秦鹏生脱下了自己的外套，裹住了婴儿。</p>
+        <p>此后的事情，按部就班：报警、登记、表示愿意暂时照看。克盈以"目击者"身份配合做完笔录后，便从秦鹏生的生活中悄然淡出。她搬离了最初租住的住所，迁往相邻城市，以另一个身份安顿下来，开始她长达二百二十年的远程守望。</p>
+        <p>而秦鹏生，一个再普通不过的路人，从此成了林夜冬的养父。户籍登记中，男婴登记为"林夜冬"，与秦鹏生的关系为"收养"。</p>
+    </main>
+
+    <footer>MaSim Corporation // ARCHIVE 2212</footer>
+</body>
+</html>

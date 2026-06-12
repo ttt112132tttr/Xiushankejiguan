@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vessel介绍 | MaSim</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --neon: #00d4ff;
+            --deep: #050508;
+            --glass: rgba(10, 12, 20, 0.85);
+            --glass-border: rgba(0, 212, 255, 0.12);
+            --text: #e0e6ed;
+            --text-dim: #6b7280;
+        }
+        body {
+            background: var(--deep);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+        .bg-image {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('b1b8402cee0b48f58be6b8fc8f4c73c4.jpeg~tplv-a9rns2rl98-image_raw_b.png') center/cover no-repeat;
+            z-index: -2;
+            opacity: 0.4;
+        }
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(5,5,16,0.88);
+            z-index: -1;
+        }
+        .logo-container {
+            position: fixed;
+            top: 30px;
+            left: 40px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .logo-icon { width: 36px; height: 36px; }
+        .logo-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 0 8px rgba(0,212,255,0.3)); }
+        .logo-main {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: var(--text);
+        }
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            z-index: 100;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--neon);
+            text-decoration: none;
+            border: 1px solid var(--glass-border);
+            padding: 8px 20px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            letter-spacing: 2px;
+        }
+        .back-btn:hover {
+            border-color: var(--neon);
+            box-shadow: 0 0 20px rgba(0,212,255,0.2);
+        }
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 40px 80px;
+        }
+        .article-header {
+            margin-bottom: 60px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .doc-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--neon);
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            opacity: 0.7;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+        }
+        .meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--neon);
+            margin: 40px 0 16px;
+            letter-spacing: 2px;
+        }
+        p {
+            margin-bottom: 20px;
+            text-align: justify;
+            font-size: 0.95rem;
+            line-height: 2;
+        }
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 60px;
+        }
+        @media (max-width: 768px) {
+            main { padding: 100px 20px 60px; }
+            .logo-container { left: 20px; top: 20px; }
+            .back-btn { right: 20px; top: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+
+    <a href="MaSim.html" class="logo-container">
+        <div class="logo-icon">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24 4L4 14V34L24 44L44 34V14L24 4Z" stroke="url(#grad1)" stroke-width="1.5" fill="none"/>
+                <path d="M24 12L12 18V30L24 36L36 30V18L24 12Z" stroke="url(#grad1)" stroke-width="1" fill="none" opacity="0.6"/>
+                <circle cx="24" cy="24" r="3" fill="url(#grad1)" opacity="0.8"/>
+                <defs>
+                    <linearGradient id="grad1" x1="0" y1="0" x2="48" y2="48">
+                        <stop offset="0%" stop-color="#00d4ff"/>
+                        <stop offset="100%" stop-color="#a855f7"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        <div class="logo-main">MaSim</div>
+    </a>
+
+    <a href="MaSim.html" class="back-btn">← RETURN</a>
+
+    <main>
+        <div class="article-header">
+            <div class="doc-id">DOC.001 / CLASSIFIED // VESSEL TECHNICAL BRIEF</div>
+            <h1>Vessel介绍</h1>
+            <div class="meta">ARCHIVED 2212.04.02 // AUTHOR: MaSim R&D</div>
+        </div>
+
+        <p>Vessel胶囊是本公司基于ζ粒子特性研发的时间传送装置，其核心不再是对空间的直接折叠，而是一种更为精巧的时间震荡干预。目前，我们已在全球多个关键节点完成部署，包括斐济、东京、新加坡、伦敦、休斯顿、洛杉矶以及大云市等地，每一处安放的Vessel装置都经过严格的ζ粒子场校准，确保时间传送的稳定与可重复。</p>
+
+        <p>有关其运作机理，需要从ζ粒子的本质说起。长久以来外界误以为ζ粒子可以"复制空间"，事实上，这种复制能力并非源于粒子本身对空间的拓印，而是因为ζ粒子能够扭曲空间中的基本弦。当这些构成时空经纬的弦受到扰动时，便会在局部引发一种被称为"时间震荡"的波动。所谓的"空间复制"，实质上是在极短暂的时间差内，将同一空间的不同时间切片并置在一起。也就是说，你进入的那个"复制房间"，其实是数秒、数分钟乃至更久之前或之后的同一个房间，因此在细节上必然与原空间有些许不同——或许桌上水杯的位置偏移了几毫米，或许墙上的钟表指针微微滞后，甚至空气里飘浮的尘埃都凝固着另一个瞬间的排列。这种不同，恰恰证明了我们跨越的并非平行空间，而是同一条时间线上的邻近时刻。</p>
+
+        <p>进一步观察发现，当ζ粒子的密度在局部急剧升高、形成大量出没的状态时，其影响就不再局限于静态的时间切片，而是足以推动整个局部时空向过去或未来整体偏移。实验表明，通过精准调制ζ粒子场的能级与相位，确实能够实现时间的"回退"与"快进"——也就是说，从原理上，Vessel胶囊应当是一台能够双向航行的时间机器。</p>
+
+        <p>然而，所有实际运行数据都指向一个令人困惑的事实：Vessel胶囊只能回到过去，无法去往未来。</p>
+
+        <p>无论我们如何调整参数，一旦向系统输入任何指向未来的时间坐标，装置都不会将使用者或测试物体送往该时刻。更诡异的是，这些本该驶向未来的传送，总是被一种无法屏蔽的机制折返为过去。例如，在休斯顿实验室的早期测试中，研究员尝试将一只同步原子钟送往正30分钟后的未来，结果原子钟没有出现在30分钟后的实验舱，而是带着完整的记录出现在了30分钟之前的同一位置，并与当时尚未启动实验的另一只钟并存。记录显示，原子钟内部计时器确实经历了"向前跳跃"的指令，但时空路径却发生了强制反转。试图定位10年后的传送，测试者无一例外被抛回10年前。就好像存在一道单向的膜，任何向未来方向的穿透都会被原路弹回，转而坠入历史。</p>
+
+        <p>更令人不安的是，这种限制似乎并非工程学或能量层级的问题。我们曾将ζ粒子密度提升至理论极限，甚至制造出足以笼罩整座城市的巨型时间震荡，结果依然如此：过去之门大开，未来的入口却如同不存在一般，完全无法锚定。送入Vessel胶囊的一切，都被精确地遣返到某一个过去的时间点，仿佛宇宙的程序里根本没有"前往未来"的合法路径。</p>
+
+        <p>对于这一现象，公司内部与全球合作实验室提出了多种假说，但至今没有一种能得到证实，众人始终不知道为什么去往不了未来。</p>
+
+        <p>一些理论物理学家认为，这可能与时间之箭的不可逆性有关。ζ粒子扭曲弦所产生的震荡，或许只能沿着熵增的反方向——也就是沿时间回溯的方向——传导能量。未来的弦尚未被"弹拨"过，处于一种量子叠加的未定形状态，因此无法与震荡建立共振；只有已经凝固为历史的过去，其弦振动模式明确存在，才能被重新激发与抵达。</p>
+
+        <p>另有假说指出，宇宙可能存在一种防悖论审查机制。前往未来，意味着携带过去的信息跨越到尚未发生的事件当中，这可能触发某种逻辑闭合，迫使一切向未来的传送强制转化为回到过去，以避免因果律的崩坏。在多次实验中，确实观察到传送过程前后会出现微弱的时空曲率异常，仿佛有某种更高阶的法则在实时修正轨迹。</p>
+
+        <p>还有一个更为晦涩的解释，来自ζ粒子复制空间时的固有特性。既然复制出的只能是"很短暂内不同时间的同一空间"，那么或许这个"不同时间"的切片只对已经发生过的时刻有效。ζ粒子无法从虚无中拷贝一个从未存在的未来空间，它需要一段已经完成的弦振动历史作为"模板"。未来尚未到来，没有模板，复制便无从谈起，传送自然也就无法成立。在这种解释下，Vessel胶囊的时间传送，本质上是在时间档案库中调取已归档的备份，而未来那份档案，还从未被书写。</p>
+
+        <p>尽管真相悬而未决，Vessel胶囊只能回溯却不可前瞻的特性，已经深刻改变了它的应用。人们用它重返历史现场，探究失落的文明瞬间，或是弥补个体的遗憾，但窥视明日、预览命运的妄想，被永远挡在了那扇只有过去一面开启的门后。或许，这正是时间本身设下的界限——它允许你回头，却禁止你偷看答案。</p>
+    </main>
+
+    <footer>MaSim Corporation // ARCHIVE 2212</footer>
+</body>
+</html>

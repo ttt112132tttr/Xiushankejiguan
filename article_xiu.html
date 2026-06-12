@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上古异兽·貅 | MaSim</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&family=Noto+Serif+SC:wght@400;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --neon: #00d4ff;
+            --deep: #050508;
+            --glass: rgba(10, 12, 20, 0.85);
+            --glass-border: rgba(0, 212, 255, 0.12);
+            --text: #e0e6ed;
+            --text-dim: #6b7280;
+        }
+        body {
+            background: var(--deep);
+            color: var(--text);
+            font-family: 'Noto Serif SC', 'Inter', serif;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+        .bg-image {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('b1b8402cee0b48f58be6b8fc8f4c73c4.jpeg~tplv-a9rns2rl98-image_raw_b.png') center/cover no-repeat;
+            z-index: -2;
+            opacity: 0.3;
+        }
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(5,5,16,0.9);
+            z-index: -1;
+        }
+        .logo-container {
+            position: fixed;
+            top: 30px;
+            left: 40px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .logo-icon { width: 36px; height: 36px; }
+        .logo-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 0 8px rgba(0,212,255,0.3)); }
+        .logo-main {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: var(--text);
+        }
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            z-index: 100;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--neon);
+            text-decoration: none;
+            border: 1px solid var(--glass-border);
+            padding: 8px 20px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            letter-spacing: 2px;
+        }
+        .back-btn:hover {
+            border-color: var(--neon);
+            box-shadow: 0 0 20px rgba(0,212,255,0.2);
+        }
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 40px 80px;
+        }
+        .article-header {
+            margin-bottom: 60px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--glass-border);
+            text-align: center;
+        }
+        .doc-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--neon);
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            opacity: 0.7;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 8px;
+            margin-bottom: 12px;
+            font-family: 'Noto Serif SC', serif;
+        }
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--neon);
+            margin: 40px 0 20px;
+            letter-spacing: 4px;
+            font-family: 'Noto Serif SC', serif;
+        }
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 30px 0 16px;
+            letter-spacing: 2px;
+        }
+        p {
+            margin-bottom: 20px;
+            text-align: justify;
+            font-size: 1rem;
+            line-height: 2.2;
+            text-indent: 2em;
+        }
+        .quote {
+            border-left: 2px solid var(--neon);
+            padding-left: 20px;
+            margin: 30px 0;
+            color: var(--text-dim);
+            font-style: italic;
+            text-indent: 0;
+        }
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 60px;
+        }
+        @media (max-width: 768px) {
+            main { padding: 100px 20px 60px; }
+            h1 { font-size: 1.8rem; }
+            .logo-container { left: 20px; top: 20px; }
+            .back-btn { right: 20px; top: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+
+    <a href="MaSim.html" class="logo-container">
+        <div class="logo-icon">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24 4L4 14V34L24 44L44 34V14L24 4Z" stroke="url(#grad1)" stroke-width="1.5" fill="none"/>
+                <path d="M24 12L12 18V30L24 36L36 30V18L24 12Z" stroke="url(#grad1)" stroke-width="1" fill="none" opacity="0.6"/>
+                <circle cx="24" cy="24" r="3" fill="url(#grad1)" opacity="0.8"/>
+                <defs>
+                    <linearGradient id="grad1" x1="0" y1="0" x2="48" y2="48">
+                        <stop offset="0%" stop-color="#00d4ff"/>
+                        <stop offset="100%" stop-color="#a855f7"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        <div class="logo-main">MaSim</div>
+    </a>
+
+    <a href="MaSim.html" class="back-btn">← RETURN</a>
+
+    <main>
+        <div class="article-header">
+            <div class="doc-id">DOC.002 / MYTHOLOGY // BIO-DATA RECORD</div>
+            <h1>上古异兽·貅</h1>
+            <div class="subtitle">《山海异纪·冥川篇》</div>
+        </div>
+
+        <p class="quote">《山海异纪·冥川篇》载："诸水之阴，有兽焉，其名为貅，形如玄豹而长尾，首生独角，其音如裂玉。能噬空吞宙，囊括八荒。乃幽澜之主，众溟之司。"</p>
+
+        <h2>形貌状之</h2>
+        <p>貅者，非血肉之躯，禀天地阴晦、川渎幽怨之气，凝结而生。其形类玄豹，皮毛沉黯，若有吞噬星月余辉之能。四足踏水无痕，长尾曳地，尾末分作九缕，状若冥河玄苇之摇曳。首生独角，质如墨晶，澄澈而不映片影。凡貅所过，泠蟾振响、碎星垂影，异象必随之——盖其噬空之际，天光为之扭曲；吞宙之时，星轨因之错乱。其以寒烟为鬃，以沧烟为甲，巡游于生死之界，吞吐于有无之间，非阳世之兽也。</p>
+
+        <h2>神能述之</h2>
+        <p>貅秉万水之阴，司九幽溟流之权。不履阳土，独行于四大聚阴之渊：麓睢冥河、西山玄涔、南纪苍泫、东海归墟。其能有二，皆为禁术。</p>
+
+        <h3>一曰噬空</h3>
+        <p>貅张口，则一方天地可纳于其腹，山川、城郭、岛嶼，非毁也，乃灭也——自空间坐标中抹去，不留寸痕。昔有渔者经东海，亲见孤岛倏忽而没，海面如镜，了无波纹，盖貅噬之也。故"重渊吞宇，万海入宙"之语，非独状归墟之深，亦暗指此兽啖空之能。</p>
+
+        <h3>二曰吞宙</h3>
+        <p>貅能啖时间，非倒流逆转，乃啮而食之，使某段往古来今，永绝于时间长河。若其吞一城未来百年，则城中人永驻此刻，无老无死，亦永无明日可期；若其噬一邑往昔十载，则十载因果顿消，父子可以相忘，战火可以息弭，恩怨情仇，皆随所噬之辰而同尽。其角动而时弦凝滞，使寒烟覆岸之水，倒映过往之景，此非显象也，乃其吞时之际，时间被迫回溯以求自全之兆。</p>
+
+        <p>古籍云"苍泫悠悠，时闻鬼吹"，乃貅巡游时，鼻息扰逝者残念，化呜咽于幽澜之间也。能引渡万古长夜之孤魂，卷咸澜浩浩，将"残辉沉涧，永隔尘丘"之执念，尽载长眠。故世称亡者之渡，阴路之守。然其所以渡亡魂者，或亦因其吞时之余，偶然遗存之碎屑也。</p>
+
+        <h2>传说辑录</h2>
+
+        <h3>归墟之栖</h3>
+        <p>貅之巢，在万海入宙、溟泠无底之墟。其处"千响尽迟"，万籁俱绝，独其曳星光、沉清辉，与永恒寂灭相伴。貅眠则四海平波，貅醒则冥川澹澹、幽澜脉脉，四溟因之生波。或曰归墟所以众川汇而不溢者，非海量无垠，乃貅时时张吻以待，将溢流之时空并而吞之也。</p>
+
+        <h3>噬空吞宙之戒</h3>
+        <p>古训云"遇貅勿视，见口勿立"。貅之所噬，不辨人兽山川，凡空间可至、时间可及者，皆其食饵。昔大云之墟，尝有古城名"胥靡"，一日之间忽亡于天地，无残垣，无遗骸，典籍亦不载其名。后之巫者观星察气，叹曰："非亡也，为貅所啖耳。城犹在，在貅腹中；民犹生，生已无时。"故凡貅出没之地，必有山川失位、时日错漏之异，智者见之，必远遁以避其吻。</p>
+
+        <h3>星流之驾</h3>
+        <p>《水经阴注》云："貅不独行，常逐星驰。所逐非光，光中之辰也。"月晦星稀之夜，西山北麓幽流之上，尝有人见其驱漫天碎星之影，若牧流萤，顺水而下。"碎星垂影，逐浪轻浮"之景，乃貅噬时之际，残存光阴化星屑四散，其出巡仪仗，实进食之迹也。</p>
+
+        <h3>鬼吹之辨</h3>
+        <p>南纪苍泫，樵猎者于山昏雾敛时，闻百响俱微中一缕裂玉之声，似远似近，此即貅鸣。其声所以如裂玉者，或曰空间碎裂于其喉间之音也。异于鬼哭，其声虽孤冷而无戾气，闻之心生静穆，尘喧尽涤。故旧谚云："貅鸣则百魅静，幽澜清则千声休。"</p>
+
+        <p>要之，貅非寻常祸源，亦非纯善之兽。其噬空吞宙之能，固天地同忌；然其引渡亡魂、清涤幽澜，又维幽冥之序于不坠。凡光沉壑、永绝尘歧之忘川旧地，皆其巡域。是兽也，为寂，为谧，为归，亦为终。</p>
+    </main>
+
+    <footer>MaSim Corporation // ARCHIVE 2212</footer>
+</body>
+</html>

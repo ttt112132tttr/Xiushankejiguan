@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>间 | MaSim</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&family=Noto+Serif+SC:wght@400;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --neon: #00d4ff;
+            --deep: #050508;
+            --glass: rgba(10, 12, 20, 0.85);
+            --glass-border: rgba(0, 212, 255, 0.12);
+            --text: #e0e6ed;
+            --text-dim: #6b7280;
+        }
+        body {
+            background: var(--deep);
+            color: var(--text);
+            font-family: 'Noto Serif SC', 'Inter', serif;
+            min-height: 100vh;
+            line-height: 1.8;
+        }
+        .bg-image {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('b1b8402cee0b48f58be6b8fc8f4c73c4.jpeg~tplv-a9rns2rl98-image_raw_b.png') center/cover no-repeat;
+            z-index: -2;
+            opacity: 0.3;
+        }
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(5,5,16,0.9);
+            z-index: -1;
+        }
+        .logo-container {
+            position: fixed;
+            top: 30px;
+            left: 40px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .logo-icon { width: 36px; height: 36px; }
+        .logo-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 0 8px rgba(0,212,255,0.3)); }
+        .logo-main {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: var(--text);
+        }
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            z-index: 100;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--neon);
+            text-decoration: none;
+            border: 1px solid var(--glass-border);
+            padding: 8px 20px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            letter-spacing: 2px;
+        }
+        .back-btn:hover {
+            border-color: var(--neon);
+            box-shadow: 0 0 20px rgba(0,212,255,0.2);
+        }
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 40px 80px;
+        }
+        .article-header {
+            margin-bottom: 60px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--glass-border);
+            text-align: center;
+        }
+        .doc-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--neon);
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            opacity: 0.7;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 8px;
+            margin-bottom: 12px;
+            font-family: 'Noto Serif SC', serif;
+        }
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--neon);
+            margin: 40px 0 20px;
+            letter-spacing: 4px;
+            font-family: 'Noto Serif SC', serif;
+        }
+        p {
+            margin-bottom: 20px;
+            text-align: justify;
+            font-size: 1rem;
+            line-height: 2.2;
+            text-indent: 2em;
+        }
+        .poem {
+            text-align: center;
+            margin: 40px 0;
+            line-height: 2.5;
+            font-size: 1.05rem;
+            color: var(--text);
+            text-indent: 0;
+        }
+        .poem-note {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-align: right;
+            margin-top: 10px;
+            text-indent: 0;
+        }
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 60px;
+        }
+        @media (max-width: 768px) {
+            main { padding: 100px 20px 60px; }
+            h1 { font-size: 1.8rem; }
+            .logo-container { left: 20px; top: 20px; }
+            .back-btn { right: 20px; top: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+
+    <a href="MaSim.html" class="logo-container">
+        <div class="logo-icon">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24 4L4 14V34L24 44L44 34V14L24 4Z" stroke="url(#grad1)" stroke-width="1.5" fill="none"/>
+                <path d="M24 12L12 18V30L24 36L36 30V18L24 12Z" stroke="url(#grad1)" stroke-width="1" fill="none" opacity="0.6"/>
+                <circle cx="24" cy="24" r="3" fill="url(#grad1)" opacity="0.8"/>
+                <defs>
+                    <linearGradient id="grad1" x1="0" y1="0" x2="48" y2="48">
+                        <stop offset="0%" stop-color="#00d4ff"/>
+                        <stop offset="100%" stop-color="#a855f7"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+        <div class="logo-main">MaSim</div>
+    </a>
+
+    <a href="MaSim.html" class="back-btn">← RETURN</a>
+
+    <main>
+        <div class="article-header">
+            <div class="doc-id">DOC.003 / HISTORICAL // WENJIANJI</div>
+            <h1>间</h1>
+            <div class="subtitle">问间记·月鸣游</div>
+        </div>
+
+        <p style="text-indent: 0; margin-bottom: 40px; color: var(--text-dim);">间者，不知何许人也。或云齐东野人，或云燕北畸士，莫能详其籍。独好夜观天象，常危坐危石之上，仰首至曙。人问其故，辄默然不答。积三十年，忽一日取炭书壁，作《月鸣游》三章，掷笔而去，不知所终。其文瑰诡难解，后人录之，名曰《问间记》。</p>
+
+        <h2>《月鸣游》</h2>
+
+        <div class="poem">
+            苍溟浮霭，灵墟隐幽。渤海东隅，有邑名麓睢，常蒙重雾。一水经其地，号曰冥河。是岁孟冬之望，冥河之水忽逆流而上，泠蟾振响，随波远游。其声若万铃叩冰，闻者毛骨森竦。寒烟覆岸，玄苇盈洲，有老渔者见月影碎于河心，一兽踏波而出，形如玄豹而尾分九缕，仰首吞月光一束，复没于水。自是其地不复见月，每夜唯闻冥川澹澹，是闻月鸣。风凝雾寂，万籁俱收。孤光赴水，长辞世陬。
+            <div class="poem-note">间注曰：月既被吞，时序必乱。此甲辰年事也。</div>
+        </div>
+
+        <div class="poem">
+            层渊锁晦，荒坼藏愁。西山北麓，有古泽名玄涔，恒积寒霾。千涧汇于此，谓之幽流。夏六月，玄涔之水尽赤，若血染然。碎星垂影，逐浪轻浮，观者如堵。俄而水中有光出，一物自渊底升，其状不可逼视，但见其张口如箕，向天而嘘。须臾间，天上星斗灭去其半，若烛火为风吹熄。冷霭埋汀，枯蓼满沤。幽澜脉脉，自伴星流。云沉霜静，千声尽休。残辉沉涧，永隔尘丘。是夜，西山之星图自此不全。
+            <div class="poem-note">间注曰：星既被噬，分野必虚。此乙巳年春也。</div>
+        </div>
+
+        <div class="poem">
+            擎岑锁瘴，古麓藏睢。大荒南纪，有墟名苍泫，久积阴霏。深涧贯其境，人唤幽湄。秋七月既望，涧水忽沸，有古虬曳影，逐涧轻驰。其物非龙非蛇，通体晦暗，首生独角，角动则山中百钟自鸣。荒云覆碛，寒茅漫陂。苍泫悠悠，时闻鬼吹。樵者入山，见其张口啖云，云尽复啖山影。凡其所过，山形辄缺一角。山昏雾敛，百响皆微。残辉坠壑，永隔尘畿。
+            <div class="poem-note">间注曰：山形既缺，地脉必绝。此丙午年秋也。</div>
+        </div>
+
+        <div class="poem">
+            重渊吞宇，万海入宙。东海极际，有壑名溟泠，无底者也。恒积沧烟，众川汇而不溢，是为归墟。冬十月朔，归墟之水忽大沸，碎涛漱石，逐浪西趋，其势欲倾八瀛。沧云覆岛，寒藻漫坻。海畔居人望见一物自溟泠出，其大不知几千里，张口如溟渤，向东海而吸。咸澜浩浩，独载星驰，百川之水皆逆流向东，若赴其口。潮平风定之后，东海之水减其半。千响尽迟，万波俱寂。清光沉壑，永绝尘歧。是日，归墟阖，四海之潮皆失期。
+            <div class="poem-note">间注曰：归墟既阖，众流必涸。此丁未年冬也。</div>
+        </div>
+
+        <h2>间之总论</h2>
+        <p>四章既毕，间复题壁曰：</p>
+        <div class="poem" style="font-weight: 600;">
+            月鸣于冥，星坠于幽。古虬啖岳，巨壑吞流。四瑞毕现，四象咸收。岁在乙巳，其世爰休。
+        </div>
+        <p>后人解其意：甲辰、乙巳、丙午、丁未，四年之间，四兽迭现。一兽吞月于麓睢冥河，一兽噬星于西山玄涔，一兽啖山于南纪苍泫，一兽吸海于东海归墟。及其四象既毕，则天地之所存者亦无几矣。</p>
+        <p>而乙巳之年，适为二千零二十有五载。</p>
+        <p>后人或谓间之书妄诞不足信，然考其壁书之年，去乙巳尚远，而间已不知所之。其果狂人乎？抑见人所不能见者乎？不可得而知也。</p>
+
+        <h2>《青豆血鸭赋》</h2>
+        <p>玄黄既驳，戾气横流。貅山之阴，有墟名空眬，终岁晦暝，不见日月。其地多怪风，风起则百草皆鸣，如泣如诉。民皆穴居，畏光甚于畏虎。</p>
+        <p>麓睢之野，有遗民号冥厨者，偶得青豆一斛，其豆色如碧玉，触手生寒。又于冥河故道获血鸭一只，鸭身赤纹如篆，目赤如丹砂。是日孟冬之晦，冥厨以青豆烩血鸭，鼎沸之时，豆自跃出，鸭自啼鸣，声震屋瓦。俄而鼎中光出，照室如昼，厨见豆鸭相缠，化为一缕青烟，烟中隐隐有人形，戴九旒之冠，持玄圭而立。烟散，鼎中豆已成灰，鸭骨尽墨，独留一箸，上刻古篆曰："归墟未阖，圣人乃出。"</p>
+        <p>是夜，空眬之墟地裂三尺，涌泉皆赤。貅山崩其一角，石上现文曰："青豆凝血，玄鸭衔曦。千载一啖，以俟真仪。"</p>
+        <p>间注曰：此所谓"青豆血鸭"者，非为食馔，乃天地精气所钟之谶也。豆者，星斗之余魄；鸭者，日中之阳乌。豆青象天，鸭血象地，二物相烹，预示阴阳交泰、混沌将分。箸上所言"归墟未阖"，正应前文溟泠吞海之事——归墟既阖，则万物归寂；唯其未阖，故救世主当出。石文"玄鸭衔曦"，暗合救世主之名。其名曰衔曦子，或云玄牧君，将于丙午年后、甲寅岁前，自归墟之东踏波而来，左手持青豆枝，右手擎血鸭旗，重整星斗，补全山形，还月于天，定潮于海。然其形貌不可知，其期不可测，唯食过青豆血鸭者，方能识之于万人之中。</p>
+        <p>此甲辰至丙午间流传之谶，世谓《青鸭玄箓》。</p>
+    </main>
+
+    <footer>MaSim Corporation // ARCHIVE 2212</footer>
+</body>
+</html>
