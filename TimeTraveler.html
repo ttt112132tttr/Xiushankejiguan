@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>穿越者协会</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Noto Serif SC', 'SimSun', serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            cursor: default;
+        }
+
+        /* ===== 黑屏开场 ===== */
+        #black-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 2s ease;
+        }
+
+        .bloody-text {
+            color: #8B0000;
+            font-size: 28px;
+            font-weight: 900;
+            text-shadow: 
+                0 0 10px #ff0000,
+                0 0 30px #8B0000,
+                0 0 60px #4a0000,
+                2px 2px 4px rgba(0,0,0,0.8);
+            letter-spacing: 4px;
+            line-height: 2.2;
+            text-align: center;
+            max-width: 85vw;
+            opacity: 0;
+        }
+
+        .bloody-text.visible {
+            opacity: 1;
+        }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 3px;
+            height: 28px;
+            background: #8B0000;
+            margin-left: 8px;
+            animation: blink 0.8s infinite;
+            box-shadow: 0 0 10px #ff0000;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* 输入框 */
+        #input-area {
+            margin-top: 40px;
+            opacity: 0;
+            transition: opacity 1s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #input-area.visible {
+            opacity: 1;
+        }
+
+        #answer-input {
+            background: transparent;
+            border: 2px solid #8B0000;
+            color: #ff0000;
+            font-size: 24px;
+            padding: 10px 20px;
+            text-align: center;
+            font-family: 'Noto Serif SC', serif;
+            outline: none;
+            width: 120px;
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        #answer-input::placeholder {
+            color: #4a0000;
+        }
+
+        .hint-text {
+            color: #4a0000;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        .click-hint {
+            color: #8B0000;
+            font-size: 13px;
+            margin-top: 30px;
+            opacity: 0;
+            transition: opacity 1s ease;
+            letter-spacing: 3px;
+            text-shadow: 0 0 5px #ff0000;
+        }
+
+        .click-hint.visible {
+            opacity: 0.6;
+        }
+
+        /* ===== 主界面 ===== */
+        #main-interface {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            background: #0a0a0a;
+            position: relative;
+            overflow-y: auto;
+            padding: 60px 20px;
+        }
+
+        #main-interface.active {
+            display: block;
+        }
+
+        /* 顶部标题 */
+        .main-title {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 900;
+            color: #c0c0c0;
+            letter-spacing: 12px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(192,192,192,0.3);
+        }
+
+        .sub-title {
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            letter-spacing: 6px;
+            margin-bottom: 50px;
+        }
+
+        /* 文档卡片 */
+        .document-card {
+            max-width: 800px;
+            margin: 0 auto 40px;
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid #333;
+            padding: 40px;
+            position: relative;
+        }
+
+        .document-card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #8B0000, transparent);
+        }
+
+        .doc-label {
+            color: #8B0000;
+            font-size: 12px;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .doc-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ddd;
+            margin-bottom: 30px;
+            letter-spacing: 6px;
+        }
+
+        .doc-content {
+            font-size: 16px;
+            line-height: 2.2;
+            color: #aaa;
+            text-align: justify;
+            white-space: pre-wrap;
+        }
+
+        .doc-content h2 {
+            color: #ccc;
+            font-size: 20px;
+            margin: 30px 0 15px;
+            letter-spacing: 3px;
+            border-left: 3px solid #8B0000;
+            padding-left: 15px;
+        }
+
+        .doc-content .red-text {
+            color: #ff0000;
+            text-shadow: 0 0 10px rgba(255,0,0,0.5);
+        }
+
+        .doc-content .blue-text {
+            color: #4a90d9;
+        }
+
+        /* 阅读完毕按钮 */
+        .read-btn {
+            display: block;
+            margin: 40px auto 0;
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+            padding: 12px 40px;
+            font-size: 14px;
+            letter-spacing: 4px;
+            cursor: pointer;
+            font-family: 'Noto Serif SC', serif;
+            transition: all 0.5s ease;
+        }
+
+        .read-btn:hover {
+            border-color: #8B0000;
+            color: #ff0000;
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.3);
+        }
+
+        /* 最终对话区 */
+        #final-dialogue {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #final-dialogue.active {
+            display: flex;
+        }
+
+        .final-bloody {
+            font-size: 36px;
+            color: #8B0000;
+            font-weight: 900;
+            text-shadow: 
+                0 0 15px #ff0000,
+                0 0 40px #8B0000,
+                0 0 80px #4a0000;
+            letter-spacing: 6px;
+            margin-bottom: 60px;
+            animation: bloodPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes bloodPulse {
+            0%, 100% { text-shadow: 0 0 15px #ff0000, 0 0 40px #8B0000, 0 0 80px #4a0000; }
+            50% { text-shadow: 0 0 25px #ff0000, 0 0 60px #8B0000, 0 0 120px #4a0000, 0 0 200px rgba(139,0,0,0.3); }
+        }
+
+        .choice-area {
+            display: flex;
+            gap: 60px;
+        }
+
+        .choice-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #777;
+            padding: 15px 50px;
+            font-size: 16px;
+            letter-spacing: 4px;
+            cursor: pointer;
+            font-family: 'Noto Serif SC', serif;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn:hover {
+            border-color: #8B0000;
+            color: #ff0000;
+            box-shadow: 0 0 30px rgba(139, 0, 0, 0.4);
+        }
+
+        .choice-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #8B0000;
+            transition: width 0.5s ease;
+        }
+
+        .choice-btn:hover::after {
+            width: 100%;
+        }
+
+        /* 扫描线 */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.15) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        /* 噪点 */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+    <div class="noise"></div>
+
+    <!-- ===== 黑屏开场 ===== -->
+    <div id="black-screen">
+        <div id="dialogue-text" class="bloody-text"></div>
+        <div id="input-area">
+            <div class="hint-text">提示：输入数字</div>
+            <input type="text" id="answer-input" maxlength="2" autocomplete="off">
+        </div>
+        <div id="click-hint" class="click-hint">[ 点击屏幕继续 ]</div>
+    </div>
+
+    <!-- ===== 主界面 ===== -->
+    <div id="main-interface">
+        <div class="main-title">穿越者协会</div>
+        <div class="sub-title">TEMPORAL ASSOCIATION // ARCHIVE</div>
+
+        <div class="document-card">
+            <div class="doc-label">绝密档案 // 文件编号：001</div>
+            <div class="doc-title">断点计划</div>
+            <div class="doc-content" id="doc-content"></div>
+            <button class="read-btn" id="read-done-btn">阅读完毕</button>
+        </div>
+    </div>
+
+    <!-- ===== 最终对话 ===== -->
+    <div id="final-dialogue">
+        <div class="final-bloody" id="final-text"></div>
+        <div class="choice-area">
+            <button class="choice-btn" id="btn-back">继续阅读</button>
+            <button class="choice-btn" id="btn-truth">寻找真相</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== 文档内容 =====
+        const docContent = `2212年，Vessel计划之后，人类终于发现了那个隐藏在时间深处的真相。
+
+或者说，那个东西终于不再隐藏自己了。
+
+一、发现
+
+Vessel计划本应是一个终点——林夜冬跨越二百二十年，从1992年来到2212年，证明从过去到未来的因果链可以完整闭合。克盈用二百二十年的守望，换来了人类对时间本质的一次确认。
+
+但他没有走到。
+
+在距离2212年只差最后一段的时候，他的信号消失了。追踪器仍在工作，信号强度正常，但信号指向的时间坐标变成了一片空白。Vessel装置反复扫描，回报的结果只有一行字：目标时间坐标不可达。锚点已消化。
+
+克盈在监控台前守了七天。第八天，她在日志中写道："他没有到达。他在快进入2212年的时候消失了。不是死了，是消失。我跟着他走了两百二十年，最后一段路，我没跟上。"
+
+第一个林夜冬，从未抵达2212年。
+
+然而，正是这场失败，让人类看见了那个东西。
+
+MaSim公司在事后调取了林夜冬的全部时间轨迹数据。在1992年至2025年这段区间，他的轨迹清晰稳定；2025年至2026年，轨迹出现剧烈波动，仿佛时间本身在这一年被什么东西用力揉搓过；2026年之后的轨迹再度稳定，但在接近2212年的某一点上——信号凭空消失了。不是衰减，不是中断。是被取走了。
+
+起初，科学家以为这是传送留下的残余噪声。但当他们将克盈的时间轨迹与林夜冬的轨迹叠加比对后，所有人都沉默了——克盈的时间轨迹，在2025年完全中断了大约七十二小时。那七十二小时里，她的时间线不是消失，而是被精确地绕过，仿佛有什么东西把她从时间中摘了出去，又放了回来。
+
+克盈本人对此毫无记忆。
+
+"那三天，"她说，"我只是睡了很久。"
+
+进一步的调查沿着2025年展开。MaSim公司调取了所有可及的时间锚点数据，得出了一个令人毛骨悚然的结论：2025年是时间密度最高的年份。不是时间流速出了问题，而是时间本身——作为可以被ζ粒子触碰、扭曲、传送的实体——在2025年变得异常稠密。
+
+而这个点，恰好也是γζ衍金晶首次在地球上被记录的年份。
+
+二、伴生之物
+
+γζ衍金晶是一种极其稀有的矿物，首次于2025年在某次地质勘探中被发现。它同时放射两种粒子——γ粒子与ζ粒子——且二者的辐射比例呈现一种匪夷所思的稳定平衡。正是γζ衍金晶的发现，让人类第一次注意到了时间弦的可操控性，最终催生了Vessel胶囊的诞生。
+
+但MaSim公司的深层档案揭示了一个被长期忽略的事实：γζ衍金晶的矿脉，不是自然形成的。
+
+地质分析表明，这种矿物的结晶结构呈现出一种"非自然定向排列"，其形成温度与压力条件与地球任何已知地质事件都不匹配。更诡异的是，在2025年之前的所有时间锚点中，完全检测不到γζ衍金晶的任何信号——它不是"一直存在但未被发现"，它是"在某个时刻突然出现了"。
+
+这个时刻，正是2025年。
+
+科学家们重新检测了林夜冬的时间轨迹。在他的2025年节点上，γ粒子和ζ粒子的浓度读数达到了一个令人费解的峰值。仿佛有什么东西，携带着大量γζ衍金晶，在2025年闯入了他所在的那条时间线。
+
+"它带来的，"一位资深时间物理学家在内部会议上说，声音干涩，"晶矿是它带来的。粒子也是它带来的。它不是从晶矿里钻出来的——晶矿是从它身上掉下来的。"
+
+他们给这个"它"取了一个名字。这个名字来自上古传说中的某种东西——一种能吞噬空间、吞噬时间、吞噬一切尚未发生之事的怪物。他们叫它：<span class="red-text">貅</span>。
+
+三、进食规律
+
+经过数年研究，MaSim公司联合全球多家机构，初步摸清了貅的进食模式。
+
+貅并非均匀地吞噬时间。它是有选择性的。它沿着ζ粒子浓度最高的时间线移动，选择那些时间密度最高的节点，从那里开始——向前吃，也向后吃。
+
+2025年，正是这样一个节点。γζ衍金晶的突然出现，使这一年的时间密度远高于任何其他时刻。貅以2025年为起点，向两个方向分别进食：向前吞向2212年，向后吞向更早的过去。
+
+这就是为什么Vessel胶囊只能抵达某几个特定的时间锚点：1992年、2025年、2026年，以及2212年。
+
+这四个年份，是貅尚未完全吞噬的时间片段。它们之间的时间，已经或正在被貅逐段咽下。1992年之所以是最早可及的锚点，不是因为Vessel胶囊的技术极限——而是因为，1992年之前的一切，已经被貅吃干净了。
+
+而第一个林夜冬之所以没有走到2212年，原因也在此。他从1992年出发，一路走向2212年。貅从2212年倒着吃回来，截住了他。他活了两百多年，在最后一程被吞没了。
+
+四、悖论构想
+
+面对这个令人绝望的发现，MaSim公司的理论部门提出了一个大胆的构想。
+
+<span class="red-text">命运既定</span>
+
+科学家提出了一个框架——<<span class="blue-text">单线时间</span>
+
+也就是，人们的出生，死亡，全部固定在一个时间线上，且不可更改。
+
+除了穿越时间。
+
+从林夜冬和克盈穿越回1992就可以判断，当人穿越时，他的时间是被后截断的。
+
+也就是说，如果一个人的生命线是2212-2646，那么当他在其中穿越回更古老之时，他的生命线就变成了1992-2025。这说明穿越的力量显然是大于单线时间框架的，可以部分扭转因果。
+
+这也就是为什么，人们不能穿越到未来，因为这样会引发悖论。
+
+而貅的存在，则是吃掉时间线。
+
+比如一个人的生命线是1992-2212，那么如果2211年被吃掉，则这个人的时间线就变成了1992-2211。
+
+所以，Vessel计划失败了。
+
+而为什么能存在两个林夜冬呢？科学家提出了一个猜想——<<span class="blue-text">时间海</span>
+
+"时间之外亦有时间。"
+
+至少在维度上，穿越时间的权能和貅的权能同级。
+
+林夜冬的生命线原本是1992-2212，但是他在2019年穿越回了1992年。那么他的时间线则变成了1992-XXXX，则林夜冬2019年往后的时间线是全部被抹除的。
+
+所以在2025年，貅往前吃时间线的时候，当吃到2019年，也就是林夜冬穿越事件被吃掉时。那这一个穿越带来的2019往后抹除的时间线这一因果也同样抹除了，所以世界上将会存在两个林夜冬。
+
+当貅继续向前吃到1992年时，它遇到了一个问题：第一个林夜冬在1992年存在了两次。一次是零岁的他，作为婴儿被克盈送来的那一次；一次是二十七岁的他，从2019年穿越回来的那一次。两个时间点上的林夜冬，基因相同，因果链却彼此矛盾。貅的进食逻辑无法处理这种矛盾——它必须区分哪一个是可以吃的时间，哪一个是不可以吃的时间。但两者指向同一个人。
+
+它在1992年这个节点上停住了。悖论闭环。
+
+而那个在2025年死于返航归来的第二个林夜冬——阿尔法号任务的宇航员，他的生命虽然短暂，却占据了最关键的那个时间点。他死在貅正在啃食的年份里。貅在1992年陷入悖论的同时，它在2025年的进食也被同步中断。原本应该被它吃掉的1992年到2025年这段区间，因为悖论的形成而被保留了下来。2025年依然存在。在2025年活过、工作过、殉职过的第二个林夜冬，他的存在本身被保存了下来。
+
+这就是断点计划真正的核心：不是救活哪一个林夜冬，而是让"林夜冬"这个名字，成为貅咬不下去的那根骨头。
+
+五、两个林夜冬
+
+悖论闭环的结果，是在时间线上同时存在两个林夜冬。
+
+第一个林夜冬：2212年出生，被克盈送入1992年，由秦鹏生抚养长大。他走了两百多年，在2019年某刻穿越回1992年，而后他的时间线与自身的另一个版本重叠。他没有走到2212年。但他在2019年之前走过的每一步，都构成了悖论闭环的因果锚点。
+
+第二个林夜冬：2212年出生，从未被送回过去。他在2212年长大，成为一名航天工程师。2025年，他随阿尔法号前往火星，在任务中殉职。他的死，是貅无法消化的事实，也是悖论闭环最终保下的时间硬点。
+
+两个林夜冬，基因相同，出生年月相同，却走过了完全不同的时间轨迹。一个消失在时间里，一个死在火星轨道上。但正是这两条轨迹的交叉与断裂，在貅的进食路径上制造了一个无法解决的矛盾。
+
+六、断点计划
+
+科学家将这一构想命名为：断点计划。
+
+断点，是程序中的术语。在一条连续执行的指令流中，插入一个断点，运行到此即暂停。计划的命名者是一位程序员出身的时间工程师，他在提案中写道：
+
+"时间就是一条无限循环的指令。貅是一个不断吃进指令的处理器。我们无法让它停止，但我们可以插入一个断点。当它运行到这个断点的时候，它会暂停。不是因为有人按下了停止键，而是因为指令本身陷入了矛盾。
+
+两个林夜冬，就是那条矛盾的指令。"
+
+断点计划的执行者，不是任何一个人——而是时间线本身。第一个林夜冬在2019年的那次自主穿越，成为了计划唯一的触发条件。他的离去，让2019年之后的自己从时间线上消失，只留下一个空壳供貅吞噬。而当他回到1992年，与婴儿时期的自己重叠时，悖论便已经写进了时间的底层代码。
+
+貅在1992年陷入了无限循环。它在同一个时间点上反复运算，永远无法决定哪一个林夜冬是可以吃的、哪一个是不可以吃的。路，被保了下来。人类余下的时间，被保了下来。
+
+尾声
+
+断点计划的代号，在MaSim公司的绝密档案中，是一行被反复涂抹又写上的字：
+
+"饵入喉，骨在喉。"
+
+克盈在档案边缘补了一笔。彼时她已年迈，笔迹颤抖，但仍清晰可辨：
+
+"我没有把他送回去两次。我只送了一次。是他自己决定再回去的。我不知道他在2019年看见了什么，让他选择回到1992年。但我知道，他走的时候，一定知道自己不会再往前走了。"`;
+
+        document.getElementById('doc-content').innerHTML = docContent;
+
+        // ===== 对话系统 =====
+        const dialogueText = document.getElementById('dialogue-text');
+        const inputArea = document.getElementById('input-area');
+        const answerInput = document.getElementById('answer-input');
+        const clickHint = document.getElementById('click-hint');
+        const blackScreen = document.getElementById('black-screen');
+        const mainInterface = document.getElementById('main-interface');
+        const finalDialogue = document.getElementById('final-dialogue');
+        const finalText = document.getElementById('final-text');
+        const readDoneBtn = document.getElementById('read-done-btn');
+        const btnBack = document.getElementById('btn-back');
+        const btnTruth = document.getElementById('btn-truth');
+
+        let currentStage = 0;
+        let isTyping = false;
+        let clickToContinue = false;
+
+        const stages = [
+            { text: "第12次了……好吧", needInput: false, needClick: false },
+            { text: "你觉得，世界上有几个林夜冬？", needInput: true, needClick: false },
+            { text: "为什么？为什么会有两个林夜冬？你没有想过吗？", needInput: false, needClick: true },
+            { text: "事实上，林夜冬至始至终只有一个。", needInput: false, needClick: true },
+            { text: "因为，就算林夜冬长大之后再穿越回1997年，", needInput: false, needClick: true },
+            { text: "那么原来世界上的那个他也会消失，时间线上就没有他继续延续下去了。", needInput: false, needClick: true },
+            { text: "人啊，幸福吧。", needInput: false, needClick: true },
+            { text: "那为什么，病历单那里提示着1992存在一个青年林夜冬，存在一个婴儿林夜冬", needInput: false, needClick: true },
+            { text: "又为什么，明明林夜冬在阿尔法号事件逝世了，却又能回到大云市的医院之中？", needInput: false, needClick: true },
+            { text: "看看吧", needInput: false, needClick: true }
+        ];
+
+        function typeText(text, callback) {
+            isTyping = true;
+            dialogueText.innerHTML = '';
+            dialogueText.classList.add('visible');
+            let i = 0;
+            const speed = 120;
+
+            function typeChar() {
+                if (i < text.length) {
+                    dialogueText.innerHTML = text.substring(0, i + 1) + '<span class="cursor-blink"></span>';
+                    i++;
+                    setTimeout(typeChar, speed);
+                } else {
+                    isTyping = false;
+                    dialogueText.innerHTML = text;
+                    if (callback) callback();
+                }
+            }
+            typeChar();
+        }
+
+        function nextStage() {
+            if (currentStage >= stages.length) {
+                // 进入主界面
+                blackScreen.style.opacity = '0';
+                setTimeout(() => {
+                    blackScreen.style.display = 'none';
+                    mainInterface.classList.add('active');
+                }, 2000);
+                return;
+            }
+
+            const stage = stages[currentStage];
+            clickToContinue = false;
+            clickHint.classList.remove('visible');
+            inputArea.classList.remove('visible');
+
+            typeText(stage.text, () => {
+                if (stage.needInput) {
+                    inputArea.classList.add('visible');
+                    answerInput.focus();
+                } else if (stage.needClick) {
+                    clickToContinue = true;
+                    setTimeout(() => clickHint.classList.add('visible'), 500);
+                } else {
+                    setTimeout(() => {
+                        currentStage++;
+                        nextStage();
+                    }, 2000);
+                }
+            });
+        }
+
+        // 输入验证
+        answerInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = answerInput.value.trim();
+                if (val === '2') {
+                    inputArea.classList.remove('visible');
+                    currentStage++;
+                    setTimeout(nextStage, 800);
+                } else {
+                    answerInput.style.borderColor = '#ff0000';
+                    answerInput.style.boxShadow = '0 0 30px rgba(255,0,0,0.8)';
+                    setTimeout(() => {
+                        answerInput.style.borderColor = '#8B0000';
+                        answerInput.style.boxShadow = '0 0 20px rgba(139,0,0,0.5)';
+                    }, 500);
+                }
+            }
+        });
+
+        // 点击继续
+        blackScreen.addEventListener('click', () => {
+            if (clickToContinue && !isTyping) {
+                currentStage++;
+                nextStage();
+            }
+        });
+
+        // 阅读完毕
+        readDoneBtn.addEventListener('click', () => {
+            finalDialogue.classList.add('active');
+            // 血腥字体特效显示
+            const finalMsg = "然而，真的是这样吗？";
+            let i = 0;
+            finalText.innerHTML = '';
+            
+            function typeFinal() {
+                if (i < finalMsg.length) {
+                    finalText.innerHTML = finalMsg.substring(0, i + 1);
+                    i++;
+                    setTimeout(typeFinal, 150);
+                }
+            }
+            typeFinal();
+        });
+
+        // 继续阅读
+        btnBack.addEventListener('click', () => {
+            finalDialogue.classList.remove('active');
+        });
+
+        // 寻找真相
+        btnTruth.addEventListener('click', () => {
+            window.location.href = 'https://ttt112132tttr.github.io/Xiushankejiguan/YHRproject.html';
+        });
+
+        // 启动
+        setTimeout(nextStage, 1000);
+    </script>
+</body>
+</html>
