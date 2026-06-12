@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeYing - 纪念</title>
+    <style>
+        :root {
+            --bg-deep: #08080f;
+            --bg-surface: #111118;
+            --text-primary: #c8c8d4;
+            --text-secondary: #7a7a8c;
+            --text-accent: #e0d8c8;
+            --golden: #f0c850;
+            --purple: #9b6dff;
+            --white-flower: #e8e6f0;
+            --black-flower: #4a4a58;
+            --stem-green: #4a7058;
+            --font-cn: 'PingFang SC', 'Noto Serif SC', 'STSong', 'Songti SC', serif;
+            --font-en: 'Cormorant Garamond', 'EB Garamond', 'Georgia', serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-deep);
+            min-height: 100vh;
+            font-family: var(--font-cn);
+            overflow-x: hidden;
+            cursor: default;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .particles-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .star {
+            position: absolute; border-radius: 50%; background: rgba(255,255,255,0.7);
+            animation: floatStar linear infinite; opacity: 0; box-shadow: 0 0 4px rgba(255,255,255,0.5);
+        }
+        .firefly {
+            position: absolute; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,240,150,0.8) 0%, rgba(255,200,50,0.2) 60%, transparent 70%);
+            animation: flyFirefly ease-in-out infinite; opacity: 0; filter: blur(0.5px);
+        }
+        @keyframes floatStar {
+            0% { transform: translateY(105vh) scale(0); opacity: 0; }
+            10% { opacity: 0.8; } 90% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) scale(1.3); opacity: 0; }
+        }
+        @keyframes flyFirefly {
+            0% { transform: translate(0,0) scale(0.8); opacity: 0; }
+            20% { opacity: 0.9; } 45% { transform: translate(30px,-50px) scale(1.2); opacity: 0.6; }
+            70% { transform: translate(-20px,-100px) scale(0.9); opacity: 0.3; }
+            100% { transform: translate(15px,-180px) scale(0.5); opacity: 0; }
+        }
+        .main-container { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+        .entrance-page { display: flex; flex-direction: column; align-items: center; gap: 2.5rem; transition: opacity 0.8s, transform 0.8s; }
+        .entrance-page.fade-out { opacity: 0; transform: translateY(-30px); pointer-events: none; }
+        .hint-text {
+            color: var(--text-secondary); font-size: 0.95rem; letter-spacing: 0.15em; text-align: center; line-height: 1.8;
+        }
+        .hint-text .highlight { color: var(--golden); font-weight: 500; }
+        .flower-slots { display: flex; gap: 2.5rem; align-items: flex-end; flex-wrap: wrap; justify-content: center; }
+        .flower-slot { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .flower-wrapper { position: relative; width: 70px; height: 130px; cursor: pointer; transition: 0.3s; }
+        .flower-slot.empty-slot .flower-wrapper { opacity: 0.35; filter: grayscale(0.5); cursor: default; }
+        .flower-slot.slot-0 .flower-wrapper { cursor: default; }
+        .hyacinth { position: relative; width: 100%; height: 100%; }
+        .stem { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 5px; height: 55px; background: var(--stem-green); border-radius: 3px; z-index: 1; }
+        .leaf { position: absolute; bottom: 15px; left: 50%; width: 4px; height: 35px; background: #3d5c44; border-radius: 50%; z-index: 0; transform-origin: bottom center; }
+        .leaf-left { transform: translateX(-50%) rotate(-22deg); }
+        .leaf-right { transform: translateX(-50%) rotate(22deg); }
+        .bloom-cluster { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 2; width: 36px; height: 50px; }
+        .petal-dot { position: absolute; border-radius: 50%; transition: 0.4s; }
+        .glow-ring {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 55px; height: 55px;
+            border-radius: 50%; pointer-events: none; z-index: 0; opacity: 0; transition: opacity 0.5s;
+        }
+        .flower-slot.lit .glow-ring { opacity: 1; animation: gentlePulse 2.5s infinite; }
+        @keyframes gentlePulse { 0%,100%{ transform: translate(-50%,-50%) scale(1); opacity:0.7; } 50%{ transform: translate(-50%,-50%) scale(1.25); opacity:1; } }
+        .empty-indicator {
+            position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 30px; height: 40px;
+            border: 2px dashed rgba(255,255,255,0.12); border-radius: 50%; z-index: 3; pointer-events: none;
+        }
+        .flower-slot.filled .empty-indicator, .flower-slot.slot-0 .empty-indicator { opacity: 0; }
+        .color-palette { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+        .color-option { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.3s; outline: none; }
+        .color-option:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+        .color-option.color-purple { background: #8b5cf6; }
+        .color-option.color-white { background: #e0dde8; }
+        .color-option.color-black { background: #3d3d4a; }
+        .color-option.color-red { background: #d95555; }
+        .color-option.color-green { background: #4fb870; }
+        .color-option.color-orange { background: #e89240; }
+        .color-option.color-blue { background: #5098e8; }
+        .color-option.disabled { pointer-events: none; opacity: 0.35; filter: grayscale(0.3); }
+
+        .home-page { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 800px; opacity: 0; transform: translateY(30px); transition: 1s 0.3s; }
+        .home-page.visible { display: flex; opacity: 1; transform: translateY(0); }
+        .site-title { font-family: var(--font-en); font-size: 3.2rem; font-weight: 300; letter-spacing: 0.25em; color: var(--text-accent); }
+        .site-subtitle { color: var(--text-secondary); font-size: 0.85rem; letter-spacing: 0.2em; margin: 0.8rem 0 2rem; }
+        .nav-tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.08); width: 100%; justify-content: center; }
+        .nav-tab { font-size: 0.9rem; color: var(--text-secondary); background: none; border: none; padding: 0.7rem 1.6rem; letter-spacing: 0.12em; cursor: pointer; transition: 0.3s; }
+        .nav-tab.active { color: var(--text-accent); font-weight: 500; border-bottom: 2px solid var(--golden); }
+        .content-area { width: 100%; margin-top: 2rem; min-height: 320px; background: var(--bg-surface); border-radius: 12px; padding: 2rem; border: 1px solid rgba(255,255,255,0.05); }
+        .content-panel { display: none; }
+        .content-panel.active { display: block; }
+        .back-btn {
+            position: fixed; top: 1.5rem; left: 1.5rem; background: none; border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text-secondary); padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; z-index: 10;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .back-btn.visible { opacity: 1; pointer-events: auto; }
+        .diary-entry { margin-bottom: 1.2rem; border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; cursor: pointer; }
+        .diary-date { color: var(--golden); font-weight: 500; }
+        .diary-text { display: none; margin-top: 0.5rem; color: #b0b0bc; line-height: 1.8; font-size: 0.9rem; }
+        .diary-entry.open .diary-text { display: block; }
+        .deleted { color: #5a5a68; text-decoration: line-through; font-style: italic; }
+        .person-card { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 1rem; margin: 0.8rem 0; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 1rem; }
+        .person-card:hover { background: rgba(255,255,255,0.06); }
+        .person-detail { display: none; }
+        .person-detail.active { display: block; }
+        .back-to-list { color: var(--golden); cursor: pointer; margin-bottom: 1rem; font-size: 0.85rem; }
+        .incense-btn { background: rgba(200,160,100,0.15); border: 1px solid rgba(200,160,100,0.4); color: #d4b87a; padding: 0.4rem 1.2rem; border-radius: 20px; cursor: pointer; margin-top: 0.8rem; transition: 0.3s; }
+        .incense-btn:hover { background: rgba(200,160,100,0.3); }
+        .incense-count { font-size: 0.8rem; color: var(--text-secondary); margin-left: 0.5rem; }
+        .chat-modal { position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background: #1a1a24; border: 1px solid #333; width: 90%; max-width: 360px; padding: 1.2rem; border-radius: 12px; z-index: 200; display: none; flex-direction: column; gap: 0.8rem; }
+        .chat-modal.active { display: flex; }
+        .chat-messages { max-height: 200px; overflow-y: auto; color: #ccc; font-size: 0.85rem; }
+        .chat-input { display: flex; gap: 0.5rem; }
+        .chat-input input { flex:1; background: #2a2a35; border: none; color: #fff; padding: 0.5rem; border-radius: 6px; }
+        .chat-input button { background: var(--golden); border: none; color: #111; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }
+        @media (max-width: 600px) {
+            .flower-wrapper { width: 55px; height: 105px; }
+            .color-option { width: 32px; height: 32px; }
+        }
+    </style>
+</head>
+<body>
+<div class="particles-container" id="particlesContainer"></div>
+<button class="back-btn" id="backBtn">← 返回</button>
+<div class="main-container">
+    <div class="entrance-page" id="entrancePage">
+        <p class="hint-text" id="hintText">请点亮四朵风信子</p>
+        <div class="flower-slots" id="flowerSlots">
+            <!-- 位置0：黄色，默认点亮 -->
+            <div class="flower-slot slot-0 filled lit" data-slot="0" data-color="yellow">
+                <div class="flower-wrapper">
+                    <div class="glow-ring"></div>
+                    <div class="hyacinth">
+                        <div class="bloom-cluster" id="bloom0"></div>
+                        <div class="stem"></div>
+                        <div class="leaf leaf-left"></div>
+                        <div class="leaf leaf-right"></div>
+                    </div>
+                </div>
+                <span class="slot-number">Ⅰ</span>
+            </div>
+            <!-- 位置1 -->
+            <div class="flower-slot empty-slot" data-slot="1" data-color="">
+                <div class="flower-wrapper">
+                    <div class="glow-ring"></div>
+                    <div class="empty-indicator"></div>
+                    <div class="hyacinth">
+                        <div class="bloom-cluster" id="bloom1"></div>
+                        <div class="stem"></div>
+                        <div class="leaf leaf-left"></div>
+                        <div class="leaf leaf-right"></div>
+                    </div>
+                </div>
+                <span class="slot-number">Ⅱ</span>
+            </div>
+            <!-- 位置2 -->
+            <div class="flower-slot empty-slot" data-slot="2" data-color="">
+                <div class="flower-wrapper">
+                    <div class="glow-ring"></div>
+                    <div class="empty-indicator"></div>
+                    <div class="hyacinth">
+                        <div class="bloom-cluster" id="bloom2"></div>
+                        <div class="stem"></div>
+                        <div class="leaf leaf-left"></div>
+                        <div class="leaf leaf-right"></div>
+                    </div>
+                </div>
+                <span class="slot-number">Ⅲ</span>
+            </div>
+            <!-- 位置3 -->
+            <div class="flower-slot empty-slot" data-slot="3" data-color="">
+                <div class="flower-wrapper">
+                    <div class="glow-ring"></div>
+                    <div class="empty-indicator"></div>
+                    <div class="hyacinth">
+                        <div class="bloom-cluster" id="bloom3"></div>
+                        <div class="stem"></div>
+                        <div class="leaf leaf-left"></div>
+                        <div class="leaf leaf-right"></div>
+                    </div>
+                </div>
+                <span class="slot-number">Ⅳ</span>
+            </div>
+        </div>
+        <div class="color-palette" id="colorPalette">
+            <!-- 紫、红、白、绿、黑、橙、蓝，避免白黑紧邻 -->
+            <button class="color-option color-purple" data-color="purple"></button>
+            <button class="color-option color-red" data-color="red"></button>
+            <button class="color-option color-white" data-color="white"></button>
+            <button class="color-option color-green" data-color="green"></button>
+            <button class="color-option color-black" data-color="black"></button>
+            <button class="color-option color-orange" data-color="orange"></button>
+            <button class="color-option color-blue" data-color="blue"></button>
+        </div>
+    </div>
+    <div class="home-page" id="homePage">
+        <h1 class="site-title">KeYing</h1>
+        <p class="site-subtitle">· 以此纪念 ·</p>
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-tab="diary">日记</button>
+            <button class="nav-tab" data-tab="materials">资料</button>
+            <button class="nav-tab" data-tab="about">关于</button>
+        </nav>
+        <div class="content-area" id="contentArea">
+            <div class="content-panel active" id="panel-diary"></div>
+            <div class="content-panel" id="panel-materials"></div>
+            <div class="content-panel" id="panel-about"></div>
+        </div>
+    </div>
+</div>
+<div class="chat-modal" id="chatModal">
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input"><input type="text" id="chatInput" placeholder="输入消息..."><button id="chatSend">发送</button></div>
+    <button style="align-self:flex-end;background:none;border:none;color:#888;cursor:pointer;" id="closeChat">关闭</button>
+</div>
+<script>
+    (function() {
+        const entrancePage = document.getElementById('entrancePage');
+        const homePage = document.getElementById('homePage');
+        const hintText = document.getElementById('hintText');
+        const flowerSlots = document.getElementById('flowerSlots');
+        const colorPalette = document.getElementById('colorPalette');
+        const backBtn = document.getElementById('backBtn');
+        const correctSequence = ['yellow','purple','white','black'];
+        let currentFillIndex = 1; // 下一个要填充的位置索引（0已填充黄色）
+        let filledColors = ['yellow',null,null,null];
+        let gameComplete = false;
+        const colorMap = {
+            yellow:{hex:'#f0c850',glow:'0 0 45px rgba(240,200,80,0.7), 0 0 85px rgba(240,190,60,0.35), 0 0 130px rgba(240,180,50,0.2)'},
+            purple:{hex:'#9b6dff',glow:'0 0 45px rgba(155,109,255,0.7), 0 0 85px rgba(150,100,250,0.35), 0 0 130px rgba(140,90,240,0.2)'},
+            white:{hex:'#e8e6f0',glow:'0 0 45px rgba(235,233,240,0.7), 0 0 85px rgba(225,222,235,0.35), 0 0 130px rgba(215,210,228,0.2)'},
+            black:{hex:'#4a4a58',glow:'0 0 45px rgba(140,140,155,0.7), 0 0 85px rgba(130,130,148,0.35), 0 0 130px rgba(120,120,140,0.2)'},
+            red:{hex:'#d95555',glow:'0 0 45px rgba(217,85,85,0.7)'},
+            green:{hex:'#4fb870',glow:'0 0 45px rgba(79,184,112,0.7)'},
+            orange:{hex:'#e89240',glow:'0 0 45px rgba(232,146,64,0.7)'},
+            blue:{hex:'#5098e8',glow:'0 0 45px rgba(80,152,232,0.7)'}
+        };
+
+        // 生成花序彩色小点
+        function genBloom(el,hex){
+            el.innerHTML='';
+            for(let i=0;i<28;i++){
+                const d=document.createElement('div');
+                d.className='petal-dot';
+                const s=5+Math.random()*4;
+                d.style.width=s+'px';
+                d.style.height=s+'px';
+                d.style.left=(Math.random()*36)+'px';
+                d.style.top=(Math.random()*50)+'px';
+                d.style.background=hex;
+                d.style.opacity=0.7+Math.random()*0.3;
+                el.appendChild(d);
+            }
+        }
+
+        // 初始化所有花朵花序
+        function initBlooms(){
+            for(let i=0;i<4;i++){
+                const slot=flowerSlots.querySelector(`[data-slot="${i}"]`);
+                const c=slot.dataset.color;
+                const bloomEl = document.getElementById('bloom'+i);
+                if(bloomEl){
+                    genBloom(bloomEl, c&&colorMap[c] ? colorMap[c].hex : 'rgba(180,180,195,0.3)');
+                }
+            }
+        }
+
+        function updateBloom(i,c){
+            const bloomEl = document.getElementById('bloom'+i);
+            if(bloomEl){
+                genBloom(bloomEl, c&&colorMap[c] ? colorMap[c].hex : 'rgba(180,180,195,0.3)');
+            }
+        }
+
+        function fillSlot(i,c){
+            if(i===0||i>3) return;
+            const s=flowerSlots.querySelector(`[data-slot="${i}"]`);
+            if(!s) return;
+            filledColors[i]=c;
+            s.dataset.color=c;
+            s.classList.remove('empty-slot');
+            s.classList.add('filled','lit');
+            updateBloom(i,c);
+            const ring = s.querySelector('.glow-ring');
+            if(ring){
+                ring.style.boxShadow = colorMap[c]?.glow || '';
+                ring.style.opacity = '1';
+                ring.style.animation = 'gentlePulse 2.5s infinite';
+            }
+            // 隐藏虚线框
+            const indicator = s.querySelector('.empty-indicator');
+            if(indicator) indicator.style.opacity = '0';
+        }
+
+        function clearSlot(i){
+            if(i===0||i>3) return;
+            const s=flowerSlots.querySelector(`[data-slot="${i}"]`);
+            if(!s) return;
+            filledColors[i]=null;
+            s.dataset.color='';
+            s.classList.add('empty-slot');
+            s.classList.remove('filled','lit');
+            updateBloom(i,null);
+            const ring = s.querySelector('.glow-ring');
+            if(ring){
+                ring.style.boxShadow = 'none';
+                ring.style.opacity = '';
+                ring.style.animation = '';
+            }
+            const indicator = s.querySelector('.empty-indicator');
+            if(indicator) indicator.style.opacity = '1';
+        }
+
+        function resetAll(){
+            for(let i=1;i<=3;i++) clearSlot(i);
+            currentFillIndex=1;
+        }
+
+        function checkSeq(){
+            if(filledColors[1]==='purple' && filledColors[2]==='white' && filledColors[3]==='black'){
+                success();
+            } else {
+                hintText.style.color='#e05555';
+                hintText.textContent='顺序不对，请重新开始';
+                setTimeout(()=>{
+                    hintText.style.color='';
+                    hintText.textContent='请点亮四朵风信子';
+                },800);
+                resetAll();
+                updatePalette();
+            }
+        }
+
+        function handleColor(c){
+            if(gameComplete || currentFillIndex>3 || c==='yellow') return;
+            fillSlot(currentFillIndex, c);
+            currentFillIndex++;
+            updatePalette();
+            if(currentFillIndex > 3){
+                checkSeq();
+            }
+        }
+
+        function handleSlotClick(i){
+            if(gameComplete || i===0) return;
+            const s=flowerSlots.querySelector(`[data-slot="${i}"]`);
+            if(!s || s.classList.contains('empty-slot')) return;
+            // 取消此位置及之后的所有位置
+            for(let j=i; j<=3; j++) clearSlot(j);
+            currentFillIndex = i;
+            updatePalette();
+            hintText.textContent='请点亮四朵风信子';
+        }
+
+        function updatePalette(){
+            const opts=colorPalette.querySelectorAll('.color-option');
+            opts.forEach(o=> o.classList.toggle('disabled', currentFillIndex>3));
+        }
+
+        function success(){
+            gameComplete=true;
+            entrancePage.classList.add('fade-out');
+            setTimeout(()=>{
+                entrancePage.style.display='none';
+                homePage.classList.add('visible');
+                backBtn.classList.add('visible');
+            },800);
+        }
+
+        function goBack(){
+            homePage.classList.remove('visible');
+            backBtn.classList.remove('visible');
+            setTimeout(()=>{
+                homePage.style.display='none';
+                entrancePage.style.display='flex';
+                entrancePage.classList.remove('fade-out');
+                gameComplete=false;
+                resetAll();
+                currentFillIndex=1;
+                updatePalette();
+                hintText.textContent='请点亮四朵风信子';
+                hintText.style.color='';
+            },400);
+        }
+
+        // 事件绑定
+        colorPalette.addEventListener('click', e => {
+            const o = e.target.closest('.color-option');
+            if(o && !o.classList.contains('disabled')){
+                handleColor(o.dataset.color);
+            }
+        });
+
+        flowerSlots.addEventListener('click', e => {
+            const s = e.target.closest('.flower-slot');
+            if(s){
+                const i = parseInt(s.dataset.slot);
+                if(!isNaN(i)) handleSlotClick(i);
+            }
+        });
+
+        backBtn.addEventListener('click', goBack);
+        document.addEventListener('keydown', e => {
+            if(e.key==='Escape' && homePage.classList.contains('visible')) goBack();
+        });
+
+        // 初始化所有花序和黄色光晕
+        initBlooms();
+        const yellowRing = document.querySelector('[data-slot="0"] .glow-ring');
+        if(yellowRing){
+            yellowRing.style.boxShadow = colorMap.yellow.glow;
+            yellowRing.style.opacity = '1';
+            yellowRing.style.animation = 'gentlePulse 2.5s infinite';
+        }
+        updatePalette();
+
+        // ---- 主页内容 ----
+        const diaryData = [
+            {date:'1992年8月4日',text:'我最爱的“花”死了，为什么？为什么还是做不到。做了这么多，甚至连凶手都查不到。还是因为来的时间太晚了，不然……'},
+            {date:'1992年8月19日',text:'我明白他们让我做的事情了，除了帮助秦鹏生之外，还有一件事情就是这个。果然，他们就不可能给我真正的自由。'},
+            {date:'1992年8月20日',text:'不……我搞明白了……可是为什么？连其他的花也非死不可吗。'},
+            {date:'1992年10月2日',text:'好吧，只有这样……人类才有希望啊'}
+        ];
+        const diaryPanel = document.getElementById('panel-diary');
+        diaryPanel.innerHTML = diaryData.map((d,i)=>`<div class="diary-entry" data-index="${i}"><span class="diary-date">${d.date}</span><div class="diary-text">${d.text}</div></div>`).join('');
+        diaryPanel.addEventListener('click', e => {
+            const entry = e.target.closest('.diary-entry');
+            if(entry) entry.classList.toggle('open');
+        });
+
+        document.getElementById('panel-materials').innerHTML = `
+            <p style="color:#b0b0bc;">养花人计划</p>
+            <p class="deleted">-资料已删除-</p>
+            <p style="color:#b0b0bc; margin-top:1.5rem;">断点计划</p>
+            <p class="deleted">-资料已删除-</p>
+        `;
+
+        const persons = [
+            {color:'yellow',name:'夏维诗',death:'追日馆事件',murderer:'？',date:'1992.08.04',extra:'还请知情人士帮助'},
+            {color:'purple',name:'伍雨',death:'风信子事件',murderer:'朝仓 慎吾',date:'1992.10.06'},
+            {color:'white',name:'郁钦洋',death:'风信子事件',murderer:'朝仓 慎吾',date:'1992.10.09'},
+            {color:'black',name:'甘眬',death:'风信子事件',murderer:'朝仓 慎吾',date:'1992.10.10'}
+        ];
+        let incenseCounts = {yellow:0,purple:0,white:0,black:0};
+        const aboutPanel = document.getElementById('panel-about');
+
+        function renderAboutList(){
+            aboutPanel.innerHTML = persons.map(p=>`
+                <div class="person-card" data-color="${p.color}">
+                    <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${colorMap[p.color]?.hex};"></span>
+                    <span>${p.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function showPersonDetail(color){
+            const p = persons.find(x=>x.color===color);
+            aboutPanel.innerHTML = `
+                <div class="back-to-list">← 返回列表</div>
+                <h3 style="color:#e0d8c8;">${p.name}</h3>
+                <p style="color:#b0b0bc;">死于 ${p.death} · 凶手：${p.murderer} · ${p.date}</p>
+                ${p.extra?`<p style="color:#d4b87a; margin:0.5rem 0;">${p.extra}</p>`:''}
+                <button class="incense-btn" id="incenseBtn">🕯️ 上香 <span class="incense-count">${incenseCounts[color]||0}</span></button>
+                ${color==='yellow'?'<button class="incense-btn" id="privateChatBtn" style="margin-left:0.5rem;">私聊</button>':''}
+            `;
+            document.querySelector('.back-to-list').addEventListener('click', renderAboutList);
+            document.getElementById('incenseBtn')?.addEventListener('click', ()=>{
+                incenseCounts[color] = (incenseCounts[color]||0) + 1;
+                const countSpan = document.querySelector('.incense-count');
+                if(countSpan) countSpan.textContent = incenseCounts[color];
+                const btn = document.getElementById('incenseBtn');
+                btn.style.transform='scale(1.1)'; setTimeout(()=> btn.style.transform='', 200);
+            });
+            if(color==='yellow'){
+                document.getElementById('privateChatBtn').addEventListener('click', openChat);
+            }
+        }
+
+        aboutPanel.addEventListener('click', e => {
+            const card = e.target.closest('.person-card');
+            if(card) showPersonDetail(card.dataset.color);
+        });
+        renderAboutList();
+
+        // 聊天逻辑
+        const chatModal = document.getElementById('chatModal');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.getElementById('chatSend');
+        let chatStep = 0;
+        function openChat(){
+            chatModal.classList.add('active');
+            chatMessages.innerHTML='<p style="color:#aaa;">克盈：你好，有什么事吗？</p>';
+            chatStep=0;
+            chatInput.value='';
+        }
+        document.getElementById('closeChat').addEventListener('click', ()=> chatModal.classList.remove('active'));
+        chatSend.addEventListener('click', ()=>{
+            const msg = chatInput.value.trim();
+            if(!msg) return;
+            chatMessages.innerHTML += `<p style="color:#e0d8c8;">你：${msg}</p>`;
+            if(msg==='小林雅子' && chatStep===0){
+                chatMessages.innerHTML += `<p style="color:#aaa;">克盈：我了解了，为了感谢您，我赋予你知晓这一切真相的权利。</p>`;
+                chatMessages.innerHTML += `<p style="color:#d4b87a;">邮箱：AUMICCIME@vessel.com<br>密码：YuYu04060910</p>`;
+                chatStep=1;
+            } else {
+                chatMessages.innerHTML += `<p style="color:#aaa;">克盈：……</p>`;
+            }
+            chatInput.value='';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+
+        // 标签切换
+        document.getElementById('navTabs').addEventListener('click', e => {
+            const tab = e.target.closest('.nav-tab');
+            if(!tab) return;
+            document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+            tab.classList.add('active');
+            document.querySelectorAll('.content-panel').forEach(p=>p.classList.remove('active'));
+            document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+        });
+
+        // 星空与萤火背景
+        function createParticles(){
+            const c=document.getElementById('particlesContainer');
+            for(let i=0;i<50;i++){
+                const s=document.createElement('div'); s.className='star';
+                s.style.width=(1+Math.random()*3)+'px'; s.style.height=s.style.width;
+                s.style.left=Math.random()*100+'%';
+                s.style.animationDuration=10+Math.random()*25+'s';
+                s.style.animationDelay=Math.random()*20+'s';
+                c.appendChild(s);
+            }
+            for(let i=0;i<18;i++){
+                const f=document.createElement('div'); f.className='firefly';
+                f.style.width=(4+Math.random()*6)+'px'; f.style.height=f.style.width;
+                f.style.left=Math.random()*100+'%';
+                f.style.bottom=Math.random()*30+'%';
+                f.style.animationDuration=7+Math.random()*12+'s';
+                f.style.animationDelay=Math.random()*10+'s';
+                c.appendChild(f);
+            }
+        }
+        createParticles();
+    })();
+</script>
+</body>
+</html>
