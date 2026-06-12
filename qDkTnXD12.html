@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KM搜索</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Courier+Prime:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #c9a961;
+            --dark-gold: #8a7342;
+            --light-gold: #e8d5a3;
+            --bg-dark: #0f0f0f;
+            --bg-gray: #1a1a1a;
+            --text-gray: #b0b0b0;
+            --pure-black: #000000;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'Courier Prime', serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1814 50%, #2d2a1e 100%);
+            color: var(--text-gray);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 老电影颗粒噪点 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.4;
+        }
+
+        /* 胶片边框效果 */
+        .film-border {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 24px;
+            background: repeating-linear-gradient(
+                90deg,
+                #000 0px,
+                #000 8px,
+                #1a1a1a 8px,
+                #1a1a1a 16px
+            );
+            z-index: 100;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .film-border.bottom {
+            top: auto;
+            bottom: 0;
+            border-bottom: none;
+            border-top: 2px solid var(--gold);
+        }
+
+        /* 卓别林剪影装饰 */
+        .chaplin-silhouette {
+            position: absolute;
+            top: 60px;
+            right: 5%;
+            width: 120px;
+            height: 200px;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .chaplin-silhouette svg {
+            width: 100%;
+            height: 100%;
+            fill: #000;
+            filter: drop-shadow(0 0 10px rgba(201, 169, 97, 0.3));
+        }
+
+        .hat-silhouette {
+            position: absolute;
+            top: 80px;
+            left: 8%;
+            width: 80px;
+            height: 50px;
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 80px 20px 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 标题区域 */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--gold);
+            letter-spacing: 0.3em;
+            text-shadow: 0 0 20px rgba(201, 169, 97, 0.4), 2px 2px 4px rgba(0,0,0,0.8);
+            margin-bottom: 10px;
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .logo-sub {
+            font-size: 0.9rem;
+            color: var(--dark-gold);
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            font-family: 'Courier Prime', monospace;
+        }
+
+        .divider {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '◆';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold);
+            font-size: 12px;
+        }
+
+        .divider::before { left: 20%; }
+        .divider::after { right: 20%; }
+
+        /* 搜索区域 */
+        .search-box {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--gold);
+            border-radius: 4px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(201, 169, 97, 0.15), inset 0 0 20px rgba(0,0,0,0.5);
+            margin-bottom: 40px;
+        }
+
+        .search-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--gold), transparent, var(--gold));
+            z-index: -1;
+            border-radius: 4px;
+            opacity: 0.3;
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid var(--dark-gold);
+            color: var(--light-gold);
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-family: 'Courier Prime', 'Noto Serif SC', monospace;
+            border-radius: 2px;
+            outline: none;
+            transition: all 0.3s ease;
+            letter-spacing: 0.1em;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(201, 169, 97, 0.2);
+            background: rgba(10, 10, 10, 0.95);
+        }
+
+        .search-input::placeholder {
+            color: #555;
+            font-style: italic;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #1a1a1a, #2d2a1e);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-family: 'Noto Serif SC', serif;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            letter-spacing: 0.2em;
+            font-weight: 700;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-btn:hover {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 20px rgba(201, 169, 97, 0.4);
+        }
+
+        .search-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .search-btn:hover::after {
+            left: 100%;
+        }
+
+        .hint-text {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #666;
+            font-family: 'Courier Prime', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        /* 结果区域 */
+        .results-area {
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .results-area.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--dark-gold);
+            padding: 25px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            border-radius: 2px;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gold);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .result-card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 0 25px rgba(201, 169, 97, 0.2);
+            transform: translateX(5px);
+        }
+
+        .result-card:hover::before {
+            opacity: 1;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            color: var(--light-gold);
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 0.15em;
+        }
+
+        .result-meta {
+            font-size: 0.85rem;
+            color: var(--dark-gold);
+            font-family: 'Courier Prime', monospace;
+            letter-spacing: 0.1em;
+        }
+
+        .result-meta span {
+            margin-right: 15px;
+        }
+
+        .no-result {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+            letter-spacing: 0.2em;
+            border: 1px dashed #333;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .no-result-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0f0f0f, #1a1814);
+            border: 2px solid var(--gold);
+            max-width: 800px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 50px rgba(201, 169, 97, 0.3);
+            border-radius: 2px;
+        }
+
+        .modal-header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--dark-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            color: var(--gold);
+            font-weight: 700;
+            letter-spacing: 0.2em;
+        }
+
+        .modal-close {
+            background: none;
+            border: 1px solid var(--dark-gold);
+            color: var(--gold);
+            width: 36px;
+            height: 36px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .modal-close:hover {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+        }
+
+        .modal-body {
+            padding: 30px;
+            font-family: 'Courier Prime', 'Noto Serif SC', monospace;
+            line-height: 1.8;
+            color: #ccc;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+        }
+
+        .modal-body .content-block {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px dashed #333;
+        }
+
+        .modal-body .content-block:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .modal-body .file-label {
+            display: inline-block;
+            background: rgba(201, 169, 97, 0.15);
+            border: 1px solid var(--dark-gold);
+            color: var(--gold);
+            padding: 3px 10px;
+            font-size: 0.75rem;
+            margin-bottom: 15px;
+            letter-spacing: 0.1em;
+            border-radius: 2px;
+        }
+
+        .modal-body h1, .modal-body h2, .modal-body h3 {
+            color: var(--light-gold);
+            margin: 20px 0 15px;
+            font-family: 'Noto Serif SC', serif;
+            letter-spacing: 0.1em;
+        }
+
+        .modal-body h1 { font-size: 1.5rem; }
+        .modal-body h2 { font-size: 1.2rem; }
+        .modal-body h3 { font-size: 1.1rem; }
+
+        .modal-body p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        .modal-body strong, .modal-body b {
+            color: var(--light-gold);
+            font-weight: 700;
+        }
+
+        .modal-body em {
+            color: var(--gold);
+        }
+
+        /* 链接卡片特殊样式 */
+        .result-card.link-card::after {
+            content: '↗';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold);
+            font-size: 1.5rem;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .result-card.link-card:hover::after {
+            opacity: 1;
+        }
+
+        /* 胶片孔装饰 */
+        .sprocket-holes {
+            position: fixed;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 50;
+            opacity: 0.3;
+        }
+
+        .sprocket-holes.right {
+            left: auto;
+            right: 10px;
+        }
+
+        .hole {
+            width: 8px;
+            height: 12px;
+            background: #333;
+            border-radius: 2px;
+            border: 1px solid #444;
+        }
+
+        /* 闪烁动画 */
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.95; }
+        }
+
+        .flicker {
+            animation: flicker 4s infinite;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .logo { font-size: 2.5rem; }
+            .search-input-wrapper { flex-direction: column; }
+            .search-btn { width: 100%; }
+            .chaplin-silhouette { display: none; }
+            .sprocket-holes { display: none; }
+        }
+
+        /* 滚动条样式 */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #0f0f0f;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--dark-gold);
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: var(--gold);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="film-border"></div>
+    <div class="film-border bottom"></div>
+
+    <div class="sprocket-holes">
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="sprocket-holes right">
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+
+    <div class="chaplin-silhouette">
+        <svg viewBox="0 0 100 220" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="50" cy="25" rx="22" ry="7" fill="black"/>
+            <rect x="33" y="12" width="34" height="14" rx="2" fill="black"/>
+            <circle cx="50" cy="48" r="13" fill="black"/>
+            <rect x="45" y="52" width="10" height="3" rx="1" fill="black"/>
+            <path d="M 38 62 Q 35 80 40 95 L 60 95 Q 65 80 62 62 Z" fill="black"/>
+            <rect x="42" y="95" width="7" height="55" fill="black"/>
+            <rect x="51" y="95" width="7" height="55" fill="black"/>
+            <ellipse cx="38" cy="150" rx="10" ry="5" fill="black"/>
+            <ellipse cx="62" cy="150" rx="10" ry="5" fill="black"/>
+            <rect x="35" y="100" width="4" height="40" fill="black" transform="rotate(15 35 100)"/>
+            <line x1="65" y1="65" x2="80" y2="110" stroke="black" stroke-width="3" stroke-linecap="round"/>
+            <line x1="80" y1="110" x2="80" y2="160" stroke="black" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="80" cy="165" r="4" fill="black"/>
+        </svg>
+    </div>
+
+    <div class="hat-silhouette">
+        <svg viewBox="0 0 80 50" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="35" rx="35" ry="8" fill="black"/>
+            <rect x="22" y="15" width="36" height="20" rx="3" fill="black"/>
+            <ellipse cx="40" cy="15" rx="20" ry="6" fill="black"/>
+        </svg>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo flicker">KM搜索</div>
+            <div class="logo-sub">KM Search Engine</div>
+            <div class="divider"></div>
+        </div>
+
+        <div class="search-box">
+            <div class="search-input-wrapper">
+                <input type="text" class="search-input" id="searchInput" placeholder="输入精确关键词..." autocomplete="off">
+                <button class="search-btn" onclick="performSearch()">检索</button>
+            </div>
+            <div class="hint-text">[ 精确匹配模式 · 多一字少一字均无法检索 ]</div>
+        </div>
+
+        <div class="results-area" id="resultsArea">
+            <!-- 结果动态插入 -->
+        </div>
+    </div>
+
+    <!-- 模态框 -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">标题</div>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 内容动态插入 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 数据库
+        const database = {
+            "宋餘": {
+                type: "file",
+                title: "宋餘",
+                files: ["文件1"],
+                contents: [`宋餘\n\n主要成分：喹硫平、碳酸锂\n\n用于重度治疗精神分裂症与双相情感障碍\n\n禁忌症：心血管疾病，肝肾功能不全，癫痫/惊厥病史，孕妇，帕金森患者等\n\n药物编号：YXC-089`]
+            },
+            "宋唯": {
+                type: "file",
+                title: "宋唯",
+                files: ["文件2"],
+                contents: [`宋唯\n\n主要成分：氟洛沙平、阿普唑仑\n\n用于治疗难逆转型精神分裂症\n\n禁忌：和阿尔洛尔联用\n\n药物编号：YXB-002`]
+            },
+            "阿尔洛尔": {
+                type: "file",
+                title: "阿尔洛尔",
+                files: ["文件3"],
+                contents: [`阿尔洛尔\n\n阿片类受体药物\n\n用于术后镇痛，一般用于婴幼儿术后或婴幼儿戒断综合征，不过要控制剂量\n\n易引发：呼吸衰竭，低血压，缩瞳，尿潴留，便秘\n\n药物编号：YXA-029`]
+            },
+            "大云市人民医院": {
+                type: "file",
+                title: "大云市人民医院",
+                files: ["文件4"],
+                contents: [`【旧闻纪实】1992年七月人事更迭剧变，大云市人民医院发展态势骤转\n\n大云市融媒体旧讯（1992年7月纪实）\n坐落于群山腹地的大云市人民医院，曾是本市规模最大、设备最全、群众认可度最高的综合性公立医院，承担着全城及周边山区乡镇数十万群众的诊疗、急救、公共卫生工作。建院多年以来，该院诊疗秩序稳定、医德民风淳朴，是山城百姓心中最信赖的民生医疗机构。\n\n然在1992年7月，院内突发一场前所未有的深度人事震荡。因一起内部重大突发事件，上级主管部门对大云市人民医院启动全面整改整顿。此次整顿力度空前，医院从院领导班子、中层科室干部、核心行政管理层至重点科室负责人，自上而下全部完成更替，原整套管理团队全数撤换、调离、免职。\n\n本次大规模人事洗牌覆盖全院核心管理层，延续多年的院内管理制度、诊疗体系、运营模式被彻底推翻。大量深耕临床、熟悉山城病患情况、拥有丰富管理经验的骨干人员尽数离场，一批全新人员仓促接手医院管理工作。\n\n因新旧团队衔接断层、管理体系骤然重构、院内秩序动荡不稳，此次剧变之后，大云市人民医院整体运行状态出现断崖式下滑。\n\n据院内老职工回忆，自1992年七月人事大换血之后，医院原本成熟的诊疗流程被打乱，科室配合脱节、管理漏洞频出、服务质量持续下降。新上任管理团队对本地医疗需求、山区病患特点、院内积淀的工作体系全然不熟，决策生硬、调度失当，导致院内纠纷增多、口碑持续走低。\n\n与此同时，患者就医体验大幅下滑，本地百姓就医信任度急剧流失。以往乡镇患者专程进城求医的盛况不复存在，大量病患转而选择外地市区医院就诊。医院门诊量、住院量、收治率逐年锐减，营收规模大幅缩水，人才流失愈发严重，形成恶性循环。\n\n自此，曾经稳居山城龙头地位的大云市人民医院，彻底一蹶不振，从区域标杆医院沦为本地口碑平平、发展停滞的普通医疗机构。这场1992年盛夏的隐秘人事剧变，也成为大云市医疗发展史上一道无法抹去的分水岭，直接改写了该院此后数十年的发展命运。\n\n时至今日，当地老一辈居民仍时常提及：大云市人民医院的荣光，永远停留在了1992年七月之前。`]
+            },
+            "秦鹏生": {
+                type: "file",
+                title: "秦鹏生传",
+                files: ["文件5"],
+                contents: [`《秦鹏生传》\n\n卷一：云城布衣，际遇天殊\n\n秦鹏生，籍贯大云市，生于群山环抱的城西老巷，是典型的内陆山城子弟。大云市坐落在连绵叠翠的山岭之间，群山围廓、层峦起伏，城在山中、山藏城中，无江海通航之便，独有深山静谧、山野淳朴的烟火气息。闭塞的山地环境，造就了这座城市安稳内敛的底色，也让少年时代的秦鹏生从未见过远洋盛景，日子朴素且清贫。父母勤恳务工，守着山间小城的平凡生计，让他安稳长大，也让他早早看透山地小城底层生活的拮据与不易。\n\n少年时期的秦鹏生，从无经商逐利的野心，也无心追逐外界风口浪潮。课余之时，他常漫步城郊山野、山间集镇，看群山绵延、市井谋生，看山城百姓勤恳度日，也时常遇见深山里失依的孤儿、因病致困的弱势家庭。生性柔软善良的他，目睹诸多山野人家的疾苦，心底悄然埋下善念的种子：若此生有幸得有余力，必尽己所能，帮扶山里的困厄之人。\n\n成年之后的秦鹏生，始终过着平淡质朴的普通人生活，踏实度日、安稳生活，无创业宏图，无资本布局，一生未曾主动涉足商海，更从未想过自己会与顶尖集团、亿万产业产生交集。他的人生本该是寻常布衣的烟火岁月，却因一场突如其来的偶然际遇，彻底改写轨迹。\n\n无人预料的机缘降临，毫无商业铺垫、无深耕积累的秦鹏生，一夜之间实现阶层跨越，骤然暴富，意外跻身资本行列，成为知名跨国高端酒店集团Vessel集团最大自然人股东之一。Vessel集团深耕全球高端旅居服务，旗下高端酒店产业遍布伦敦、新加坡、东京等国际核心都市，是享誉海外的高端酒店品牌。这场突如其来的财富馈赠，没有步步为营的打拼，没有运筹帷幄的布局，纯粹是命运馈赠的殊遇，让一介生于深山小城的平凡布衣，骤然手握跨国酒店集团的核心股权，坐拥遍布全球多国的庞大产业与财富。深山小城的朴素少年，就此与国际高端旅居产业、全球都市商业版图产生了奇妙的联结。\n\n骤然暴富的人生巨变，并未让秦鹏生迷失本心。一朝坐拥巨额身家，他却始终保留着市井布衣的纯粹与温和，不慕浮华、不逐虚名，极少参与商界应酬，远离名流喧嚣。旁人皆惊叹他的天降好运，他却始终清醒：突如其来的财富，不是独享的奢靡资本，而是托付在自己手中、用以济世助人的责任。这份意外所得，让他年少时的善意初心，终于有了落地生根的底气。\n\n卷二：骤得富贵，以善润山乡\n\n坐拥Vessel集团核心股权、跻身行业顶层后，秦鹏生并未沉溺于奢靡享乐，而是将这场意外财富尽数回馈故土。他扎根生于斯长于斯的内陆山城大云市，以本心立公益，以财富济山民，搭建起长效、纯粹的公益体系，拒绝一切流量式、作秀式的短期慈善，默默深耕山城与周边山区的民生帮扶事业。\n\n为规范化深耕公益事业，秦鹏生牵头创立云舟慈善基金会，以Vessel跨国酒店集团的产业资源为坚实依托，每年固定划拨企业营收百分之五作为公益专项基金，亲自担任基金会理事长。所有善款收支、帮扶流向全程公开公示，透明公正、专款专用，彻底杜绝公益乱象，只为踏实帮扶弱者。\n\n结合大云市深山小城、乡村散落、山区民生薄弱的本土现状，秦鹏生将公益事业划分为三大核心板块，深耕多年、从未间断。\n\n其一，困境儿童兜底帮扶。他亲自走遍大云市群山村落、城乡福利院与山区留守学校，精准对接深山失怙孤儿、偏远村落留守孩童、困境少年，全额资助其生活、学业、医疗所需，为无数困于深山的无家孩童撑起安稳天地。也正是在常年深入山区的公益走访中，目睹诸多孩童孤苦无依、无人照拂的境遇，秦鹏生心生恻隐，下定决心收养孤儿，为苦难孩童撑起专属的温暖小家。`]
+            },
+            "云舟慈善基金会": {
+                type: "link",
+                title: "云舟慈善基金会",
+                url: "https://ttt112132tttr.github.io/Xiushankejiguan/Yunzhoucishan.html"
+            },
+            "黑宗鹄庭园": {
+                type: "file",
+                title: "黑宗鹄庭园",
+                files: ["文件6", "文件7"],
+                contents: [
+                    `【1992年10月3日旧闻】休山区黑宗鹄庭园幼儿智力赛落幕，患病幼婴斩获"智力比拼王"称号\n\n大云市融媒体讯（1992年10月3日）\n近日，大云市休山区黑宗鹄庭园成功举办年度幼儿智力比拼竞赛，面向低龄婴幼儿开展专注力、认知力、反应力综合测评比拼。本次赛事吸引片区众多孩童参与，最终，一名年仅八至九月龄的幼童凭借远超同龄幼儿的感知能力与聪慧表现，脱颖而出，成功摘得本次赛事最高荣誉——黑宗鹄庭园幼儿智力比拼王称号，成为本次赛事最令人惊叹的小小获奖者。\n\n据了解，这名幼童由云舟慈善基金会创办人秦鹏生收养抚育。自襁褓初生之际，秦鹏生便常年携其遍历各大药房、诊疗场所，自幼浸润医药氛围，辨识药材、熟悉诊疗环境。小小婴孩虽尚未言语成型，却对药理器物、诊疗秩序有着天然的熟悉度与敏锐感知，与生俱来般自带沉静、细致的医者气质，被熟知其事的旁人戏称"生来便是一副医者模样"。\n\n令人唏嘘的是，天赋异禀的幼童并未被命运温柔眷顾。今年六月，该名幼童因肺部重疾，入住大云市人民医院接受专项治疗，确诊肺部病变后，顺利完成肺根切除手术，针对性清除病变肺根病灶、修复胸腔呼吸系统损伤，历经数月住院疗养，于近日方才顺利康复出院。对于低龄婴儿而言，肺根切除属于高难度精细胸科手术，术中风险高、术后恢复期漫长，孩子小小年纪便历经病痛折磨与手术考验，令人心疼不已。\n\n纵使历经重病手术、身体尚未完全复原，这名幼童依旧展现出惊人的天赋与毅力。休养期间，他的认知、反应、逻辑感知能力丝毫未受病痛影响。本次黑宗鹄庭园幼儿智力比拼中，他从容应对各项测评项目，思维敏锐、专注力极强，远超同龄孩童平均水平，以绝对优势拿下赛事桂冠，获评"智力比拼王"。\n\n此事在休山区、墨园片区广为流传，成为一段极具反差感的暖心佳话。一边是幼小身躯历经重症手术的磨难，一边是天赋卓绝、聪慧过人的惊人表现。众人纷纷感慨，这名由秦鹏生悉心抚育的幼婴，纵使命运多舛、病痛缠身，依旧天赋斐然、灵气不减，在小小年纪便绽放出独属于自己的耀眼光芒。`,
+                    `Vessel集团渊源颇深\n\n大云市休山区黑宗鹄庭园自建成运营以来，凭借幼儿赛事、休闲庭院等项目常年备受市民关注，但鲜少有人知晓，这座庭园的股权结构里藏着一位身份模糊的神秘股东。此人极少公开露面，行事低调却出手阔绰，圈内一直流传着他独有的两大特殊喜好：一是频繁将名下多处房产无偿赠予他人，二是专门驯养极具攻击性的猛禽猎头鹰，两种截然不同的爱好，为其蒙上了一层浓重的神秘色彩。\n\n这位神秘股东名下手握多处商铺、住宅与景观地产，赠予房产从不设苛刻门槛，亲友\n\n而他私人饲养的猎头鹰，更是旁人不敢轻易靠近的存在。猎头鹰属于性情暴戾的大型猛禽，利爪锋利、攻击性极强，寻常人靠近极易被抓伤，寻常庭院、私人宅邸极少有人敢饲养。但这名股东却驯养了数只，除日常专人投喂照料外，他还发掘出猎头鹰特殊的用途——依靠猛禽极强的认路与飞行能力，跨区域传递私密信件，不少不便走常规邮寄渠道的消息，都经由猎头鹰往返递送，避开所有人的视线。\n\n曾有本地媒体记者获准独家探访其私宅，也是为数不多进入他居所的外部人员。与外界想象的冷峻、疏离的豪门宅邸不同，他的居所庭院清幽、草木繁茂，各处精心栽种各类绿植花草，四时常青、雅致静谧，一派温润恬淡的景象。凶猛的猎头鹰栖息于专属鹰架之上，静立蛰伏、气场凛冽，与满屋清雅花草形成极致的反差，刚柔并济的格局，让记者印象极为深刻。\n\n在客厅正墙的显眼位置，悬挂着一副亲笔题写的墨字诗句，笔锋沉稳苍劲，字字醒目：克勤恒有道，盈满自无疆。\n\n短短十字意蕴深远，前句守本心、重勤勉，后句喻胸襟、藏格局，似乎暗合他低调行善、广施馈赠的行事准则，也让他神秘的形象多了一层深沉的底色。\n\n此次家访采访中，记者专门抛出两个大众最关心的核心疑问：其一为何常年无偿赠送房产，其二为何独独偏爱驯养凶猛的猎头鹰、以鹰传信。面对镜头与提问，这位股东态度淡然，全程言辞模糊、刻意留白，只用几句通俗的场面话草草糊弄作答。谈及赠房之举，他只称名下不动产充裕，乐于成人之美、结善结缘；谈及饲养猎头鹰，仅说偏爱猛禽傲骨，飞鸟传信清净自在，无需繁杂世俗媒介。全程避重就轻，对深层动机、个人经历、产业布局只字不提，巧妙回避了所有关键问题。\n\n随着各类线索逐步拼凑，坊间业内普遍推测，这名深居简出的神秘股东，与大云市顶尖企业Vessel集团存在密不可分的深层渊源。Vessel集团产业庞大、根基深厚，掌控本地大量高端地产与商业资源，恰好对应他手握海量房产、肆意馈赠的财力底蕴。外界猜测，他或是Vessel集团隐匿的核心出资人，或是手握隐秘合作权限的幕后合伙人，而专属猎头鹰传递的私密信件，大概率关联集团不对外公开的隐秘业务与人情往来。\n\n时至今日，没有任何官方资料披露这位股东的真实身份，他疯狂赠房、驯养猛禽的真实目的无人知晓，墙上十字诗句暗藏的深意无从解读，与Vessel集团的深层关联也始终悬而未决。黑宗鹄庭园因这位神秘的幕后股东，平添无数都市秘闻，常年成为大云市民私下热议的未解传闻。`
+                ]
+            },
+            "墨园": {
+                type: "file",
+                title: "墨园悬案",
+                files: ["文件8"],
+                contents: [`墨园悬案：三人离奇坠亡，真相至今尘封\n\n大云市墨园片区曾发生一桩轰动全城的离奇坠楼事件，事发当日有三名不明身份人员相继从高空坠落，路人发现后第一时间送医抢救，最终三人均抢救无效身亡。\n\n案件疑点重重，最先困扰办案人员的便是坠落源头无从查证。整片墨园高楼林立，核心地标为220米高的云舟慈善基金会主楼，区域内多栋高层办公楼、居民楼宇交错分布，现场缺少清晰目击证人，多处监控设备存在缺失故障，无法确定三人究竟从哪一栋楼宇、哪一层天台坠落。更为诡异的是，三名死者身份完全无法核实，随身没有证件、手机等可辨识物品，其中一人还是少见的白人外籍面孔，户籍、出入境记录均查无匹配信息，没有人知晓他们为何会出现在墨园。\n\n当地公安迅速成立专案组开展多轮排查，走访周边商户、住户与园区工作人员，比对失踪人口档案、外籍入境登记信息，反复勘查所有高层建筑天台与坠落地现场，可多条调查线索全部中断，既无法确认死者身份，也无法厘清坠楼是意外、轻生还是人为所致，诸多关键疑点始终找不到合理解释，常规刑侦调查最终只能搁置，案件不了了之，没有对外出具完整定论。\n\n为破解这起悬案，大云市政府后续专门委托一名身份未知的私家侦探介入独立调查，交由其梳理警方遗漏线索、深挖隐藏细节。经过一段时间走访取证与私下摸排，这名侦探据称已经梳理出完整事件结论，但相关调查记录、推理结果全程未向网络、媒体公开，仅有少数相关部门内部知晓内容，普通市民无从窥见分毫。\n\n时至今日，墨园这起三人身亡坠楼案依旧是本地流传已久的未解传闻。当地居民、知情网友始终对案件内情充满好奇，时常讨论三名无身份死者的来历、外籍男子的背景、侦探未公开的真相，各类猜测层出不穷，整件事笼罩着一层久久散不去的迷雾。`]
+            },
+            "王杨": {
+                type: "file",
+                title: "王杨",
+                files: ["文件9", "文件10"],
+                contents: [
+                    `王杨：大云市休山大酒店负责人 撰写：飞扬新闻 1992年6月报\n\n王杨，现任大云市休山大酒店全权负责人，深耕高端酒店运营管理行业多年，具备成熟的酒店管理经验与精细化运营思维，全权统筹休山大酒店的日常经营、服务管控、团队管理与品牌落地等各项工作。\n\n大云市休山大酒店，是跨国高端酒店品牌Vessel集团旗下的山城核心门店。依托Vessel集团遍布伦敦、新加坡、东京等国际都市的高端旅居产业体系与成熟品牌资源，休山大酒店扎根群山环抱的大云市，是当地为数不多的接轨国际化高端服务标准的高端酒店。酒店依托大云市静谧的山城生态、山野人文特色，融合Vessel集团轻奢、雅致、暖心的全球服务理念，成为大云市政务接待、商旅出行、高端旅居、城市文旅的标杆性场所。\n\n作为门店核心负责人，王杨始终秉持Vessel集团的品牌初心，同时深耕本土市场，贴合大云市山城发展特质，平衡国际化服务标准与本土化人文温情。从业以来，他坚持以品质为核心、以服务为根基，严格规范酒店软硬件设施、客房服务、餐饮配套、会务接待等全流程标准，带领团队打磨服务细节，升级旅居体验，让身处深山小城的休山大酒店，始终保持与集团全球门店同步的高端品质。\n\n在深耕经营的同时，王杨积极响应Vessel集团股东秦鹏生的公益理念，主动联动云舟慈善基金会，依托休山大酒店的本土资源，参与大云市山区助学、困境儿童帮扶、山城民生公益等相关活动。他始终认为，扎根一方水土的企业，既要做好经营服务，也要主动承担社会责任，以企业微光回馈山城故土。\n\n凭借专业的运营能力、严谨的管理态度与暖心的服务理念，王杨带领休山大酒店稳步发展，不仅打响了Vessel集团在大云市的品牌口碑，更成为大云市高端酒店行业的标杆从业者，为山城文旅产业发展注入了持久活力。`,
+                    `都市旧闻纪实：佳偶天成远赴东瀛蜜月，东京之行疑生变数，佳人性情骤变\n\n大云市民生旧讯\n早前，大云市一对备受全城艳羡的璧人王杨、沈铃正式缔结良缘。其中，新郎王杨为大云市知名企业Vessel集团旗下休山大酒店核心负责人，深耕本土商旅产业，行事沉稳有度，在业界拥有良好口碑与人脉底蕴；新娘沈铃则拥有一段特殊的职业过往，曾是大云市人民医院的在岗护士，专业素养扎实、待人温柔耐心，深受患者与同事认可，却因1992年7月医院全域管理层重大整顿风波，随院内人员整改调整彻底卸任，褪去医护官职，回归平凡生活。二人相识相知多年，性情互补、志趣相投，三观契合、温情相伴，无论是待人处事的品性，还是生活磨合的默契，都堪称天造地设、无可挑剔的模范夫妻。二人成婚的消息传出后，亲友邻里、相识众人皆纷纷送上祝福，称赞二人是难得一见的绝佳婚配，是山城坊间人人称道的神仙眷侣。\n\n为庆贺新婚之喜，也为留存专属二人的美好回忆，婚后不久，王杨便携妻子沈铃远赴日本东京，开启专属蜜月之旅。此次东瀛之行，二人全程下榻东京核心商圈的Vessel酒店，该酒店格调雅致、区位优越，是当地极具口碑的高端旅居场所，往来多为各地商旅与度假人士，环境静谧且私密性极强，本应是二人温存相伴、欢度蜜月的绝佳之地。\n\n东京旅途前期，二人依旧温情缱绻，览都市风光、品异国风物，一切顺遂安然。可无人预料，这场看似圆满甜蜜的蜜月之旅，却悄然成为二人关系与沈铃个人状态的重要转折点。自入驻Vessel酒店、深度旅居东京之后，沈铃的言行举止、神态心性开始悄然发生翻天覆地的变化，仿若彻底换了一个人。\n\n昔日温婉柔和、开朗细腻的性情不复存在，取而代之的是疏离淡漠的神态、愈发沉默的性格，待人待事的态度、日常言行习惯皆与从前判若两人。这种突兀的转变毫无征兆，既无旅途争执，也无意外变故，突如其来的性情蜕变让丈夫王杨倍感陌生与费解，始终无法探寻背后缘由。\n\n因沈铃性情转变诡异、毫无头绪，满心疑惑的王杨为查清妻子性情骤变的背后隐情，特地聘请了东京当地两位知名私家侦探——资深探员城塚七月与新锐侦探北崎铃音，二人彼时常驻东京Vessel酒店周边处理涉外疑难委托，拥有极强的细节探查与线索摸排能力。受王杨委托后，二人全程跟进二人蜜月旅居轨迹，细致核查酒店入住记录、行程动线、接触人员等各类细节，早已察觉沈铃状态的诡异反差，断定其变化并非普通心境波动，背后定然藏有不为人知的隐秘。但二人探查至终，并未向外披露任何调查细节与研判结果，始终严守委托秘密。\n\n整段东京蜜月行程结束，返程归来的沈铃彻底褪去了往日的模样，性情、气场、思维方式全然革新，仿佛在繁华陌生的东京都市，被未知的人与事悄然重塑。\n\n时至今日，大云市依旧无人知晓沈铃在东京旅居期间，究竟经历了何种际遇、听闻何事、接触何人。城塚七月与北崎铃音未曾对外透露分毫相关见闻，Vessel酒店的日常记录亦无异常线索留存。这场发生在蜜月途中的诡异蜕变，成为萦绕在这对天造地设夫妻身上的一桩未解谜题，引得无数熟人好奇揣测，久久无解。`
+                ]
+            },
+            "猎头鹰": {
+                type: "file",
+                title: "猎头鹰",
+                files: ["文件11"],
+                contents: [`猎头鹰物种介绍\n\n猎头鹰是一类存世数量极少、分布范围极度受限的珍稀猛禽，放眼全球仅有三处固定栖息区域：东京市区、伦敦市区，以及大云市区。种群踪迹隐蔽，寻常人一生都很难亲眼撞见，知晓它存在的本就寥寥无几。\n\n它体格强悍、爪喙锋利，攻击性远胜于常见鹰隼，生人靠近极易受到扑击，驯养门槛极高。它身上藏着一桩广为流传的神秘习性：世上没有任何一个人见过猎头鹰进食、捕食的模样，据说到进食时段，它都会独自隐匿于无人能靠近的僻静处，从不展露这一面。\n\n凶悍冷冽之外，猎头鹰有着独一份温柔浪漫的天性。每到晴朗夏夜，它们总爱停栖在高处，长久凝望着天际的群星。飞鸟能飞越群山、穿梭城市，可单薄羽翼终究抵达不了深邃宇宙，只能日复一日遥遥仰望星辰，这份渺小生灵对遥远星河无声的追逐，便是专属于猎头鹰独有的浪漫。`]
+            },
+            "城塚七月": {
+                type: "file",
+                title: "城塚七月",
+                files: ["文件12"],
+                contents: [`侦探城塚七月人物介绍\n\n城塚七月是东京圈内声名赫赫的私家侦探，以破解各类手法诡谲、警方束手无策的疑难大案闻名，经手多起轰动全城的连环凶案，凭借缜密的逻辑推演与对细节极致的捕捉力，多次揪出隐藏在层层迷雾后的真凶。\n\n他的成名代表作尽数为极具代表性的密室与连环杀人事件：以白色风信子为现场标志性信物的风信子杀人案、建在悬崖边、封闭空间诡计重重的追日馆杀人案，以及布满幻象机关、疑点遍布的奇迹馆杀人案。三起案件均存在完美犯罪假象，警方多次搜查均陷入线索死局，最终全靠城塚七月独辟蹊径的推理思路，拆解凶手布下的圈套，完整还原作案全过程，也让他的名号在民间与商界广为流传，不少跨城的委托者专程赴东京寻求他的帮助，此前大云市Vessel集团负责人王杨远赴东京调查妻子性情异变一事，便专程聘请他参与调查。\n\n为方便各地委托人线上递交线索、提交委托诉求，同时记录过往案件手记、分享推理思路，城塚七月独立搭建运营了专属侦探网站。网站界面简洁低调，划分委托投稿、旧案复盘、线索答疑多个板块，不对外大肆宣传，仅靠圈内人口口相传。普通人可通过网站留言提交寻人、溯源、调查取证类委托，有价值的悬案线索也能直接上传；网站内还收录了她破解风信子、追日馆、奇迹馆等大案时的推理笔记（隐去血腥现场与关键凶手隐私信息），是她对外唯一公开的信息渠道。\n\n平日她极少接受媒体线下采访，多数问询与委托对接，都依靠这座线上侦探网站完成，既避开不必要的舆论打扰，也能高效承接来自不同城市的调查委托。`]
+            },
+            "风信子": {
+                type: "file",
+                title: "风信子",
+                files: ["文件13"],
+                contents: [`风信子学名Hyacinthus orientalis，天门冬科多年生球根草本花卉，别名五色水仙、洋水仙，原产地中海沿岸与小亚细亚，是已知开花植物里香气最为浓郁的品种之一。\n植株高 20 至 50 厘米，底部生有肉质饱满的球形鳞茎；叶片宽厚油亮、呈翠绿色；中空花茎直立挺拔，顶端生出饱满总状花序，一串簇拥 6 至 20 朵钟形小花，花瓣层叠柔和。自然花期在早春 3-4 月，花色品类繁多，包含深蓝、浅紫、纯白、粉、绯红、淡黄、重瓣复色等，色彩浓郁雅致，盛放时花香浓烈绵长，数米外均可清晰嗅到香气。\n\n馥郁浓烈的风信子，是独属于离别与追念的花。源自希腊古老传说，少年雅辛托斯意外殒命，滴落大地的鲜血破土开出串串花穗，花瓣上深浅交错的纹路，是神明惋惜落泪留下的印记，与生俱来裹着绵长无望的思念。\n\n这份埋于泥土的哀愁，与天穹之上的牛郎星遥遥相通。\n\n东方星河传说中，牛郎与织女被银河分隔，遥遥相望不得朝夕相伴。漫漫长夜里，牛郎星独自悬于夜空，恒久守望着银河对岸的光亮，岁岁年年，不曾移开目光。人间之人怀揣牵挂，常会在窗边摆上一束蓝风信子，抬头望向孤亮的牛郎星，将心底无处诉说的思念托付花香，飘向茫茫星河。\n\n风信子扎根凡土，承载俗世藏不住的遗憾；牛郎星高悬九天，装着天地间隔河相守的执念。一花开于尘世，一星悬于长夜，同诉世间所有无法团圆的心事。\n\n入夜之后，驯养的猎头鹰栖于窗前，静嗅风信子沉静的香气，抬眼久久凝望着天际明亮的牛郎星。凶戾猛禽、哀婉花束、孤悬星辰相融，藏起一道隐秘线索：风信子是落在人间的思念信物，牛郎星是藏在夜空的牵挂坐标，一花一星，写尽跨越天地的孤寂与温柔。`]
+            },
+            "追日馆": {
+                type: "file",
+                title: "追日馆",
+                files: ["文件14"],
+                contents: [`东京追日馆建筑介绍\n\n追日馆坐落于东京东部临海悬崖顶端，是一栋四层西式私人独栋别墅，建筑整体紧贴临海断崖修建，背靠陡峭岩壁，区位十分独立。整片区域仅西侧一条狭窄盘山步道连通山下城镇，周边无相邻民居，整体环境僻静隔绝。\n\n建筑得名源于东侧立面整面巨型落地观景玻璃，无墙体遮挡，每日清晨日出时分，朝阳光线会毫无阻隔铺满馆内主厅，全天东侧空间都拥有绵长海景日光视野，因此定名追日馆。\n\n整体结构层次繁复，多层阁楼、迂回连通回廊、独立上锁客房、悬空观景露台相互交错，室内遍布推拉隔断、隐蔽储物暗格、贯通上下的通风管道，外墙多处设置悬挑外置平台，空间动线复杂，存在大量隐藏式衔接构造。\n\n建筑内饰走复古简约风格，大面积运用原木建材搭配浅米色软装，全屋陈设统一围绕日光、朝阳主题打造，随处摆放石材日晷、太阳浮雕、日出海景油画：太阳下的追逐者。据说这一画作跟织女星有关。顶楼设置开放式无遮挡观日露台，金属围栏直面百米深海断崖，是整栋建筑视野最佳的观景区域。\n\n因地处临海高地，建筑针对滨海强风做了加固设计，墙体、门窗均做加厚隔音处理，海风呼啸时，室内声响很难传递至其他楼层。房屋地基依托山体岩石浇筑，稳固适配悬崖地形，同时配套独立庭院与休憩廊架，院内栽种耐海风绿植。`]
+            },
+            "奇迹馆": {
+                type: "file",
+                title: "奇迹馆",
+                files: ["文件15"],
+                contents: [`东京奇迹馆介绍\n\n奇迹馆坐落于东京近郊山林深处，是一座三层欧式复古独栋建筑，整体通体纯白，搭配大面积弧形穹顶与彩绘玻璃窗，建筑外围环绕规整的圆形回廊，四面栽种常年盛放的白菊与铃兰，整体氛围静谧肃穆，自带祭奠悼亡的清冷气质。\n\n整栋建筑结构设计繁复，底层为开阔仪式大厅，中央设有环形下沉平台，早年对外宣称是唤醒逝者的仪式场地；二层分割数十间独立静思室，房间隔音极强，每一间都配有单向透光落地窗；顶层是全玻璃穹顶观星室，昼夜光线通透，屋内摆放大量星盘、烛台与复古金属祭器，其中最著名的是一尊牛头鼎，唤作麒牛祀寰鼎。除此之外，随处可见象征重生、轮回的浮雕纹饰。馆内暗藏大量暗门、夹层、反光镜面与声光装置，可配合灯光、音效营造出虚幻朦胧的视觉效果，也是当年 "复活传说" 能够流传的核心依托。\n\n此地最出名的传闻，是坊间流传奇迹馆拥有能够让逝去之人重新现世、短暂复生的特殊力量。传闻称只要在馆内完成全套仪式，便能与离世的亲人重逢。但只要稍微理清逻辑、看清建筑机关的人，都能一眼识破这套说辞纯属虚假。所谓 "死者重现"，不过是依靠馆内镜面折射、投影设备、光影音效制造的幻象，没有任何真实复生的能力，当地居民、走访过的访客都心知肚明这只是刻意包装出来的噱头。\n\n建筑周边人迹稀少，仅一条林间小路连通外部，常年雾气浓重。如今奇迹馆极少对外开放，仅有猎奇游客、调查类委托人会专程前往，不少相关线索咨询，都会通过城塚七月的侦探网站提交问询。`]
+            },
+            "麒牛祀寰鼎": {
+                type: "file",
+                title: "麒牛祀寰鼎",
+                files: ["文件16"],
+                contents: [`麒牛祀寰鼎是一尊厚重古制青铜重器，鼎身铸有昂首踏云的麒牛浮雕，牛首抬升、目光朝向上方，周身环绕山海云纹，鼎名之中 "祀寰" 二字，意为以鼎礼祭天地寰宇，藏着望向苍穹、叩问星河的本意。\n\n相传铸鼎工匠当年观天象而刻纹饰，在鼎沿内侧錾刻三枚细碎星痕，其中最亮一处，对应深空孤悬的天津四。\n\n天津四悬于高空，光度绵长柔和，常年静踞天际一隅，是长夜之中格外醒目的孤星。麒牛祀寰鼎上的麒牛不望山川大地，抬首远眺的朝向，恰好与天津四的方位遥遥对应，似是青铜铸刻的生灵，千万年里始终仰望这颗亘古不变的星辰。\n\n古时有言，鼎承人间念想，星载天外清辉。每逢夜色深重，鼎身铜纹在月光下泛出幽光，鼎上麒牛静默伫立，遥遥奔赴天际天津四，一器一星彼此相望。\n\n这尊鼎既是祭祀天地的礼器，也是一条隐晦线索：麒牛为尘世之具象，天津四为苍穹之坐标，以铜鼎上恒久凝望的牛纹，暗合亘古高悬的远星，将大地重器与深空星辰悄然相连。`]
+            },
+            "夏日大三角": {
+                type: "link",
+                title: "夏日大三角",
+                url: "https://ttt112132tttr.github.io/Xiushankejiguan/Daisangaku.html"
+            },
+            "Vessel": {
+                type: "link",
+                title: "Vessel集团",
+                url: "https://ttt112132tttr.github.io/Xiushankejiguan/VesselV2.html"
+            },
+            "Vessel集团": {
+                type: "link",
+                title: "Vessel集团",
+                url: "https://ttt112132tttr.github.io/Xiushankejiguan/VesselV2.html"
+            },
+            "克盈": {
+                type: "link",
+                title: "克盈",
+                url: "https://ttt112132tttr.github.io/Xiushankejiguan/Ifwecan12.html"
+            }
+        };
+
+        // 辅助函数：将纯文本转换为HTML，保留换行和加粗
+        function textToHtml(text) {
+            let html = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            
+            // 处理 **加粗**
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // 处理换行
+            html = html.replace(/\n/g, '<br>');
+            
+            return html;
+        }
+
+        function performSearch() {
+            const input = document.getElementById('searchInput');
+            const keyword = input.value.trim();
+            const resultsArea = document.getElementById('resultsArea');
+            
+            resultsArea.innerHTML = '';
+            
+            if (!keyword) {
+                resultsArea.classList.remove('active');
+                return;
+            }
+            
+            const result = database[keyword];
+            
+            if (result) {
+                if (result.type === 'link') {
+                    // 外部链接
+                    const card = document.createElement('div');
+                    card.className = 'result-card link-card';
+                    card.innerHTML = `
+                        <div class="result-title">${result.title}</div>
+                        <div class="result-meta">
+                            <span>类型: 外部链接</span>
+                            <span>状态: 可跳转</span>
+                        </div>
+                    `;
+                    card.onclick = () => {
+                        window.open(result.url, '_blank');
+                    };
+                    resultsArea.appendChild(card);
+                } else {
+                    // 文件内容
+                    const card = document.createElement('div');
+                    card.className = 'result-card';
+                    const filesText = result.files.join(' · ');
+                    card.innerHTML = `
+                        <div class="result-title">${result.title}</div>
+                        <div class="result-meta">
+                            <span>类型: 档案文件</span>
+                            <span>${filesText}</span>
+                            <span>状态: 可查看</span>
+                        </div>
+                    `;
+                    card.onclick = () => openModal(result);
+                    resultsArea.appendChild(card);
+                }
+            } else {
+                // 无结果
+                const noResult = document.createElement('div');
+                noResult.className = 'no-result';
+                noResult.innerHTML = `
+                    <div class="no-result-icon">✦</div>
+                    <div>未检索到匹配档案</div>
+                    <div style="font-size:0.75rem; margin-top:10px; color:#444;">[ 关键词 "${keyword}" 无对应记录 ]</div>
+                `;
+                resultsArea.appendChild(noResult);
+            }
+            
+            resultsArea.classList.add('active');
+        }
+
+        function openModal(data) {
+            const overlay = document.getElementById('modalOverlay');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            
+            title.textContent = data.title;
+            body.innerHTML = '';
+            
+            data.contents.forEach((content, index) => {
+                const block = document.createElement('div');
+                block.className = 'content-block';
+                
+                const label = document.createElement('div');
+                label.className = 'file-label';
+                label.textContent = data.files[index];
+                
+                const textDiv = document.createElement('div');
+                textDiv.innerHTML = textToHtml(content);
+                
+                block.appendChild(label);
+                block.appendChild(textDiv);
+                body.appendChild(block);
+            });
+            
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            
+            const overlay = document.getElementById('modalOverlay');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // 回车搜索
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // ESC关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
