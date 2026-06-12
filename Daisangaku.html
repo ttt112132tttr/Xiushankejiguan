@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星图观测</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(to bottom, #070b1d 0%, #0f1b3d 30%, #162b5c 60%, #0d1642 100%);
+            overflow: hidden;
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            cursor: crosshair;
+            user-select: none;
+        }
+        #sky {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 3px rgba(255,255,255,0.6);
+            animation: twinkle 3s infinite alternate;
+            pointer-events: none;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .star-bright {
+            background: #d0e8ff;
+            box-shadow: 0 0 6px 2px rgba(176, 224, 255, 0.5);
+        }
+        .clickable-star {
+            position: absolute;
+            width: 9px;
+            height: 9px;
+            background: #b0c4de;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 3px rgba(176, 196, 222, 0.35);
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        .clickable-star:hover {
+            transform: scale(1.3);
+            background: #fff;
+            box-shadow: 0 0 18px 6px rgba(255, 255, 255, 0.5);
+        }
+        .clickable-star.lit {
+            background: #ffd700;
+            box-shadow: 0 0 20px 8px rgba(255, 215, 0, 0.8);
+        }
+        .clickable-star.last {
+            outline: 2px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 4px;
+            border-radius: 50%;
+        }
+        .star-label {
+            position: absolute;
+            color: #a8d8ff;
+            font-size: 12px;
+            font-weight: 500;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8), 0 0 8px rgba(168,216,255,0.4);
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 11;
+            letter-spacing: 1px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .star-label.visible {
+            opacity: 1;
+        }
+        .star-label .en {
+            font-size: 10px;
+            color: #7fb3d5;
+            display: block;
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+        }
+        .constellation-label {
+            position: absolute;
+            color: rgba(168, 216, 255, 0.5);
+            font-size: 12px;
+            pointer-events: none;
+            text-align: center;
+            line-height: 1.4;
+        }
+        .constellation-label .en {
+            font-size: 10px;
+            color: rgba(168, 216, 255, 0.35);
+            display: block;
+        }
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .connect-line {
+            stroke: rgba(255, 200, 150, 0.85);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 4px rgba(255, 200, 150, 0.6));
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 1.2s ease-out forwards;
+        }
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+        .fake-line {
+            stroke: rgba(255, 255, 255, 0.12);
+            stroke-width: 1;
+            stroke-linecap: round;
+        }
+        .trees {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 22vh;
+            z-index: 20;
+            pointer-events: none;
+        }
+        .success-flash {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0);
+            pointer-events: none;
+            z-index: 99;
+            transition: background 0.5s;
+        }
+        .success-flash.active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div id="sky">
+        <svg id="lines"></svg>
+        <svg class="trees" viewBox="0 0 1000 220" preserveAspectRatio="none">
+            <path d="M0,220 L0,180 Q20,140 40,160 Q60,120 80,140 Q100,100 130,130 Q160,90 190,120 Q220,80 250,110 Q280,90 300,130 L320,220 Z" fill="#02040a"/>
+            <path d="M-20,220 L-20,200 Q10,170 30,190 Q50,160 70,180 L90,220 Z" fill="#010205"/>
+            <path d="M1000,220 L1000,170 Q970,130 940,150 Q910,110 880,140 Q850,100 820,130 Q790,90 760,120 Q730,80 700,110 Q670,90 650,130 L630,220 Z" fill="#02040a"/>
+            <path d="M1020,220 L1020,200 Q990,170 970,190 Q950,160 930,180 L910,220 Z" fill="#010205"/>
+            <rect x="0" y="200" width="1000" height="20" fill="#02040a"/>
+        </svg>
+    </div>
+    <div class="success-flash" id="flash"></div>
+
+    <script>
+        const sky = document.getElementById('sky');
+        const svg = document.getElementById('lines');
+        const flash = document.getElementById('flash');
+
+        for(let i = 0; i < 250; i++) {
+            const star = document.createElement('div');
+            star.className = 'star' + (Math.random() > 0.7 ? ' star-bright' : '');
+            const size = Math.random() * 2.5 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 78 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            star.style.opacity = Math.random() * 0.6 + 0.2;
+            sky.appendChild(star);
+        }
+
+        const fakeConstellations = [
+            [[15, 25], [18, 22], [16, 28], [20, 26]],
+            [[82, 18], [85, 15], [88, 20], [84, 22]],
+            [[25, 55], [28, 52], [30, 58], [27, 60]],
+            [[75, 50], [78, 48], [80, 53], [77, 56]],
+            [[50, 8], [52, 6], [48, 10]],
+            [[12, 40], [14, 38], [16, 42]],
+            [[88, 38], [90, 36], [92, 40]]
+        ];
+        fakeConstellations.forEach(group => {
+            for(let i = 0; i < group.length - 1; i++) {
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', group[i][0] + '%');
+                line.setAttribute('y1', group[i][1] + '%');
+                line.setAttribute('x2', group[i+1][0] + '%');
+                line.setAttribute('y2', group[i+1][1] + '%');
+                line.setAttribute('class', 'fake-line');
+                svg.appendChild(line);
+            }
+        });
+
+        const keyStars = [
+            { id: 'deneb', name: '天津四', en: 'Deneb', x: 45, y: 14 },
+            { id: 'vega', name: '织女星', en: 'Vega', x: 66, y: 33 },
+            { id: 'altair', name: '牛郎星', en: 'Altair', x: 43, y: 63 }
+        ];
+
+        const extraStars = [
+            { id: 'arcturus', name: '大角星', en: 'Arcturus', x: 22, y: 38 },
+            { id: 'regulus', name: '轩辕十四', en: 'Regulus', x: 78, y: 28 },
+            { id: 'antares', name: '心宿二', en: 'Antares', x: 88, y: 68 },
+            { id: 'betelgeuse', name: '参宿四', en: 'Betelgeuse', x: 8, y: 18 },
+            { id: 'capella', name: '五车二', en: 'Capella', x: 18, y: 8 },
+            { id: 'procyon', name: '南河三', en: 'Procyon', x: 82, y: 48 },
+            { id: 'spica', name: '角宿一', en: 'Spica', x: 72, y: 62 },
+            { id: 'aldebaran', name: '毕宿五', en: 'Aldebaran', x: 12, y: 12 },
+            { id: 'pollux', name: '北河三', en: 'Pollux', x: 58, y: 18 },
+            { id: 'sirius', name: '天狼星', en: 'Sirius', x: 55, y: 55 }
+        ];
+
+        const constellations = [
+            { name: '天鹅座', en: 'LE CYGNE', x: 32, y: 28 },
+            { name: '天琴座', en: 'LA LYRE', x: 74, y: 42 },
+            { name: '天鹰座', en: 'L\'AIGLE', x: 54, y: 75 }
+        ];
+        constellations.forEach(c => {
+            const label = document.createElement('div');
+            label.className = 'constellation-label';
+            label.innerHTML = `${c.name}<span class="en">${c.en}</span>`;
+            label.style.left = c.x + '%';
+            label.style.top = c.y + '%';
+            label.style.transform = 'translate(-50%, -50%)';
+            sky.appendChild(label);
+        });
+
+        const connectedPairs = new Set();
+        let lastStar = null;
+        let completed = false;
+        const litStars = new Set();
+
+        function createStarElement(s) {
+            const star = document.createElement('div');
+            star.className = 'clickable-star';
+            star.id = s.id;
+            star.style.left = `calc(${s.x}% - 4.5px)`;
+            star.style.top = `calc(${s.y}% - 4.5px)`;
+
+            const label = document.createElement('div');
+            label.className = 'star-label';
+            label.id = 'label-' + s.id;
+            label.innerHTML = `${s.name}<span class="en">${s.en}</span>`;
+            label.style.left = (s.x + 1.2) + '%';
+            label.style.top = (s.y - 4) + '%';
+
+            star.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if(completed) return;
+                handleClick(s, star, label);
+            });
+
+            sky.appendChild(star);
+            sky.appendChild(label);
+        }
+
+        keyStars.forEach(s => createStarElement(s));
+        extraStars.forEach(s => createStarElement(s));
+
+        function clearLastStarHighlight() {
+            if (lastStar) {
+                const el = document.getElementById(lastStar.id);
+                if (el) el.classList.remove('last');
+            }
+        }
+
+        function setLastStarHighlight(s) {
+            const el = document.getElementById(s.id);
+            if (el) el.classList.add('last');
+        }
+
+        function handleClick(s, el, label) {
+            const isLit = litStars.has(s.id);
+
+            if (!isLit) {
+                // 未点亮：点亮，并尝试与 lastStar 连线
+                litStars.add(s.id);
+                el.classList.add('lit');
+                label.classList.add('visible');
+
+                if (lastStar && lastStar.id !== s.id) {
+                    const pair = [lastStar.id, s.id].sort().join('-');
+                    if (!connectedPairs.has(pair)) {
+                        drawLine(lastStar, s);
+                        connectedPairs.add(pair);
+                    }
+                }
+
+                clearLastStarHighlight();
+                lastStar = s;
+                setLastStarHighlight(s);
+            } else {
+                // 已点亮
+                if (lastStar && lastStar.id === s.id) {
+                    // 是当前 lastStar：熄灭
+                    litStars.delete(s.id);
+                    el.classList.remove('lit');
+                    el.classList.remove('last');
+                    label.classList.remove('visible');
+                    removeLinesForStar(s.id);
+                    lastStar = null;
+                } else {
+                    // 不是 lastStar：设为新的 lastStar，并尝试画线
+                    if (lastStar && lastStar.id !== s.id) {
+                        const pair = [lastStar.id, s.id].sort().join('-');
+                        if (!connectedPairs.has(pair)) {
+                            drawLine(lastStar, s);
+                            connectedPairs.add(pair);
+                        }
+                    }
+                    clearLastStarHighlight();
+                    lastStar = s;
+                    setLastStarHighlight(s);
+                }
+            }
+
+            checkTriangle();
+        }
+
+        function drawLine(s1, s2) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', s1.x + '%');
+            line.setAttribute('y1', s1.y + '%');
+            line.setAttribute('x2', s2.x + '%');
+            line.setAttribute('y2', s2.y + '%');
+            line.setAttribute('class', 'connect-line');
+            line.dataset.from = s1.id;
+            line.dataset.to = s2.id;
+            svg.appendChild(line);
+        }
+
+        function removeLinesForStar(starId) {
+            const lines = svg.querySelectorAll('.connect-line');
+            lines.forEach(line => {
+                const from = line.dataset.from;
+                const to = line.dataset.to;
+                if (from === starId || to === starId) {
+                    const pair = [from, to].sort().join('-');
+                    connectedPairs.delete(pair);
+                    line.remove();
+                }
+            });
+        }
+
+        function checkTriangle() {
+            const needed = [
+                ['altair', 'deneb'].sort().join('-'),
+                ['altair', 'vega'].sort().join('-'),
+                ['deneb', 'vega'].sort().join('-')
+            ];
+
+            const allConnected = needed.every(p => connectedPairs.has(p));
+
+            if (allConnected && !completed) {
+                completed = true;
+                flash.classList.add('active');
+
+                keyStars.forEach(s => {
+                    const label = document.getElementById('label-' + s.id);
+                    if(label) label.classList.add('visible');
+                });
+
+                setTimeout(() => {
+                    window.location.href = 'https://ttt112132tttr.github.io/Dective/';
+                }, 3000);
+            }
+        }
+
+        sky.addEventListener('click', () => {
+            if(!completed) {
+                clearLastStarHighlight();
+                lastStar = null;
+            }
+        });
+    </script>
+</body>
+</html>
