@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇迹馆之谜 - 问题4</title>
+    <style>
+        :root {
+            --bg: #1a0f08;
+            --card-bg: #231410;
+            --gold: #c8a45c;
+            --gold-light: #e0c680;
+            --text: #d4c5b2;
+            --text-light: #e8dcc8;
+            --dark-border: #3a2215;
+            --btn-disabled: #3a2a1a;
+            --btn-text-disabled: #5a4530;
+            --font-serif: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', 'Songti SC', serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #1a0f08;
+            background-image: radial-gradient(ellipse at center, rgba(180, 120, 40, 0.06) 0%, transparent 70%),
+                radial-gradient(ellipse at 30% 20%, rgba(200, 140, 50, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(160, 80, 30, 0.05) 0%, transparent 60%);
+            color: #d4c5b2;
+            font-family: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', 'Songti SC', serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            letter-spacing: 0.04em;
+            line-height: 1.7;
+        }
+        .container {
+            background: #231410;
+            border: 1px solid #3a2215;
+            border-radius: 4px;
+            padding: 40px 36px 32px;
+            max-width: 680px;
+            width: 100%;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(200, 150, 70, 0.08) inset;
+            position: relative;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 16px;
+            right: 16px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(200, 150, 70, 0.25), transparent);
+            pointer-events: none;
+        }
+        .container::after {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            left: 16px;
+            right: 16px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(200, 150, 70, 0.2), transparent);
+            pointer-events: none;
+        }
+        .ornament-top {
+            text-align: center;
+            color: #c8a45c;
+            font-size: 18px;
+            margin-bottom: 16px;
+            letter-spacing: 0.3em;
+            opacity: 0.7;
+            user-select: none;
+        }
+        .question-label {
+            text-align: center;
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            color: #8b6d4a;
+            margin-bottom: 8px;
+            user-select: none;
+        }
+        .question-text {
+            font-size: 1.05rem;
+            color: #e8dcc8;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 0.06em;
+            line-height: 1.9;
+        }
+        .selected-area {
+            min-height: 46px;
+            border: 1px dashed #3a2215;
+            border-radius: 3px;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.25);
+            transition: border-color 0.3s;
+        }
+        .selected-area.has-items {
+            border-color: rgba(200, 150, 70, 0.35);
+        }
+        .selected-tag {
+            display: inline-block;
+            background: #3a1f0f;
+            color: #e0c680;
+            padding: 6px 14px;
+            border-radius: 2px;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            border: 1px solid #5a3520;
+            transition: all 0.2s;
+            user-select: none;
+            position: relative;
+        }
+        .selected-tag:hover {
+            background: #4a2814;
+            border-color: #8b4a2a;
+            color: #ffc8a0;
+        }
+        .selected-tag::after {
+            content: ' ×';
+            font-size: 0.75rem;
+            opacity: 0.5;
+            margin-left: 2px;
+        }
+        .selected-placeholder {
+            color: #4a3525;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+        }
+        .word-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .word-btn {
+            display: inline-block;
+            padding: 8px 13px;
+            background: #1f1108;
+            border: 1px solid #3a2215;
+            border-radius: 2px;
+            color: #b89a70;
+            cursor: pointer;
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            font-family: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', serif;
+            transition: all 0.2s;
+            user-select: none;
+            min-width: 38px;
+            text-align: center;
+        }
+        .word-btn:hover {
+            background: #2a180d;
+            border-color: #6b4020;
+            color: #d4b880;
+            box-shadow: 0 0 12px rgba(180, 100, 30, 0.15);
+        }
+        .word-btn.selected {
+            background: #3a1a08;
+            border-color: #8b4a20;
+            color: #e8c880;
+            box-shadow: 0 0 16px rgba(200, 120, 40, 0.3);
+            font-weight: bold;
+        }
+        .btn-confirm {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+            padding: 12px 30px;
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            font-family: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', serif;
+            cursor: pointer;
+            border: 1px solid #3a2215;
+            border-radius: 2px;
+            transition: all 0.35s;
+            user-select: none;
+            background: #3a2a1a;
+            color: #5a4530;
+            pointer-events: none;
+        }
+        .btn-confirm.active {
+            background: #3a180a;
+            border-color: #7a3a18;
+            color: #d4a060;
+            pointer-events: auto;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(180, 100, 30, 0.2);
+        }
+        .btn-confirm.active:hover {
+            background: #4a200e;
+            border-color: #a05028;
+            color: #e8c080;
+            box-shadow: 0 0 30px rgba(200, 120, 40, 0.35);
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 24px 14px 20px;
+            }
+            .word-btn {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+                min-width: 32px;
+            }
+            .word-grid {
+                gap: 5px;
+            }
+            .question-text {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="ornament-top">◆ ◇ ◆</div>
+        <div class="question-label">— 问 题 4 —</div>
+        <p class="question-text">
+            确实，无论是事件的发生日期还是监控录像均可证明追日馆和奇迹馆案件有密切的联系。但是有一点，进出奇迹馆的机会只有一次。而监控拍下的只有两个人进出了追日馆，可知其中一个人绝对是凶手本人，另一个是受害者。已知凶手绝对不可能自己自杀。那么，为什么追日馆现场也有一个头颅？这不是两具尸体了吗？
+        </p>
+        <div class="selected-area" id="selectedArea">
+            <span class="selected-placeholder" id="placeholder">请点击下方文字进行选择</span>
+        </div>
+        <div class="word-grid" id="wordGrid"></div>
+        <button class="btn-confirm" id="btnConfirm" disabled>确 定</button>
+    </div>
+
+    <script>
+        (function() {
+            const words = ['里', '埋', '提', '火', '尸', '前', '外', '放', '置', '空', '水', '来', '偷', '藏', '头', '点', '馆',
+                '图', '墙', '好', '间', '内', '杀', '房', '天', '窗', '进', '跑', '砍'
+            ];
+            const correctAnswers = [
+                ['窗', '前', '砍', '头'],
+                ['窗', '外', '砍', '头']
+            ];
+            const maxSelect = 4;
+            const minForConfirm = 3;
+            let selected = [];
+
+            const selectedArea = document.getElementById('selectedArea');
+            const placeholder = document.getElementById('placeholder');
+            const wordGrid = document.getElementById('wordGrid');
+            const btnConfirm = document.getElementById('btnConfirm');
+
+            function renderWords() {
+                wordGrid.innerHTML = '';
+                words.forEach(w => {
+                    const btn = document.createElement('span');
+                    btn.className = 'word-btn';
+                    btn.textContent = w;
+                    if (selected.includes(w)) {
+                        btn.classList.add('selected');
+                    }
+                    btn.addEventListener('click', () => toggleWord(w));
+                    wordGrid.appendChild(btn);
+                });
+            }
+
+            function renderSelected() {
+                const existingTags = selectedArea.querySelectorAll('.selected-tag');
+                existingTags.forEach(t => t.remove());
+                if (placeholder) placeholder.style.display = selected.length === 0 ? 'inline' : 'none';
+
+                selected.forEach((w, i) => {
+                    const tag = document.createElement('span');
+                    tag.className = 'selected-tag';
+                    tag.textContent = w;
+                    tag.addEventListener('click', () => {
+                        selected.splice(i, 1);
+                        updateAll();
+                    });
+                    selectedArea.appendChild(tag);
+                });
+
+                if (selected.length > 0) {
+                    selectedArea.classList.add('has-items');
+                } else {
+                    selectedArea.classList.remove('has-items');
+                }
+            }
+
+            function updateConfirmBtn() {
+                if (selected.length >= minForConfirm && selected.length <= maxSelect) {
+                    btnConfirm.classList.add('active');
+                    btnConfirm.disabled = false;
+                    btnConfirm.style.pointerEvents = 'auto';
+                } else {
+                    btnConfirm.classList.remove('active');
+                    btnConfirm.disabled = true;
+                    btnConfirm.style.pointerEvents = 'none';
+                }
+            }
+
+            function toggleWord(w) {
+                const idx = selected.indexOf(w);
+                if (idx >= 0) {
+                    selected.splice(idx, 1);
+                } else {
+                    if (selected.length >= maxSelect) return;
+                    selected.push(w);
+                }
+                updateAll();
+            }
+
+            function updateAll() {
+                renderWords();
+                renderSelected();
+                updateConfirmBtn();
+            }
+
+            function arraysEqual(a, b) {
+                if (a.length !== b.length) return false;
+                return a.every((v, i) => v === b[i]);
+            }
+
+            function checkAnswer() {
+                let isCorrect = false;
+                for (const ca of correctAnswers) {
+                    if (arraysEqual(selected, ca)) {
+                        isCorrect = true;
+                        break;
+                    }
+                }
+                if (isCorrect) {
+                    window.location.href = 'truth.html';
+                } else {
+                    selected = [];
+                    updateAll();
+                }
+            }
+
+            btnConfirm.addEventListener('click', () => {
+                if (selected.length >= minForConfirm && selected.length <= maxSelect) {
+                    checkAnswer();
+                }
+            });
+
+            renderWords();
+            updateConfirmBtn();
+        })();
+    </script>
+</body>
+</html>

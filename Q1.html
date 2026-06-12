@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇迹馆之谜</title>
+    <style>
+        :root {
+            --bg: #1a0f08;
+            --card-bg: #231410;
+            --gold: #c8a45c;
+            --gold-light: #e0c680;
+            --text: #d4c5b2;
+            --text-light: #e8dcc8;
+            --red: #8b2a1a;
+            --red-light: #b8442a;
+            --dark-border: #3a2215;
+            --btn-disabled: #3a2a1a;
+            --btn-text-disabled: #5a4530;
+            --accent: #c8a45c;
+            --font-serif: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', 'Songti SC', serif;
+            --font-sans: 'Georgia', 'Noto Serif SC', 'STSong', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            background-image:
+                radial-gradient(ellipse at center, rgba(180, 120, 40, 0.06) 0%, transparent 70%),
+                radial-gradient(ellipse at 30% 20%, rgba(200, 140, 50, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(160, 80, 30, 0.05) 0%, transparent 60%);
+            color: var(--text);
+            font-family: var(--font-serif);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            letter-spacing: 0.04em;
+            line-height: 1.7;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border: 1px solid var(--dark-border);
+            border-radius: 4px;
+            padding: 40px 36px 32px;
+            max-width: 680px;
+            width: 100%;
+            box-shadow:
+                0 4px 30px rgba(0, 0, 0, 0.6),
+                0 1px 0 rgba(200, 150, 70, 0.08) inset,
+                0 -1px 0 rgba(0, 0, 0, 0.3) inset;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 16px;
+            right: 16px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(200, 150, 70, 0.25), transparent);
+            pointer-events: none;
+        }
+
+        .container::after {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            left: 16px;
+            right: 16px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(200, 150, 70, 0.2), transparent);
+            pointer-events: none;
+        }
+
+        .ornament-top {
+            text-align: center;
+            color: var(--gold);
+            font-size: 18px;
+            margin-bottom: 20px;
+            letter-spacing: 0.3em;
+            opacity: 0.7;
+            user-select: none;
+        }
+
+        .title-main {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--gold-light);
+            font-weight: normal;
+            letter-spacing: 0.25em;
+            margin-bottom: 6px;
+            text-shadow: 0 0 40px rgba(200, 150, 70, 0.3);
+            user-select: none;
+        }
+
+        .title-sub {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--gold);
+            letter-spacing: 0.35em;
+            margin-bottom: 28px;
+            opacity: 0.65;
+            user-select: none;
+        }
+
+        .question-label {
+            text-align: center;
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            color: #8b6d4a;
+            margin-bottom: 8px;
+            user-select: none;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 24px;
+            letter-spacing: 0.06em;
+            line-height: 1.9;
+        }
+
+        .selected-area {
+            min-height: 46px;
+            border: 1px dashed var(--dark-border);
+            border-radius: 3px;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.25);
+            transition: border-color 0.3s;
+        }
+
+        .selected-area.has-items {
+            border-color: rgba(200, 150, 70, 0.35);
+        }
+
+        .selected-tag {
+            display: inline-block;
+            background: #3a1f0f;
+            color: #e0c680;
+            padding: 6px 14px;
+            border-radius: 2px;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            border: 1px solid #5a3520;
+            transition: all 0.2s;
+            user-select: none;
+            position: relative;
+        }
+
+        .selected-tag:hover {
+            background: #4a2814;
+            border-color: #8b4a2a;
+            color: #ffc8a0;
+        }
+
+        .selected-tag::after {
+            content: ' ×';
+            font-size: 0.75rem;
+            opacity: 0.5;
+            margin-left: 2px;
+        }
+
+        .selected-placeholder {
+            color: #4a3525;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+        }
+
+        .word-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .word-btn {
+            display: inline-block;
+            padding: 8px 13px;
+            background: #1f1108;
+            border: 1px solid #3a2215;
+            border-radius: 2px;
+            color: #b89a70;
+            cursor: pointer;
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            font-family: var(--font-serif);
+            transition: all 0.2s;
+            user-select: none;
+            min-width: 38px;
+            text-align: center;
+        }
+
+        .word-btn:hover {
+            background: #2a180d;
+            border-color: #6b4020;
+            color: #d4b880;
+            box-shadow: 0 0 12px rgba(180, 100, 30, 0.15);
+        }
+
+        .word-btn.selected {
+            background: #3a1a08;
+            border-color: #8b4a20;
+            color: #e8c880;
+            box-shadow: 0 0 16px rgba(200, 120, 40, 0.3);
+            font-weight: bold;
+        }
+
+        .btn-confirm {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+            padding: 12px 30px;
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            font-family: var(--font-serif);
+            cursor: pointer;
+            border: 1px solid var(--dark-border);
+            border-radius: 2px;
+            transition: all 0.35s;
+            user-select: none;
+            background: var(--btn-disabled);
+            color: var(--btn-text-disabled);
+            pointer-events: none;
+        }
+
+        .btn-confirm.active {
+            background: #3a180a;
+            border-color: #7a3a18;
+            color: #d4a060;
+            pointer-events: auto;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(180, 100, 30, 0.2);
+        }
+
+        .btn-confirm.active:hover {
+            background: #4a200e;
+            border-color: #a05028;
+            color: #e8c080;
+            box-shadow: 0 0 30px rgba(200, 120, 40, 0.35);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .input-field {
+            flex: 1;
+            min-width: 180px;
+            max-width: 340px;
+            padding: 11px 16px;
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+            font-family: var(--font-serif);
+            background: #1a0d06;
+            border: 1px solid #3a2215;
+            border-radius: 2px;
+            color: #d4b880;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #7a3a18;
+            box-shadow: 0 0 14px rgba(180, 100, 30, 0.15);
+        }
+
+        .input-field::placeholder {
+            color: #4a3020;
+            letter-spacing: 0.06em;
+        }
+
+        .input-hint {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #6b4d30;
+            letter-spacing: 0.1em;
+            margin-bottom: 10px;
+            user-select: none;
+        }
+
+        .btn-submit {
+            padding: 11px 24px;
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            font-family: var(--font-serif);
+            cursor: pointer;
+            border: 1px solid #5a3018;
+            border-radius: 2px;
+            background: #2a1408;
+            color: #c89050;
+            transition: all 0.3s;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .btn-submit:hover {
+            background: #3a1a0a;
+            border-color: #8b4a20;
+            color: #e0b870;
+            box-shadow: 0 0 18px rgba(200, 120, 40, 0.25);
+        }
+
+        /* Truth page */
+        .truth-title {
+            text-align: center;
+            font-size: 2.4rem;
+            color: #c83020;
+            letter-spacing: 0.3em;
+            margin-bottom: 4px;
+            animation: truthGlow 2s ease-in-out infinite;
+            text-shadow: 0 0 50px rgba(200, 40, 20, 0.7), 0 0 100px rgba(200, 40, 20, 0.3);
+            user-select: none;
+        }
+
+        @keyframes truthGlow {
+            0%,
+            100% {
+                text-shadow: 0 0 50px rgba(200, 40, 20, 0.7), 0 0 100px rgba(200, 40, 20, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 80px rgba(255, 60, 30, 0.9), 0 0 150px rgba(220, 50, 30, 0.5), 0 0 200px rgba(200, 30, 10, 0.3);
+            }
+        }
+
+        .truth-subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            letter-spacing: 0.3em;
+            color: #a04030;
+            margin-bottom: 20px;
+            user-select: none;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 24px;
+            border-left: 2px solid #3a1a10;
+            margin: 16px 0 20px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 16px;
+            padding-left: 20px;
+            opacity: 0;
+            animation: slideIn 0.6s ease-out forwards;
+            color: #d4c0a0;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+            line-height: 1.6;
+        }
+
+        .timeline-item:nth-child(1) {
+            animation-delay: 0.3s;
+        }
+        .timeline-item:nth-child(2) {
+            animation-delay: 0.6s;
+        }
+        .timeline-item:nth-child(3) {
+            animation-delay: 0.9s;
+        }
+        .timeline-item:nth-child(4) {
+            animation-delay: 1.2s;
+        }
+        .timeline-item:nth-child(5) {
+            animation-delay: 1.5s;
+        }
+        .timeline-item:nth-child(6) {
+            animation-delay: 1.8s;
+        }
+        .timeline-item:nth-child(7) {
+            animation-delay: 2.1s;
+        }
+        .timeline-item:nth-child(8) {
+            animation-delay: 2.4s;
+        }
+        .timeline-item:nth-child(9) {
+            animation-delay: 2.7s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 6px;
+            width: 8px;
+            height: 8px;
+            background: #6b2a15;
+            border-radius: 50%;
+            border: 1px solid #9b4a28;
+            box-shadow: 0 0 8px rgba(180, 60, 30, 0.4);
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-time {
+            color: #c08050;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+        }
+
+        .seal {
+            position: absolute;
+            top: 50px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            border: 3px solid #8b1a0a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b1a0a;
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            transform: rotate(-20deg);
+            opacity: 0;
+            animation: sealAppear 1s ease-out 2.5s forwards;
+            user-select: none;
+            pointer-events: none;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        @keyframes sealAppear {
+            from {
+                opacity: 0;
+                transform: rotate(-20deg) scale(1.6);
+            }
+            to {
+                opacity: 0.75;
+                transform: rotate(-20deg) scale(1);
+            }
+        }
+
+        .btn-profile-link {
+            display: block;
+            width: 100%;
+            max-width: 280px;
+            margin: 20px auto 0;
+            padding: 13px 20px;
+            font-size: 0.95rem;
+            letter-spacing: 0.15em;
+            font-family: var(--font-serif);
+            cursor: pointer;
+            border: 1px solid #5a2a15;
+            border-radius: 2px;
+            background: #1f0d05;
+            color: #c89050;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            user-select: none;
+            animation: fadeIn 1s ease-out 3s forwards;
+            opacity: 0;
+        }
+
+        .btn-profile-link:hover {
+            background: #2f1508;
+            border-color: #8b3a18;
+            color: #e8c080;
+            box-shadow: 0 0 22px rgba(200, 100, 30, 0.3);
+        }
+
+        /* Profile page */
+        .profile-header {
+            text-align: center;
+            border-bottom: 1px solid #3a2215;
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .profile-badge {
+            display: inline-block;
+            background: #2a1008;
+            border: 1px solid #5a2a15;
+            padding: 6px 16px;
+            letter-spacing: 0.2em;
+            font-size: 0.75rem;
+            color: #b87040;
+            margin-bottom: 8px;
+            user-select: none;
+        }
+
+        .profile-name {
+            font-size: 1.6rem;
+            color: #e0c080;
+            letter-spacing: 0.2em;
+            user-select: none;
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            color: #b87040;
+            border-bottom: 1px dotted #3a2215;
+            padding-bottom: 6px;
+            margin: 18px 0 10px;
+            user-select: none;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .info-table td {
+            padding: 5px 8px;
+            vertical-align: top;
+            line-height: 1.6;
+        }
+        .info-table td:first-child {
+            color: #8b6d4a;
+            white-space: nowrap;
+            width: 110px;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+        }
+        .info-table td:last-child {
+            color: #d4c0a0;
+        }
+
+        .narrative-block {
+            color: #d4c0a0;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            line-height: 1.8;
+            margin-bottom: 12px;
+            text-indent: 2em;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 24px;
+            color: #8b6d4a;
+            text-decoration: none;
+            letter-spacing: 0.15em;
+            font-size: 0.85rem;
+            transition: color 0.3s;
+            user-select: none;
+        }
+        .back-link:hover {
+            color: #c8a45c;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 24px 14px 20px;
+            }
+            .title-main {
+                font-size: 1.5rem;
+            }
+            .word-btn {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+                min-width: 32px;
+            }
+            .word-grid {
+                gap: 5px;
+            }
+            .seal {
+                right: 8px;
+                top: 40px;
+                width: 55px;
+                height: 55px;
+                font-size: 0.6rem;
+                border-width: 2px;
+            }
+            .truth-title {
+                font-size: 1.6rem;
+            }
+            .timeline {
+                padding-left: 14px;
+            }
+            .timeline-item {
+                padding-left: 12px;
+                font-size: 0.85rem;
+            }
+            .timeline-item::before {
+                left: -20px;
+                width: 6px;
+                height: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="ornament-top">◆ ◇ ◆</div>
+        <div class="title-main">奇迹馆之谜</div>
+        <div class="title-sub">M I R A C L E &nbsp; P A V I L I O N</div>
+        <div class="question-label">— 序 章 —</div>
+        <p class="question-text">
+            奇迹馆每天都会刷新，按理来说人也会复活。既然是焦尸，那么说明尸体肯定不是瞬间死亡的，而尸体是在00：00被发现的，请问这是如何做到的。
+        </p>
+        <div class="selected-area" id="selectedArea">
+            <span class="selected-placeholder" id="placeholder">请点击下方文字进行选择</span>
+        </div>
+        <div class="word-grid" id="wordGrid"></div>
+        <button class="btn-confirm" id="btnConfirm" disabled>确 定</button>
+    </div>
+
+    <script>
+        (function() {
+            const words = ['里', '埋', '提', '火', '尸', '前', '外', '放', '置', '空', '水', '来', '偷', '藏', '头', '点', '馆',
+                '图', '墙', '好', '间', '内', '杀', '房', '天', '窗', '进', '跑', '砍'
+            ];
+            const correctAnswer = ['馆', '外'];
+            const maxSelect = 3;
+            const minForConfirm = 2;
+            let selected = [];
+
+            const selectedArea = document.getElementById('selectedArea');
+            const placeholder = document.getElementById('placeholder');
+            const wordGrid = document.getElementById('wordGrid');
+            const btnConfirm = document.getElementById('btnConfirm');
+
+            function renderWords() {
+                wordGrid.innerHTML = '';
+                words.forEach(w => {
+                    const btn = document.createElement('span');
+                    btn.className = 'word-btn';
+                    btn.textContent = w;
+                    if (selected.includes(w)) {
+                        btn.classList.add('selected');
+                    }
+                    btn.addEventListener('click', () => toggleWord(w));
+                    wordGrid.appendChild(btn);
+                });
+            }
+
+            function renderSelected() {
+                const existingTags = selectedArea.querySelectorAll('.selected-tag');
+                existingTags.forEach(t => t.remove());
+                if (placeholder) placeholder.style.display = selected.length === 0 ? 'inline' : 'none';
+
+                selected.forEach((w, i) => {
+                    const tag = document.createElement('span');
+                    tag.className = 'selected-tag';
+                    tag.textContent = w;
+                    tag.addEventListener('click', () => {
+                        selected.splice(i, 1);
+                        updateAll();
+                    });
+                    selectedArea.appendChild(tag);
+                });
+
+                if (selected.length > 0) {
+                    selectedArea.classList.add('has-items');
+                } else {
+                    selectedArea.classList.remove('has-items');
+                }
+            }
+
+            function updateConfirmBtn() {
+                if (selected.length >= minForConfirm && selected.length <= maxSelect) {
+                    btnConfirm.classList.add('active');
+                    btnConfirm.disabled = false;
+                    btnConfirm.style.pointerEvents = 'auto';
+                } else {
+                    btnConfirm.classList.remove('active');
+                    btnConfirm.disabled = true;
+                    btnConfirm.style.pointerEvents = 'none';
+                }
+            }
+
+            function toggleWord(w) {
+                const idx = selected.indexOf(w);
+                if (idx >= 0) {
+                    selected.splice(idx, 1);
+                } else {
+                    if (selected.length >= maxSelect) return;
+                    selected.push(w);
+                }
+                updateAll();
+            }
+
+            function updateAll() {
+                renderWords();
+                renderSelected();
+                updateConfirmBtn();
+            }
+
+            function checkAnswer() {
+                if (selected.length === correctAnswer.length &&
+                    selected.every((v, i) => v === correctAnswer[i])) {
+                    window.location.href = 'Q2.html';
+                } else {
+                    selected = [];
+                    updateAll();
+                }
+            }
+
+            btnConfirm.addEventListener('click', () => {
+                if (selected.length >= minForConfirm && selected.length <= maxSelect) {
+                    checkAnswer();
+                }
+            });
+
+            renderWords();
+            updateConfirmBtn();
+        })();
+    </script>
+</body>
+</html>

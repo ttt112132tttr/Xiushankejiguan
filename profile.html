@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇迹馆之谜 - 城塚七月解密档案</title>
+    <style>
+        :root {
+            --bg: #1a0f08;
+            --card-bg: #231410;
+            --gold: #c8a45c;
+            --gold-light: #e0c680;
+            --text: #d4c5b2;
+            --text-light: #e8dcc8;
+            --dark-border: #3a2215;
+            --font-serif: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', 'Songti SC', serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #1a0f08;
+            background-image: radial-gradient(ellipse at center, rgba(180, 120, 40, 0.05) 0%, transparent 70%),
+                radial-gradient(ellipse at 60% 30%, rgba(200, 140, 50, 0.03) 0%, transparent 55%);
+            color: #d4c5b2;
+            font-family: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', 'Songti SC', serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 30px 20px;
+            letter-spacing: 0.04em;
+            line-height: 1.7;
+        }
+        .container {
+            background: #231410;
+            border: 1px solid #3a2215;
+            border-radius: 4px;
+            padding: 36px 34px 28px;
+            max-width: 720px;
+            width: 100%;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(200, 150, 70, 0.08) inset;
+            position: relative;
+            margin-top: 10px;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 16px;
+            right: 16px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(200, 150, 70, 0.25), transparent);
+            pointer-events: none;
+        }
+        .profile-header {
+            text-align: center;
+            border-bottom: 1px solid #3a2215;
+            padding-bottom: 16px;
+            margin-bottom: 18px;
+        }
+        .profile-badge {
+            display: inline-block;
+            background: #2a1008;
+            border: 1px solid #5a2a15;
+            padding: 6px 16px;
+            letter-spacing: 0.2em;
+            font-size: 0.72rem;
+            color: #b87040;
+            margin-bottom: 8px;
+            user-select: none;
+        }
+        .profile-name {
+            font-size: 1.5rem;
+            color: #e0c080;
+            letter-spacing: 0.2em;
+            user-select: none;
+        }
+        .archive-title {
+            text-align: center;
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            color: #8b6d4a;
+            margin-top: 2px;
+            user-select: none;
+        }
+        .section-title {
+            font-size: 0.78rem;
+            letter-spacing: 0.2em;
+            color: #b87040;
+            border-bottom: 1px dotted #3a2215;
+            padding-bottom: 5px;
+            margin: 20px 0 10px;
+            user-select: none;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            letter-spacing: 0.05em;
+        }
+        .info-table td {
+            padding: 4px 8px;
+            vertical-align: top;
+            line-height: 1.65;
+        }
+        .info-table td:first-child {
+            color: #8b6d4a;
+            white-space: nowrap;
+            width: 105px;
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+        }
+        .info-table td:last-child {
+            color: #d4c0a0;
+        }
+        .narrative-block {
+            color: #d4c0a0;
+            font-size: 0.88rem;
+            letter-spacing: 0.05em;
+            line-height: 1.85;
+            margin-bottom: 10px;
+            text-indent: 2em;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 26px;
+            color: #8b6d4a;
+            text-decoration: none;
+            letter-spacing: 0.15em;
+            font-size: 0.82rem;
+            transition: color 0.3s;
+            user-select: none;
+        }
+        .back-link:hover {
+            color: #c8a45c;
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px 12px 18px;
+            }
+            .profile-name {
+                font-size: 1.2rem;
+            }
+            .info-table td:first-child {
+                width: 80px;
+                font-size: 0.7rem;
+            }
+            .info-table td:last-child {
+                font-size: 0.8rem;
+            }
+            .narrative-block {
+                font-size: 0.8rem;
+                text-indent: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="profile-header">
+            <div class="profile-badge">城塚七月解密档案</div>
+            <div class="profile-name">小林雅子</div>
+            <div class="archive-title">— 奇迹馆初代运维专员 · 案件核心人物 —</div>
+        </div>
+
+        <div class="section-title">基础信息</div>
+        <table class="info-table">
+            <tr><td>姓名</td><td>小林雅子</td></tr>
+            <tr><td>性别</td><td>女</td></tr>
+            <tr><td>出生年份</td><td>1968年</td></tr>
+            <tr><td>年龄</td><td>24岁（1992年案发时段）</td></tr>
+            <tr><td>身份</td><td>奇迹馆初代运维专员、场馆机制观测员</td></tr>
+            <tr><td>在岗时间</td><td>1992年08月01日（奇迹馆正式开馆）入职</td></tr>
+            <tr><td>状态</td><td>1992年08月03日夜间神秘失踪，疑似奇迹馆焦尸死者</td></tr>
+        </table>
+
+        <div class="section-title">任职履历与权限</div>
+        <p class="narrative-block">
+            小林雅子是奇迹馆开馆阶段唯一正式在岗工作人员，也是极少数完整知晓场馆ζ粒子重置机制、空间回溯规则的内部人员。不同于后期普通访客，她持有场馆最高权限专属通行手环，可全天候自由进出奇迹馆，不受常规访客时限管控。开馆三日间，她全程驻守馆内，未曾踏出奇迹馆范围，是场馆初期唯一的活动人员。
+        </p>
+        <p class="narrative-block">
+            其工作内容为记录每日零点重置数据、观测阈限空间变化、排查场馆机制异常，长期独自值守、独处办公，几乎无外界人际往来，性格孤僻严谨，做事极度细致，留存的工作记录工整精密，无任何疏漏。
+        </p>
+
+        <div class="section-title">失踪前后线索记录</div>
+        <p class="narrative-block">
+            1992年08月01日、08月02日，场馆每日运行正常，小林雅子的工作记录完整，无任何异常标注，场馆零点重置机制稳定运行。
+        </p>
+        <p class="narrative-block">
+            1992年08月03日白天，仍有正常工作痕迹，馆内物品记录、空间观测日志均按时更新；入夜后，场馆彻底失去所有人工记录，外部人员无法联系上小林雅子，无外出报备、无离岗记录、无求救痕迹，属于凭空失踪。
+        </p>
+        <p class="narrative-block">
+            1992年08月04日凌晨零点，场馆完成例行重置后，巡查人员发现馆内出现无名女性焦尸，结合人员登记信息，整座场馆当期仅有小林雅子一名女性人员，警方高度判定焦尸身份即为小林雅子。
+        </p>
+
+        <a href="truth.html" class="back-link">← 返回真相页</a>
+    </div>
+</body>
+</html>

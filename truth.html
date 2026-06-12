@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇迹馆之谜 - 真相</title>
+    <style>
+        :root {
+            --bg: #0d0503;
+            --card-bg: #1a0c06;
+            --gold: #c8a45c;
+            --text: #d4c0a0;
+            --dark-border: #3a1a10;
+            --font-serif: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', 'Songti SC', serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0d0503;
+            background-image: radial-gradient(ellipse at center, rgba(200, 80, 30, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 30%, rgba(180, 60, 20, 0.06) 0%, transparent 50%);
+            color: #d4c0a0;
+            font-family: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', 'Songti SC', serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            letter-spacing: 0.04em;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        .container {
+            background: #1a0c06;
+            border: 1px solid #3a1a10;
+            border-radius: 4px;
+            padding: 40px 36px 32px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(200, 100, 40, 0.1) inset;
+            position: relative;
+            overflow: hidden;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(200, 60, 20, 0.5), rgba(200, 60, 20, 0.5), transparent);
+            animation: borderPulse 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes borderPulse {
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        .truth-title {
+            text-align: center;
+            font-size: 2.6rem;
+            color: #c83020;
+            letter-spacing: 0.3em;
+            margin-bottom: 2px;
+            animation: truthGlow 2s ease-in-out infinite;
+            text-shadow: 0 0 50px rgba(200, 40, 20, 0.7), 0 0 100px rgba(200, 40, 20, 0.3);
+            user-select: none;
+        }
+        @keyframes truthGlow {
+            0%,
+            100% {
+                text-shadow: 0 0 50px rgba(200, 40, 20, 0.7), 0 0 100px rgba(200, 40, 20, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 80px rgba(255, 60, 30, 0.9), 0 0 150px rgba(220, 50, 30, 0.5), 0 0 200px rgba(200, 30, 10, 0.3);
+            }
+        }
+        .truth-subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            letter-spacing: 0.35em;
+            color: #a04030;
+            margin-bottom: 22px;
+            user-select: none;
+            animation: fadeInDown 1.5s ease-out;
+        }
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .timeline {
+            position: relative;
+            padding-left: 28px;
+            border-left: 2px solid #3a1a10;
+            margin: 16px 0 20px;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 15px;
+            padding-left: 18px;
+            opacity: 0;
+            animation: slideIn 0.7s ease-out forwards;
+            color: #d4c0a0;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+            line-height: 1.6;
+        }
+        .timeline-item:nth-child(1) {
+            animation-delay: 0.4s;
+        }
+        .timeline-item:nth-child(2) {
+            animation-delay: 0.7s;
+        }
+        .timeline-item:nth-child(3) {
+            animation-delay: 1.0s;
+        }
+        .timeline-item:nth-child(4) {
+            animation-delay: 1.3s;
+        }
+        .timeline-item:nth-child(5) {
+            animation-delay: 1.6s;
+        }
+        .timeline-item:nth-child(6) {
+            animation-delay: 1.9s;
+        }
+        .timeline-item:nth-child(7) {
+            animation-delay: 2.2s;
+        }
+        .timeline-item:nth-child(8) {
+            animation-delay: 2.5s;
+        }
+        .timeline-item:nth-child(9) {
+            animation-delay: 2.8s;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-35px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            background: #5a1a0a;
+            border-radius: 50%;
+            border: 1px solid #8b3020;
+            box-shadow: 0 0 10px rgba(200, 50, 20, 0.5);
+        }
+        .timeline-item:nth-child(odd)::before {
+            background: #6b1a08;
+            box-shadow: 0 0 14px rgba(220, 60, 20, 0.6);
+        }
+        .timeline-time {
+            color: #c08050;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .seal {
+            position: absolute;
+            top: 45px;
+            right: 25px;
+            width: 85px;
+            height: 85px;
+            border: 3px solid #8b1a0a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b1a0a;
+            font-size: 0.78rem;
+            letter-spacing: 0.3em;
+            transform: rotate(-20deg);
+            opacity: 0;
+            animation: sealAppear 1.2s ease-out 2.6s forwards;
+            user-select: none;
+            pointer-events: none;
+            text-align: center;
+            line-height: 1.2;
+            z-index: 1;
+        }
+        @keyframes sealAppear {
+            from {
+                opacity: 0;
+                transform: rotate(-20deg) scale(1.8);
+            }
+            to {
+                opacity: 0.7;
+                transform: rotate(-20deg) scale(1);
+            }
+        }
+        .btn-profile-link {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 22px auto 0;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            letter-spacing: 0.15em;
+            font-family: 'Georgia', 'Noto Serif SC', 'STSong', 'SimSun', serif;
+            cursor: pointer;
+            border: 1px solid #5a2a15;
+            border-radius: 2px;
+            background: #1f0d05;
+            color: #c89050;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            user-select: none;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 3.2s forwards;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .btn-profile-link:hover {
+            background: #2f1508;
+            border-color: #8b3a18;
+            color: #e8c080;
+            box-shadow: 0 0 26px rgba(200, 100, 30, 0.35);
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 24px 14px 20px;
+            }
+            .truth-title {
+                font-size: 1.7rem;
+            }
+            .timeline {
+                padding-left: 16px;
+            }
+            .timeline-item {
+                padding-left: 10px;
+                font-size: 0.82rem;
+                margin-bottom: 10px;
+            }
+            .timeline-item::before {
+                left: -23px;
+                width: 7px;
+                height: 7px;
+            }
+            .seal {
+                right: 6px;
+                top: 35px;
+                width: 55px;
+                height: 55px;
+                font-size: 0.55rem;
+                border-width: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="seal">真<br>相</div>
+        <div class="truth-title">真 相</div>
+        <div class="truth-subtitle">—— 案 件 重 构 ——</div>
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="timeline-time">8月2日 00：00</span> 奇迹馆读档
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-time">8月2日 00：01</span> 凶手在窗前将自己斩首，头颅掉到馆外
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-time">8月3日 00：00</span> 凶手复活
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-time">8月3日 12：00</span> 凶手假装工作，于下午离开，同时捡起8月2日自己的头颅，一同前往追日馆
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-time">8月3日 20：00</span> 凶手和死者陆续进入追日馆，凶手烧死死者，并将其身体装入行李箱，在现场放上那颗自己已被毁容的头
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-time">8月3日 23：00</span> 凶手回到奇迹馆，将烧焦的尸体放进自己房间，然后躲藏在某地
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-time">8月4日 00：00</span> 发现尸体
+            </div>
+            <div class="timeline-item">
+                待发现尸体后趁乱逃脱即可
+            </div>
+            <div class="timeline-item">
+                警察到来
+            </div>
+        </div>
+        <a href="profile.html" class="btn-profile-link">查看凶手档案（城塚七月解密档案）</a>
+    </div>
+</body>
+</html>
