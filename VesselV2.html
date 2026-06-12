@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vessel |  vessel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif+SC:wght@300;400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0a0e1a;
+            --secondary: #1a1f2e;
+            --accent: #c9a962;
+            --accent-light: #e0c88a;
+            --text: #f0f0f0;
+            --text-muted: #8a8f9a;
+            --border: rgba(201, 169, 98, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', 'Noto Serif SC', sans-serif;
+            background-color: var(--primary);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--primary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            background: transparent;
+        }
+        nav.scrolled {
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+        .logo span {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.9rem;
+            display: block;
+            color: var(--text-muted);
+            letter-spacing: 4px;
+            margin-top: -5px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px; left: 0;
+            width: 0; height: 1px;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a:hover::after { width: 100%; }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('hero.png') center/cover no-repeat;
+            z-index: 1;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(10,14,26,0.6) 0%, rgba(10,14,26,0.4) 50%, rgba(10,14,26,0.9) 100%);
+            z-index: 2;
+        }
+        .grid-lines {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(201, 169, 98, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201, 169, 98, 0.03) 1px, transparent 1px);
+            background-size: 100px 100px;
+            z-index: 3;
+            opacity: 0.5;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 900px;
+            padding: 0 2rem;
+        }
+        .hero-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--accent);
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.3s forwards;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+        }
+        .hero-title em {
+            font-style: italic;
+            color: var(--accent);
+        }
+        .hero-desc {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.1rem;
+            color: rgba(240,240,240,0.9);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.6s forwards;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .hero-cta {
+            display: inline-flex;
+            gap: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.9s forwards;
+        }
+        .cta-primary {
+            padding: 1rem 2.5rem;
+            background: var(--accent);
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            border: 1px solid var(--accent);
+        }
+        .cta-primary:hover {
+            background: transparent;
+            color: var(--accent);
+        }
+        .cta-secondary {
+            padding: 1rem 2.5rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+        .cta-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 1.5s forwards;
+        }
+        .scroll-indicator span {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--accent), transparent);
+            animation: scrollPulse 2s infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; transform: scaleY(0.5); }
+            50% { opacity: 1; transform: scaleY(1); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Section Styling */
+        section { padding: 6rem 5%; position: relative; }
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        .section-label {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.9rem;
+            color: var(--accent);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        /* About Section */
+        .about { background: var(--secondary); }
+        .about-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        .about-text h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+        .about-text p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: 'Noto Serif SC', serif;
+            line-height: 1.8;
+        }
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+        .stat h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        .stat p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+        .about-image {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .about-image:hover img {
+            transform: scale(1.05);
+        }
+        .about-image::after {
+            content: '';
+            position: absolute;
+            top: 20px; left: 20px;
+            right: 20px; bottom: 20px;
+            border: 1px solid var(--border);
+            pointer-events: none;
+        }
+
+        /* Locations Section (formerly Rooms) */
+        .locations-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        .location-card {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        .location-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 40px rgba(201, 169, 98, 0.1);
+        }
+        .location-image {
+            height: 250px;
+            position: relative;
+            overflow: hidden;
+        }
+        .location-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .location-card:hover .location-image img {
+            transform: scale(1.1);
+        }
+        .location-info {
+            padding: 2rem;
+        }
+        .location-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .location-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-family: 'Noto Serif SC', serif;
+        }
+        .location-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        .location-status {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            color: var(--accent);
+        }
+        .location-link {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        .location-link:hover { color: var(--accent); }
+
+        /* Login Section */
+        .login-section {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            position: relative;
+            overflow: hidden;
+        }
+        .login-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(201, 169, 98, 0.1) 0%, transparent 70%);
+        }
+        .login-section .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1.5rem;
+        }
+        .login-section .section-subtitle {
+            margin-bottom: 2.5rem;
+        }
+        .login-form {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+            text-align: left;
+        }
+        .login-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .login-form label {
+            display: block;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .login-form input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .login-form input:focus {
+            border-color: var(--accent);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent);
+            color: var(--primary);
+            border: 1px solid var(--accent);
+            font-family: inherit;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+        .login-btn:hover {
+            background: transparent;
+            color: var(--accent);
+        }
+        .login-error {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .login-error.show { opacity: 1; }
+
+        /* Footer */
+        footer {
+            background: #05070a;
+            padding: 4rem 5% 2rem;
+            border-top: 1px solid var(--border);
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        .footer-brand .logo {
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .footer-brand p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.8;
+            font-family: 'Noto Serif SC', serif;
+        }
+        .footer-col h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 0.8rem; }
+        .footer-col ul li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .footer-col ul li a:hover { color: var(--accent); }
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .nav-links { display: none; }
+            .about-content { grid-template-columns: 1fr; }
+            .locations-grid { grid-template-columns: 1fr; }
+            .footer-content { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 600px) {
+            .footer-content { grid-template-columns: 1fr; }
+            .hero-cta { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <a href="#" class="logo">
+            VESSEL
+            <span>vessel</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#about">关于</a></li>
+            <li><a href="#locations">地区</a></li>
+            <li><a href="#login">登录</a></li>
+            <li><a href="#contact">联系</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="grid-lines"></div>
+        <div class="hero-content">
+            <p class="hero-subtitle">Est. 1992</p>
+            <h1 class="hero-title">时间的<br><em>容器</em></h1>
+            <p class="hero-desc">在喧嚣与宁静之间，Vessel以经典之名，为每一位旅人提供一处承载记忆与梦境的庇护之所。</p>
+            <div class="hero-cta">
+                <a href="#locations" class="cta-primary">探索地区</a>
+                <a href="#about" class="cta-secondary">了解更多</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div class="section-header reveal">
+            <p class="section-label">About Us</p>
+            <h2 class="section-title">关于 Vessel</h2>
+            <p class="section-subtitle">一座城市中的静谧港湾，承载时光与故事</p>
+        </div>
+        <div class="about-content">
+            <div class="about-text reveal">
+                <h3>经典与现代的交汇</h3>
+                <p>Vessel创立于1992年，坐落于城市核心地带，却独享一份难得的宁静。我们的名字「Vessel」寓意着容器——不仅是身体的栖所，更是记忆与情感的载体。</p>
+                <p>三十余年来，我们始终坚持以匠心服务每一位宾客。从精心修复的 vintage 家具到现代化的智能设施，从传统茶道到当代艺廊，每一处细节都诉说着对品质的执着。</p>
+                <div class="about-stats">
+                    <div class="stat"><h4>30+</h4><p>年历史</p></div>
+                    <div class="stat"><h4>3</h4><p>服务地区</p></div>
+                    <div class="stat"><h4>5★</h4><p>星级服务</p></div>
+                </div>
+            </div>
+            <div class="about-image reveal">
+                <img src="about.png" alt="关于Vessel">
+            </div>
+        </div>
+    </section>
+
+    <section class="locations" id="locations">
+        <div class="section-header reveal">
+            <p class="section-label">Service Areas</p>
+            <h2 class="section-title">服务地区</h2>
+            <p class="section-subtitle">跨越三座城市，同一种卓越体验</p>
+        </div>
+        <div class="locations-grid">
+            <div class="location-card reveal">
+                <div class="location-image">
+                    <img src="singapore.png" alt="新加坡">
+                </div>
+                <div class="location-info">
+                    <h3>新加坡</h3>
+                    <p>滨海湾畔的璀璨明珠，融合南洋风情与现代都市的奢华体验。</p>
+                    <div class="location-meta">
+                        <div class="location-status">运营中</div>
+                        <a href="#" class="location-link">查看详情 →</a>
+                    </div>
+                </div>
+            </div>
+            <div class="location-card reveal">
+                <div class="location-image">
+                    <img src="tokyo.png" alt="东京">
+                </div>
+                <div class="location-info">
+                    <h3>东京</h3>
+                    <p>东京塔与晴空树之间的静谧居所，传统与未来的完美交汇。</p>
+                    <div class="location-meta">
+                        <div class="location-status">运营中</div>
+                        <a href="#" class="location-link">查看详情 →</a>
+                    </div>
+                </div>
+            </div>
+            <div class="location-card reveal">
+                <div class="location-image">
+                    <img src="dayun.png" alt="大云市">
+                </div>
+                <div class="location-info">
+                    <h3>大云市</h3>
+                    <p>群山环抱中的法式庄园，远离尘嚣的隐世桃源。</p>
+                    <div class="location-meta">
+                        <div class="location-status">运营中</div>
+                        <a href="#" class="location-link">查看详情 →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="login-section" id="login">
+        <div class="section-header reveal">
+            <p class="section-label">Access</p>
+            <h2 class="section-title">开启您的旅程</h2>
+            <p class="section-subtitle">登录以访问 Vessel 核心系统</p>
+        </div>
+        <form class="login-form reveal" id="loginForm">
+            <div class="form-group">
+                <label>账号</label>
+                <input type="text" id="username" placeholder="请输入账号" required>
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="password" placeholder="请输入密码" required>
+            </div>
+            <button type="submit" class="login-btn">登 录</button>
+            <div class="login-error" id="loginError">账号或密码错误，请重试。</div>
+        </form>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="#" class="logo">VESSEL<span>vessel</span></a>
+                <p>时间的容器，记忆的港湾。<br>自1992年起，致力于为每一位宾客创造难忘的居停体验。</p>
+            </div>
+            <div class="footer-col">
+                <h4>探索</h4>
+                <ul>
+                    <li><a href="#">新加坡</a></li>
+                    <li><a href="#">东京</a></li>
+                    <li><a href="#">大云市</a></li>
+                    <li><a href="#">设施服务</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>信息</h4>
+                <ul>
+                    <li><a href="#">关于我们</a></li>
+                    <li><a href="#">新闻资讯</a></li>
+                    <li><a href="#">职业机会</a></li>
+                    <li><a href="#">隐私政策</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>联系</h4>
+                <ul>
+                    <li><a href="#">大云市墨园区墨园路1号</a></li>
+                    <li><a href="#">+86 672 8888 000</a></li>
+                    <li><a href="#">reservations@vessel.com</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p> Vessel. All rights reserved.</p>
+            <p>Designed with elegance.</p>
+        </div>
+    </footer>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Login validation
+        const CORRECT_USER = 'AUMICCIME@vessel.com';
+        const CORRECT_PASS = 'YuYu04060910';
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const errorEl = document.getElementById('loginError');
+
+            if (user === CORRECT_USER && pass === CORRECT_PASS) {
+                window.location.href = 'vessel_capsule.html';
+            } else {
+                errorEl.classList.add('show');
+                setTimeout(() => errorEl.classList.remove('show'), 3000);
+            }
+        });
+    </script>
+</body>
+</html>

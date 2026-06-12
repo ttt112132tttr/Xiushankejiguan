@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vessel胶囊 | Vessel Capsule</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif+SC:wght@300;400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0a0e1a;
+            --secondary: #1a1f2e;
+            --accent: #c9a962;
+            --accent-light: #e0c88a;
+            --text: #f0f0f0;
+            --text-muted: #8a8f9a;
+            --border: rgba(201, 169, 98, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Noto Serif SC', sans-serif;
+            background-color: var(--primary);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Background Effects */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(201, 169, 98, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201, 169, 98, 0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(201, 169, 98, 0.08) 0%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* Header */
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-decoration: none;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .logo-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            border: 1px solid var(--border);
+            padding: 0.2rem 0.5rem;
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+            font-family: 'Noto Serif SC', serif;
+        }
+        .back-link:hover { color: var(--accent); }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 5%;
+        }
+
+        .capsule-content {
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .capsule-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .capsule-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 400;
+            margin-bottom: 2rem;
+            line-height: 1.2;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.3s forwards;
+        }
+
+        .capsule-title em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .capsule-divider {
+            width: 60px;
+            height: 1px;
+            background: var(--accent);
+            margin: 0 auto 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.5s forwards;
+        }
+
+        .capsule-text {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            line-height: 2;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.7s forwards;
+        }
+
+        .capsule-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.9s forwards;
+        }
+
+        .capsule-meta span {
+            color: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 10;
+            padding: 2rem 5%;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .copyright {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .copyright-label {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .masim-link {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .masim-link::after {
+            content: '↗';
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            margin-left: 0.3rem;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .masim-link:hover {
+            color: var(--accent-light);
+            border-bottom-color: var(--accent-light);
+            text-shadow: 0 0 10px rgba(201, 169, 98, 0.3);
+        }
+
+        .masim-link:hover::after {
+            opacity: 1;
+        }
+
+        .footer-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            footer { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <header>
+        <a href="VesselV2.html" class="logo">
+            Vessel
+            <span class="logo-tag">胶囊</span>
+        </a>
+        <a href="VesselV2.html" class="back-link">← 返回主页</a>
+    </header>
+
+    <main>
+        <div class="capsule-content">
+            <p class="capsule-label">// Classified Document</p>
+            <h1 class="capsule-title">
+                Vessel<br><em>Capsule</em>
+            </h1>
+            <div class="capsule-divider"></div>
+            <p class="capsule-text">
+                Vessel是一种时间穿越的巨型设备，其主要舱体在地下一层。
+            </p>
+            <p class="capsule-meta">
+                SYSTEM STATUS: <span>ONLINE</span> &nbsp;|&nbsp; LOCATION: <span>B1</span> &nbsp;|&nbsp; CLEARANCE: <span>LEVEL 5</span>
+            </p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="copyright">
+            <span class="copyright-label">版权隶属</span>
+            <a href="https://ttt112132tttr.github.io/Xiushankejiguan/MaSim.html" target="_blank" class="masim-link">MaSim</a>
+        </div>
+        <div class="footer-status">
+            <span class="status-dot"></span>
+            Vessel Core Running
+        </div>
+    </footer>
+</body>
+</html>
