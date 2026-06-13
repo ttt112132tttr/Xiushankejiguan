@@ -48,6 +48,14 @@ html,body{height:100%;font-family:"Noto Serif SC","Source Han Serif SC","SimSun"
 .content{padding:40px 20px 80px}
 .qr-img{width:80px;height:80px}
 }
+
+/* 灯箱 */
+.lightbox-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:1000;display:none;justify-content:center;align-items:center;cursor:pointer;opacity:0;transition:opacity 0.4s ease}
+.lightbox-overlay.active{display:flex;opacity:1}
+.lightbox-img{max-width:85vw;max-height:85vh;border-radius:8px;box-shadow:0 0 60px rgba(255,255,255,0.2);transform:scale(0.8);transition:transform 0.4s ease}
+.lightbox-overlay.active .lightbox-img{transform:scale(1)}
+.lightbox-close{position:fixed;top:30px;right:40px;color:#fff;font-size:2.5em;cursor:pointer;z-index:1001;text-shadow:0 0 10px rgba(255,255,255,0.5);opacity:0.7;transition:opacity 0.3s}
+.lightbox-close:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -70,15 +78,28 @@ html,body{height:100%;font-family:"Noto Serif SC","Source Han Serif SC","SimSun"
 <h2 class="sub-title" style="animation-delay:1s">—— 浮生若梦，为欢几何</h2>
 <div id="page2-text"></div>
 <div class="qr-section">
-<img src="qr1.png" class="qr-img" alt="小红书">
-<img src="qr2.jpg" class="qr-img" alt="B站">
-<img src="qr3.png" class="qr-img" alt="网易云">
+<img src="qr1.png" class="qr-img" alt="小红书" onclick="openLightbox(this.src)" style="cursor:pointer">
+<img src="qr2.jpg" class="qr-img" alt="B站" onclick="openLightbox(this.src)" style="cursor:pointer">
+<img src="qr3.png" class="qr-img" alt="网易云" onclick="openLightbox(this.src)" style="cursor:pointer">
 </div>
 <div class="blink-text">你确定这里是地球吗？</div>
 </div>
 </div>
 
 <script>
+
+// 灯箱
+function openLightbox(src){
+document.getElementById('lightbox-img').src=src;
+document.getElementById('lightbox').classList.add('active');
+document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+document.getElementById('lightbox').classList.remove('active');
+document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
+
 // 粒子系统
 const canvas=document.getElementById('particle-canvas');
 const ctx=canvas.getContext('2d');
@@ -195,12 +216,18 @@ renderTexts('page1-text',page1Texts,1500);
 function goToPage2(){
 document.getElementById('page1').classList.remove('active');
 document.getElementById('page2').classList.add('active');
-window.scrollTo(0,0);
+window.scrollTo({top:0,behavior:'instant'});
 renderTexts('page2-text',page2Texts,800);
 }
 
 // 全局错误捕获
 window.onerror=function(msg,url,line){alert('JS错误: '+msg+' (行'+line+')');};
 </script>
+
+<!-- 灯箱 -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+<div class="lightbox-close" onclick="event.stopPropagation();closeLightbox()">&times;</div>
+<img class="lightbox-img" id="lightbox-img" src="" alt="">
+</div>
 </body>
 </html>
