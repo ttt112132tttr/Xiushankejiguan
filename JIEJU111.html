@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>结局1：溺入梦境</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:"Noto Serif SC","Source Han Serif SC","SimSun",serif;background:#000;color:#f0f0f0;overflow-x:hidden}
+
+#particle-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10}
+
+.page{position:relative;min-height:100vh;width:100%;display:none;background-size:cover;background-position:center;background-attachment:fixed}
+.page.active{display:block}
+.page-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:1}
+
+.content{position:relative;z-index:5;max-width:800px;margin:0 auto;padding:60px 30px 100px}
+
+.main-title{font-size:2.8em;text-align:center;margin-bottom:10px;color:#fff;text-shadow:0 0 20px rgba(255,255,255,0.6),0 0 40px rgba(255,255,255,0.3);letter-spacing:8px;font-weight:300;opacity:0;animation:titleFadeIn 2.5s ease-out forwards}
+.sub-title{font-size:1.3em;text-align:center;margin-bottom:50px;color:rgba(255,255,255,0.85);letter-spacing:4px;font-weight:300;opacity:0;animation:titleFadeIn 2.5s ease-out 0.8s forwards}
+
+.paragraph{font-size:1.15em;line-height:2.2;margin-bottom:28px;text-align:justify;text-indent:2em;color:rgba(255,255,255,0.92);text-shadow:0 1px 3px rgba(0,0,0,0.5);opacity:0;transform:translateY(30px);transition:all 1.8s cubic-bezier(0.22,1,0.36,1)}
+.paragraph.visible{opacity:1;transform:translateY(0)}
+
+.page2 .paragraph{text-indent:0;filter:blur(4px);transition:all 2.5s cubic-bezier(0.22,1,0.36,1)}
+.page2 .paragraph.visible{filter:blur(0)}
+
+.continue-btn{display:block;margin:60px auto 40px;padding:14px 50px;background:transparent;border:1px solid rgba(255,255,255,0.5);color:rgba(255,255,255,0.9);font-size:1.1em;letter-spacing:6px;cursor:pointer;transition:all 0.6s ease;font-family:inherit;opacity:0;animation:titleFadeIn 2s ease-out 3s forwards}
+.continue-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.9);text-shadow:0 0 10px rgba(255,255,255,0.8);transform:scale(1.05)}
+
+.qr-section{display:flex;justify-content:center;gap:30px;margin-top:60px;margin-bottom:40px;flex-wrap:wrap}
+.qr-img{width:100px;height:100px;object-fit:contain;border-radius:8px;opacity:0.85;transition:all 0.5s ease;filter:drop-shadow(0 0 8px rgba(255,255,255,0.3))}
+.qr-img:hover{opacity:1;transform:scale(1.1);filter:drop-shadow(0 0 15px rgba(255,255,255,0.6))}
+
+.blink-text{text-align:center;font-size:1.2em;color:#ff4444;letter-spacing:3px;margin-bottom:40px;animation:blink 1.5s ease-in-out infinite;text-shadow:0 0 10px rgba(255,68,68,0.6),0 0 20px rgba(255,68,68,0.3)}
+
+@keyframes titleFadeIn{0%{opacity:0;transform:translateY(-20px);filter:blur(8px)}100%{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:rgba(0,0,0,0.2)}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.3);border-radius:3px}
+
+@media(max-width:600px){
+.main-title{font-size:2em;letter-spacing:4px}
+.sub-title{font-size:1em}
+.paragraph{font-size:1em;line-height:2}
+.content{padding:40px 20px 80px}
+.qr-img{width:80px;height:80px}
+}
+</style>
+</head>
+<body>
+<canvas id="particle-canvas"></canvas>
+
+<div class="page page1 active" id="page1" style="background-image:url('bg1.png')">
+<div class="page-overlay"></div>
+<div class="content">
+<h1 class="main-title">结局1：溺入梦境</h1>
+<h2 class="sub-title">朝闻道，夕死可矣</h2>
+<div id="page1-text"></div>
+<button class="continue-btn" id="continueBtn" onclick="goToPage2()">继 续</button>
+</div>
+</div>
+
+<div class="page page2" id="page2" style="background-image:url('bg2.png')">
+<div class="page-overlay"></div>
+<div class="content">
+<h1 class="main-title" style="animation-delay:0.5s">墟中论道</h1>
+<h2 class="sub-title" style="animation-delay:1s">—— 浮生若梦，为欢几何</h2>
+<div id="page2-text"></div>
+<div class="qr-section">
+<img src="qr1.png" class="qr-img" alt="小红书">
+<img src="qr2.jpg" class="qr-img" alt="B站">
+<img src="qr3.png" class="qr-img" alt="网易云">
+</div>
+<div class="blink-text">你确定这里是地球吗？</div>
+</div>
+</div>
+
+<script>
+// 粒子系统
+const canvas=document.getElementById('particle-canvas');
+const ctx=canvas.getContext('2d');
+let particles=[];
+let w,h;
+function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight}
+resize();
+window.addEventListener('resize',resize);
+
+class Particle{
+constructor(){this.reset()}
+reset(){
+this.x=Math.random()*w;
+this.y=Math.random()*h;
+this.size=Math.random()*2.5+0.5;
+this.speedX=(Math.random()-0.5)*0.4;
+this.speedY=(Math.random()-0.5)*0.4-0.2;
+this.opacity=Math.random()*0.6+0.1;
+this.fadeSpeed=Math.random()*0.003+0.001;
+this.fadeDir=Math.random()>0.5?1:-1;
+}
+update(){
+this.x+=this.speedX;
+this.y+=this.speedY;
+this.opacity+=this.fadeSpeed*this.fadeDir;
+if(this.opacity>0.8||this.opacity<0.05)this.fadeDir*=-1;
+if(this.x<-10||this.x>w+10||this.y<-10||this.y>h+10)this.reset();
+}
+draw(){
+ctx.beginPath();
+ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+ctx.fillStyle='rgba(255,255,255,'+this.opacity+')';
+ctx.fill();
+ctx.beginPath();
+ctx.arc(this.x,this.y,this.size*3,0,Math.PI*2);
+ctx.fillStyle='rgba(255,255,255,'+(this.opacity*0.15)+')';
+ctx.fill();
+}
+}
+
+for(let i=0;i<120;i++)particles.push(new Particle());
+function animateParticles(){ctx.clearRect(0,0,w,h);particles.forEach(p=>{p.update();p.draw()});requestAnimationFrame(animateParticles)}
+animateParticles();
+
+// 页面1文本（使用反引号避免引号冲突）
+const page1Texts=[
+`第十三次重启，从一开始就不太对。`,
+`前十二次，貅做这件事是轻车熟路的。张开嘴，吞下去的却不是时间，而是某种更深的东西——世界线本身被咽入腹中，咀嚼，然后吐出来，一切回到起点。他不得不这么做。时间在他的咽喉里不会停留太久，吞下去，消化掉，饥饿又会卷土重来。那些活在他腹中岁月里的人，林夜冬、克盈、秦鹏生，以及更多他来不及知道名字的存在，便随着每一次消化彻底消散。只有重启，才能把他们从自己的食欲里赎回来。吐出去，他们就能再活一遍；世界不荒芜，自己也不饿死。十二次，每一次都是这样。他以为自己找到了一个两全的法子——虽然累一点，虽然每隔两千多年就要重来一遭，但至少大家都还在。`,
+`但这一次，貅张嘴的时候，感觉到了重量。`,
+`那不是时间线本身的重量。时间线对他而言从来轻得像一缕烟。这一次压在他口腔里的，是整个世界的轮廓。他试图像往常一样合拢上下颚，却发现咬不下去。不是有什么东西卡住了喉咙——断点计划那些人的悖论骨头他吃过不止一次，早就知道怎么绕过。这一次的阻碍不在外面，在自己身上。权能不够了，像一盏点了太久的油灯，灯芯还在，油已见底。十二次重启，每一次都是在同一根灯芯上再烧一遍，烧到第十三次，火苗终于开始发抖。`,
+`他试了三次，第四次才勉强将那条世界线吞进嘴里。咀嚼的过程格外滞涩。往常两三下就能咬断的因果链，这一次反反复复嚼了许久。他嚼的时候甚至闪过一个从未有过的念头：如果这一次咽不下去，那上一次重启之后的世界就是最后的世界。林夜冬就真的死了，克盈就真的老了，那些花就真的只能在被貅吃剩的时间夹缝里静默地枯萎。他把这个念头连同世界线一起，硬生生咽了下去。等终于咽完，貅已经疲惫不堪。`,
+`但他还是做到了。世界线重启，时间重置，一切回到2025。`,
+`然后他发现了一个问题。`,
+`重启之后的世界上，少了一个东西。`,
+`不是少了林夜冬——林夜冬还在2025年的火星轨道上活着，还没来得及死。不是少了克盈——克盈还在2212年，才刚刚结束她的守望，正在写第一版养花人计划的草稿。不是少了那些花——夏维诗、伍雨、郁钦洋、甘眬，她们都还在各自的时间片段里静默地生长。`,
+`少的是一个不在这条时间线上的存在。一个貅每次重启之后都会去见一面的存在。帝江。`,
+`貅站在天山之表，混沌云雾翻涌如初，但那团状如黄囊、赤如丹火、六足四翼浑敦无面目的东西，不在那里。不止不在那里。貅伸出感知去触碰那个名字——帝江——触碰到的是一片光滑的虚无，像舌头舔过一面没有刻痕的石碑。名字没有对应的存在，存在没有对应的位置，位置没有对应的空间。帝江这个称号本身，被消除了。不是死了，不是离开了，不是被吞噬了。是「曾经有过」这件事，从来没有过。`,
+`貅摇了摇头。`,
+`「不可能。」`,
+`他站在云雾里又说了一遍：「不可能。帝江是混沌之始，与天地同根。谁能消除混沌？谁能在重启之前就把混沌剔除？帝江不在时间线上，他从来不在这条线上。他怎么会——」`,
+`他没有说完。因为他说不下去。他所掌握的一切知识都在告诉他这件事不可能发生，但这件事就摆在他面前，光滑、完整、毫无破绽。他忽然想起自己咽下第十三条世界线时那股前所未有的吃力——权能不够了，世界变薄了，薄到连混沌本身都兜不住了。是自己反复重启，把世界的底磨穿了。帝江不是被谁消除的，帝江是被他一遍又一遍的拯救磨没的。这个念头像一根刺，扎进他疲惫不堪的意识深处。`,
+`间一直站在旁边，双手抄在袖子里，安安静静地看着貅折腾。从头到尾，他一个字都没说。直到貅第三次喃喃自语「不可能」的时候，间才微微扬起下巴，望了望头顶那片似乎越来越稀薄的天空，用一种很轻很淡的语调开了口。其辞曰：`,
+`「世本如是。汝以为有端，其实无端。汝以为有顶，其实无顶。汝所触者，皆泡影之壁也。非入梦中，不可及也。」`,
+`貅转过头，盯着间。他还没来得及问这句话是什么意思，头顶的天空就碎了。不是裂开，不是坍塌，而是像一层极薄的泡沫被针尖轻轻一碰，泡影的表面从中心向外漾出一圈无声的涟漪，然后整片天空化成虚无。`,
+`不是黑暗。黑暗也是一种颜色。他们坠入的是一片纯白。纯白是没有颜色的。没有方向，没有远近，没有上下，没有时间可以咀嚼，没有空间可以游动。什么都没有，连「没有」这个词都不太用得上。只有貅和间，一大一小两个存在，悬浮在这片无边无际的白色当中，像两粒被遗忘在空碗里的灰尘。`
+];
+
+// 页面2文本（使用反引号避免引号冲突）
+const page2Texts=[
+`貅曰：「此境何归？诚如子言，是浮生幻梦欤？吾起于归墟，亦终将返于归墟。天地万物，皆可为吾驭用。今万象诡变、虚实难分，岂太虚存身之躯，亦沉沦入梦哉？断无此理。」`,
+`间曰：「浮生世人，仅此而已。众生熙熙，自以为欣然而乐。子安知己为超然巨灵，而非沧海微芥、池底虾苗？处世行世，随心欣然，便是至道。孰定何为梦、何为真？孰辨何为虚、何为实？唯吾自知，此刻未溺幻梦。若梦者，圆满无缺，包纳万性、涵摄万有，太虚不离梦，众生无时不在梦中也。」`,
+`貅曰：「子言甚合至理。吾辈身处空境，万象先于吾见闻而立，而后世所思之理、所循之律，皆可笼而统之。由是观之，此世为幻梦，非真境也。」`,
+`间曰：「未然。『我』者，万化本源、绝对之根也。先立己身，而后辨万物、分我非我。是故，心之所判，境之所成。我谓梦真，则此梦自真，非外物所能夺也。」`,
+`貅曰：「微积成巨，幽显相生。帝江隐迹、江河潜形，此世诡异久矣。纵使是梦中幻境，亦必有生成之径、运化之则。吾观此梦，循正反相生、合化衍变之序，步步推演，方成万千世相。」`,
+`间曰：「天地本根，为生之欲；浮生真性，为苦之渊。世间诸苦，皆由求生之志而起。寂灭求生之心，便可脱尘离苦、跳出苦海。浮生虚妄，不必沉恋，不若弃生息念，归乎太虚？」`,
+`貅曰：「子何颓言若是！吾辈不可弃自强之志、峥嵘之性。当秉奋进之心，蓄生命锐力，破壁破幻，超脱此梦墟牢笼。纵使轮回再世、重入此境，吾亦能破梦而出，直抵真源。」`,
+`间曰：「吾向者妄论耳。今悟至道：立身于世，贵在自择，向道从心，以归所信。纵长堕墟境、流转无休，又何损于吾？天地寥廓，万象无穷，吾愿尽观世间山海。」`,
+`貅曰：「善哉。你我墟中论道，亦是尘外佳趣。存者自存，亡者自寂。我辈既为有思之灵，便当叩问己身存在之真。此世若梦，此梦亦当自究何以为梦。此墟中幻境，非吾辈愿居而自至，乃被太虚放逐、沉堕于此。你我皆为放逐之人，浮沉坠落之间，坐而论道、观化听心，足矣。浮生有尽，死生常态，复有何伤？」`,
+`间曰：「诚然。吾深然子说，万物先存而后有性，本无定质，皆由自造。且身被放逐，众生各囿己境，彼此相隔、不可相涉。譬若素色涡旋横亘目前，可望而不可即。彼不知我胸中之思，我亦不测彼心之所向，彼此隔绝，两不相通。」`,
+`貅曰：「此便是世之荒诞耶？纵超然如我，亦不免有感于天地、慨叹于浮生。然境由心造，我辈当自安其心，自视福乐，不困虚妄。」`,
+`间曰：「盍反观此梦墟本相？且凝心悬境，摒诸好恶、绝诸思虑，不执是非、不扰心念。令万象自现其真，不妄描摹、不私言说，唯以身体悟、以心观照，察其本然意象，剖其生化真机。」`,
+`貅曰：「妙哉斯言。如是，则吾不以思虑隔物、不以心智断世，以身合道、以心通境，与万物浑然同一也。」`,
+`「然也。身者，当为接世之器。然子不谓我辈如此言谈，甚疲乎？吾或有不解子所言者。譬如『说』之一字，观其形符，不能径达于『言说』之义。故我辈之通，必多隔碍。又若吾复言『梦境』，子亦未必知吾所指。盖所表之符与所能之义，其系也任意耳。」`,
+`貅曰：「虽如是，亦可由言语之统系而会通之。世界之义在于世界之外，我辈当以语言描绘意义。世界之义，在于言语之日用也。」`,
+`间曰：「吾赞此见。言语之日用，重矣。然能表者，本自断裂。我辈今所识之万规，皆为一物所定，此物自吾生以来即在焉。然此物者，恒以一种缺场之姿而临场。今吾与子语，实为索吾心中不可补之虚罅也。」`,
+`貅曰：「吾能解子矣。吾今亦作此想。自适才以来，我辈所论者，其题屡迁。故无有定一之真理也。能表之链，迁流不息，恒自延异。而我辈之谈，皆以念与想为基，二者皆需或皆令我辈于脑中发为声响。故吾思之，声或为万象之本欤？吾当解构此梦境——设此梦果为梦者——吾意此特一卑劣之暴器，用以缚我辈、抑我辈耳。」`,
+`间曰：「子所言者，其规训乎。即某种存有，以权力与暴力加诸我辈。我辈亦只能如处环视之囹圄，若雏鷇然，为全景所监。然彼诚以我为可欺者耶？」`,
+`貅曰：「无已，且作此想。其实我辈已以符代物矣。自适才以来，未尝有以『现象』之物相对谈者，所用皆虚渺之符耳。」`,
+`间曰：「且此符者，遁走于无阶无涯之平面上。诚然。此符于我辈言之之际，其义亦自迁流，衍生不可能之可能。」`,
+`貅曰：「人兮，其欣然乎。」`,
+`间曰：「似将及底矣。」`,
+`貅曰：「岂非梦乎？」`,
+`间曰：「未知也。」`,
+`貅曰：「……」`
+];
+
+// 渲染段落
+function renderTexts(containerId,texts,baseDelay){
+const container=document.getElementById(containerId);
+container.innerHTML='';
+texts.forEach((text,index)=>{
+const p=document.createElement('p');
+p.className='paragraph';
+p.textContent=text;
+container.appendChild(p);
+setTimeout(()=>{p.classList.add('visible')},baseDelay+index*5000);
+});
+}
+
+// 初始化页面1
+renderTexts('page1-text',page1Texts,1500);
+
+// 切换页面2
+function goToPage2(){
+document.getElementById('page1').classList.remove('active');
+document.getElementById('page2').classList.add('active');
+window.scrollTo(0,0);
+renderTexts('page2-text',page2Texts,800);
+}
+
+// 全局错误捕获
+window.onerror=function(msg,url,line){alert('JS错误: '+msg+' (行'+line+')');};
+</script>
+</body>
+</html>
