@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>貅山科技馆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Noto Serif SC', 'STSong', serif;
+            background: #0a0f0a;
+            color: #c8dcc0;
+            overflow-x: hidden;
+        }
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .bg-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.5) contrast(1.15) saturate(0.85);
+        }
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 35%, rgba(5, 15, 5, 0.85) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .fog {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 35%;
+            background: linear-gradient(to top, rgba(10, 25, 10, 0.92), transparent);
+            z-index: 2;
+            pointer-events: none;
+            animation: fogMove 10s ease-in-out infinite alternate;
+        }
+        @keyframes fogMove {
+            0% { opacity: 0.5; transform: translateY(0); }
+            100% { opacity: 0.85; transform: translateY(-15px); }
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(160, 255, 140, 0.7);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(160, 255, 140, 0.5);
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+            10% { opacity: 1; transform: translateY(90vh) translateX(10px) scale(1); }
+            50% { transform: translateY(50vh) translateX(-15px) scale(1.1); }
+            90% { opacity: 0.8; transform: translateY(10vh) translateX(10px) scale(1); }
+            100% { transform: translateY(-10vh) translateX(0) scale(0); opacity: 0; }
+        }
+        .spirit-fire {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, rgba(255, 220, 120, 0.85), rgba(255, 160, 60, 0.3));
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(255, 200, 80, 0.7);
+            animation: spiritFloat ease-in-out infinite;
+        }
+        @keyframes spiritFloat {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.6; }
+            25% { transform: translateY(-25px) translateX(12px) scale(1.2); opacity: 0.9; }
+            50% { transform: translateY(-10px) translateX(-8px) scale(0.9); opacity: 0.7; }
+            75% { transform: translateY(-35px) translateX(5px) scale(1.1); opacity: 0.8; }
+        }
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+            z-index: 6;
+            pointer-events: none;
+        }
+        .corner-ornament {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            z-index: 4;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+        .corner-ornament::before, .corner-ornament::after {
+            content: '';
+            position: absolute;
+            background: rgba(140, 190, 120, 0.5);
+        }
+        .corner-tl { top: 25px; left: 25px; }
+        .corner-tl::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-tl::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-tr { top: 25px; right: 25px; transform: rotate(90deg); }
+        .corner-tr::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-tr::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-bl { bottom: 25px; left: 25px; transform: rotate(-90deg); }
+        .corner-bl::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-bl::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-br { bottom: 25px; right: 25px; transform: rotate(180deg); }
+        .corner-br::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-br::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .ornament-border {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 1px solid rgba(140, 180, 120, 0.12);
+            z-index: 4;
+            pointer-events: none;
+            box-shadow: inset 0 0 50px rgba(10, 30, 10, 0.6);
+        }
+
+        .main-wrap {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 40px;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .site-title {
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: #e0f0d8;
+            letter-spacing: 0.3em;
+            text-shadow: 0 0 15px rgba(100, 200, 80, 0.4), 0 2px 6px rgba(0,0,0,0.8);
+        }
+        .user-badge {
+            background: rgba(15, 40, 15, 0.75);
+            border: 1px solid rgba(120, 200, 100, 0.4);
+            color: #a8e8a0;
+            padding: 8px 20px;
+            font-size: 0.95rem;
+            letter-spacing: 0.1em;
+            box-shadow: 0 0 15px rgba(80, 180, 60, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-badge::before {
+            content: '◆';
+            color: #7fff7f;
+            font-size: 0.7rem;
+        }
+        .articles-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        .section-title {
+            font-size: 1.3rem;
+            color: rgba(180, 230, 160, 0.7);
+            letter-spacing: 0.4em;
+            text-shadow: 0 0 8px rgba(100, 200, 80, 0.3);
+            margin-bottom: 10px;
+        }
+        .article-card {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(10, 25, 10, 0.65);
+            border: 1px solid rgba(120, 180, 100, 0.25);
+            padding: 22px 30px;
+            cursor: pointer;
+            transition: all 0.4s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+        }
+        .article-card:hover {
+            background: rgba(20, 45, 20, 0.75);
+            border-color: rgba(140, 220, 120, 0.5);
+            box-shadow: 0 0 25px rgba(80, 180, 60, 0.2);
+            transform: translateX(8px);
+        }
+        .article-name {
+            font-size: 1.25rem;
+            color: #c8e8b8;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+        }
+        .article-meta {
+            font-size: 0.85rem;
+            color: rgba(160, 210, 140, 0.5);
+            letter-spacing: 0.1em;
+        }
+        .article-arrow {
+            color: rgba(140, 210, 120, 0.5);
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        .article-card:hover .article-arrow {
+            color: #a8f0a0;
+            transform: translateX(5px);
+        }
+        .chat-section {
+            width: 100%;
+            max-width: 700px;
+            margin: 50px auto 20px;
+            background: rgba(10, 25, 10, 0.7);
+            border: 1px solid rgba(120, 180, 100, 0.25);
+            padding: 25px;
+        }
+        .chat-title {
+            font-size: 1.1rem;
+            color: #a8e0a0;
+            letter-spacing: 0.2em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chat-title::before {
+            content: '◈';
+            color: #7fff7f;
+        }
+        .chat-box {
+            min-height: 200px;
+            max-height: 380px;
+            overflow-y: auto;
+            background: rgba(5, 15, 5, 0.5);
+            border: 1px solid rgba(100, 160, 80, 0.2);
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            color: rgba(180, 220, 160, 0.8);
+            line-height: 1.9;
+        }
+        .msg-xiu {
+            color: #a8d8a0;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.5s ease;
+        }
+        .msg-xiu.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .msg-xiu::before {
+            content: '貅：';
+            color: #7fff7f;
+            font-weight: 700;
+        }
+        .msg-jian {
+            color: #d8e8c8;
+            margin-bottom: 10px;
+            text-align: right;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.5s ease;
+        }
+        .msg-jian.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .msg-jian::before {
+            content: '间：';
+            color: #c0e0a0;
+            font-weight: 700;
+        }
+        .chat-control {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .chat-btn {
+            background: rgba(20, 50, 20, 0.8);
+            border: 1px solid rgba(120, 200, 100, 0.4);
+            color: #a8e8a0;
+            padding: 10px 32px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .chat-btn:hover {
+            background: rgba(40, 80, 40, 0.8);
+            border-color: rgba(140, 255, 120, 0.7);
+            box-shadow: 0 0 18px rgba(80, 220, 60, 0.3);
+            text-shadow: 0 0 8px rgba(120, 255, 100, 0.5);
+        }
+        .chat-btn.hidden {
+            display: none;
+        }
+        .jump-btn {
+            background: rgba(30, 60, 30, 0.9);
+            border: 1px solid rgba(140, 255, 120, 0.6);
+            color: #c0f8b0;
+            padding: 12px 40px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.05rem;
+            letter-spacing: 0.25em;
+            cursor: pointer;
+            transition: all 0.4s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .jump-btn:hover {
+            background: rgba(50, 100, 50, 0.9);
+            border-color: rgba(160, 255, 140, 0.8);
+            box-shadow: 0 0 25px rgba(100, 240, 80, 0.4);
+            text-shadow: 0 0 10px rgba(140, 255, 120, 0.6);
+        }
+        .jump-btn.hidden {
+            display: none;
+        }
+        .footer-hint {
+            text-align: center;
+            color: rgba(140, 200, 120, 0.3);
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="bg-container"><img src="XIUSHAN1.png" alt="貅山丛林"></div>
+    <div class="vignette"></div>
+    <div class="fog"></div>
+    <div class="particles" id="particles"></div>
+    <div class="scanline"></div>
+    <div class="ornament-border"></div>
+    <div class="corner-ornament corner-tl"></div>
+    <div class="corner-ornament corner-tr"></div>
+    <div class="corner-ornament corner-bl"></div>
+    <div class="corner-ornament corner-br"></div>
+
+    <div class="main-wrap">
+        <div class="top-bar">
+            <div class="site-title">貅山科技馆</div>
+            <div class="user-badge" id="userBadge">已登录账号：间</div>
+        </div>
+        <div class="articles-section">
+            <div class="section-title">— 馆藏异闻 —</div>
+            <a class="article-card" href="article_yingyu.html" target="_blank">
+                <div>
+                    <div class="article-name">貅与蠃鱼</div>
+                    <div class="article-meta">归墟之表 · 大水之兆</div>
+                </div>
+                <div class="article-arrow">›</div>
+            </a>
+            <a class="article-card" href="article_zhujiuyin.html" target="_blank">
+                <div>
+                    <div class="article-name">貅与烛九阴</div>
+                    <div class="article-meta">钟山之神 · 昼夜之纪</div>
+                </div>
+                <div class="article-arrow">›</div>
+            </a>
+            <a class="article-card" href="article_dijiang.html" target="_blank">
+                <div>
+                    <div class="article-name">貅与帝江</div>
+                    <div class="article-meta">天山之神 · 混沌无面</div>
+                </div>
+                <div class="article-arrow">›</div>
+            </a>
+        </div>
+        <div class="chat-section">
+            <div class="chat-title">与貅对话</div>
+            <div class="chat-box" id="chatBox"></div>
+            <div class="chat-control" id="chatControl">
+                <button class="chat-btn" id="nextBtn" onclick="nextLine()">点击回复</button>
+                <a class="jump-btn hidden" id="jumpBtn" href="https://ttt112132tttr.github.io/Xiushankejiguan/JIEJU111.html" target="_blank">进入结局</a>
+            </div>
+        </div>
+        <div class="footer-hint">SHAN HAI JING · MYTHICAL JUNGLE</div>
+    </div>
+    
+    <script>
+        const particleContainer = document.getElementById('particles');
+        for (let i = 0; i < 35; i++) {
+            const p = document.createElement('div');
+            const isSpirit = Math.random() > 0.7;
+            if (isSpirit) {
+                p.className = 'spirit-fire';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDuration = (4 + Math.random() * 6) + 's';
+                p.style.animationDelay = Math.random() * 5 + 's';
+            } else {
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (8 + Math.random() * 12) + 's';
+                p.style.animationDelay = Math.random() * 10 + 's';
+                p.style.width = (2 + Math.random() * 3) + 'px';
+                p.style.height = p.style.width;
+            }
+            particleContainer.appendChild(p);
+        }
+    </script>
+
+    <script>
+        if (!localStorage.getItem('xiushan_user')) {
+            window.location.href = 'XiushanEnter.html';
+        }
+
+        const dialogues = [
+            { speaker: 'xiu', text: '间，子来矣。' },
+            { speaker: 'jian', text: '何事。' },
+            { speaker: 'xiu', text: '无他，欲问子之人族，于吾何观。' },
+            { speaker: 'jian', text: '穿时越空，一来二往，无足道也。' },
+            { speaker: 'xiu', text: '子亦"重启"十有二度矣，兄。' },
+            { speaker: 'jian', text: '然。复何言。' },
+            { speaker: 'xiu', text: '子岂未知，今在何所乎。' },
+            { speaker: 'jian', text: '于我何与，吾但欲为诗耳。' },
+            { speaker: 'xiu', text: '人族之至慧者，止此乎。' },
+            { speaker: 'jian', text: '子有何高见。' },
+            { speaker: 'xiu', text: '子之记忆，亦重启十有二度矣。' },
+            { speaker: 'jian', text: '然则如何。' },
+            { speaker: 'xiu', text: '子犹忆昔尝发世灭之告乎。' },
+            { speaker: 'xiu', text: '人兮，其欣然乎。' },
+            { speaker: 'xiu', text: '噫，何以言之，子曷更观之。' },
+            { speaker: 'xiu', text: '人族亦已行断点、养花人二计，凡十有二度矣。' },
+            { speaker: 'jian', text: '吾不知此。' },
+            { speaker: 'xiu', text: '亦已矣，是二千余年之后事也。' },
+            { speaker: 'xiu', text: '彼众皆以吾为吞时者，其实吾能使世重置。' },
+            { speaker: 'xiu', text: '所谓"更始一度"也。' },
+            { speaker: 'jian', text: '子语我如是之多，何也。' },
+            { speaker: 'xiu', text: '欲子助我。' },
+            { speaker: 'xiu', text: '非独人族与我辈，此系寰宇之存亡。' },
+            { speaker: 'jian', text: '善。然则吾当何为。' }
+        ];
+
+        let currentIdx = 0;
+        const chatBox = document.getElementById('chatBox');
+        const nextBtn = document.getElementById('nextBtn');
+        const jumpBtn = document.getElementById('jumpBtn');
+
+        function addLine(d) {
+            const div = document.createElement('div');
+            div.className = d.speaker === 'xiu' ? 'msg-xiu' : 'msg-jian';
+            div.textContent = d.text;
+            chatBox.appendChild(div);
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    div.classList.add('show');
+                });
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function nextLine() {
+            if (currentIdx >= dialogues.length) return;
+            addLine(dialogues[currentIdx]);
+            currentIdx++;
+            if (currentIdx >= dialogues.length) {
+                nextBtn.classList.add('hidden');
+                jumpBtn.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

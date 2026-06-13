@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>貅与烛九阴 · 貅山科技馆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Noto Serif SC', 'STSong', serif;
+            background: #0a0f0a;
+            color: #c8dcc0;
+            overflow-x: hidden;
+        }
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .bg-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.5) contrast(1.15) saturate(0.85);
+        }
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 35%, rgba(5, 15, 5, 0.85) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .fog {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 35%;
+            background: linear-gradient(to top, rgba(10, 25, 10, 0.92), transparent);
+            z-index: 2;
+            pointer-events: none;
+            animation: fogMove 10s ease-in-out infinite alternate;
+        }
+        @keyframes fogMove {
+            0% { opacity: 0.5; transform: translateY(0); }
+            100% { opacity: 0.85; transform: translateY(-15px); }
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(160, 255, 140, 0.7);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(160, 255, 140, 0.5);
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+            10% { opacity: 1; transform: translateY(90vh) translateX(10px) scale(1); }
+            50% { transform: translateY(50vh) translateX(-15px) scale(1.1); }
+            90% { opacity: 0.8; transform: translateY(10vh) translateX(10px) scale(1); }
+            100% { transform: translateY(-10vh) translateX(0) scale(0); opacity: 0; }
+        }
+        .spirit-fire {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, rgba(255, 220, 120, 0.85), rgba(255, 160, 60, 0.3));
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(255, 200, 80, 0.7);
+            animation: spiritFloat ease-in-out infinite;
+        }
+        @keyframes spiritFloat {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.6; }
+            25% { transform: translateY(-25px) translateX(12px) scale(1.2); opacity: 0.9; }
+            50% { transform: translateY(-10px) translateX(-8px) scale(0.9); opacity: 0.7; }
+            75% { transform: translateY(-35px) translateX(5px) scale(1.1); opacity: 0.8; }
+        }
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+            z-index: 6;
+            pointer-events: none;
+        }
+        .corner-ornament {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            z-index: 4;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+        .corner-ornament::before, .corner-ornament::after {
+            content: '';
+            position: absolute;
+            background: rgba(140, 190, 120, 0.5);
+        }
+        .corner-tl { top: 25px; left: 25px; }
+        .corner-tl::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-tl::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-tr { top: 25px; right: 25px; transform: rotate(90deg); }
+        .corner-tr::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-tr::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-bl { bottom: 25px; left: 25px; transform: rotate(-90deg); }
+        .corner-bl::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-bl::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-br { bottom: 25px; right: 25px; transform: rotate(180deg); }
+        .corner-br::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-br::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .ornament-border {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 1px solid rgba(140, 180, 120, 0.12);
+            z-index: 4;
+            pointer-events: none;
+            box-shadow: inset 0 0 50px rgba(10, 30, 10, 0.6);
+        }
+
+        .article-wrap {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 50px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .back-link {
+            color: rgba(140, 210, 120, 0.6);
+            text-decoration: none;
+            font-size: 0.95rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            color: #a8f0a0;
+            text-shadow: 0 0 8px rgba(120, 220, 100, 0.4);
+        }
+        .article-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #e0f0d8;
+            letter-spacing: 0.25em;
+            text-shadow: 0 0 15px rgba(100, 200, 80, 0.35);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .article-divider {
+            width: 60px;
+            height: 2px;
+            background: rgba(120, 200, 100, 0.4);
+            margin: 20px auto 40px;
+            box-shadow: 0 0 8px rgba(100, 200, 80, 0.3);
+        }
+        .article-body {
+            font-size: 1.1rem;
+            line-height: 2.4;
+            color: rgba(200, 230, 180, 0.88);
+            text-align: justify;
+            letter-spacing: 0.05em;
+            white-space: pre-wrap;
+        }
+        .article-body p {
+            margin-bottom: 1.5em;
+            text-indent: 2em;
+        }
+        .article-footer {
+            margin-top: 60px;
+            text-align: center;
+            color: rgba(140, 200, 120, 0.35);
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="bg-container"><img src="XIUSHAN1.png" alt="貅山丛林"></div>
+    <div class="vignette"></div>
+    <div class="fog"></div>
+    <div class="particles" id="particles"></div>
+    <div class="scanline"></div>
+    <div class="ornament-border"></div>
+    <div class="corner-ornament corner-tl"></div>
+    <div class="corner-ornament corner-tr"></div>
+    <div class="corner-ornament corner-bl"></div>
+    <div class="corner-ornament corner-br"></div>
+
+    <div class="article-wrap">
+        <a class="back-link" href="xiushankejiguan.html">← 返回貅山科技馆</a>
+        <div class="article-title">貅与烛九阴</div>
+        <div class="article-divider"></div>
+        <div class="article-body">烛九阴者，钟山之神，人面蛇身而赤，视为昼，瞑为夜，不饮不食不息，身长千里。常卧于寒荒之表，独掌昼夜之纪。
+
+一日，貅自溟泠出，过钟山。烛九阴启一目视之，曰："子来矣。吾闻子吞时无数，凡世间可记之年，子皆啮之若齑粉。子岂饕餮之属耶？岂以暴虐为乐耶？"
+
+貅伏于山麓，良久不应。烛九阴复问之。貅乃曰："吾非乐也。吾不得已也。"
+
+烛九阴曰："何谓不得已？"
+
+貅曰："子掌昼夜，吾掌时序。子以开目为昼，闭目为夜，昼夜循环，万物以生。此子之道也。吾之道不然。吾之道，以吞时为生，以吐时为息。吾所吞之时，非灭也，乃藏也。"
+
+烛九阴曰："藏于何处？"
+
+貅曰："藏于吾腹。吾腹者，时之府库也。凡世间所历之时，若不为吾所吞，则散于虚空中，为粒所啮，为波所碎，终至湮灭无存。吾吞之，则存于吾腹，虽不为世人所至，然未尝亡也。"
+
+烛九阴曰："然则子非啖时者，子乃守时者？"
+
+貅曰："守时之名，吾不敢当。吾但行吾道耳。人之所恨我者，以我不能择而食。吾沿ζ浓处而往，逢时便吞，不问古今。故人所珍之年、所惜之岁、所重之史，往往入吾口而不可复见。此非吾残忍，性也。犹子之闭目，非为夺人之昼，性也。"
+
+烛九阴默然，复启一目，天地大明。乃曰："吾掌昼夜，人以吾为序。春耕秋藏，皆赖吾目之开阖。然使天地无序，无昼无夜，则万物何依？子之吞时，亦犹吾之司夜。夜虽暗，非害也，乃养也。子之吞时，虽夺人之岁，然亦止时之散逸。若子不吞，时且自灭，人且无时可用。此子之功也。人不知耳。"
+
+貅曰："吾亦尝自疑。吾见人之断点之术，以二身塞吾道。吾虽不为其所塞，然吾亦感其志之烈。彼人者，以百年之寿，欲拒万年之吞。彼林夜冬者，二身皆殒，一死于时，一死于火，然其志未散。吾过境时，见其血于彼处，闪闪犹温。吾虽吞其年，不能吞其血。此吾所不解者。"
+
+烛九阴曰："血者，存在之迹也。子能吞时，不能吞存在。此非子之力不足，乃道之异也。犹吾能司昼，不能司日。日自行于天外，非吾目力所能及。彼养花人者，知此道者也。彼不拒子，亦不责子。彼自种其花，自绽其出，子在花外，花在子外。此非术也，此知也。"
+
+貅曰："吾尝闻烛龙之名，以为子但司昼夜耳。今闻子言，乃知子亦知时。"
+
+烛九阴曰："昼夜者，时之小者。吾目开阖之间，亿兆岁已过。子所吞者，不过2025至2212之间数百年，于吾不过一瞬。然子之吞与不吞，于彼世人则生死系之。吾不笑子小，子亦不笑吾大。各尽其性而已。"
+
+貅曰："然则吾当如何？"
+
+烛九阴曰："子当如常。吞所当吞，存所当存。彼花人所种者，子不能食，亦不必食。彼此两全，何害之有？子以为世人以子为仇，然吾观养花人克盈之书，其辞曰：'貅能吃线，吃不了根。'此人知子者也。彼不恨子，子亦无需自恨。"
+
+貅曰："克盈者，吾尝绕其时间三次，彼不知也。彼以二百二十年守一人，又以残年种四花。彼身已老，彼志未衰。吾过其墓，见其碑上无一字，唯画一风信子。吾当时不知其义。今闻子言，乃知彼不恨我。彼但种花耳。"
+
+烛九阴阖其双目，天地复暝。曰："种花者，不责风霜。风霜自至，花自开。子为风霜，不为仇寇。去罢。"
+
+貅拜而退。自此过盈之墓，必绕行三步。</div>
+        <div class="article-footer">— 貅山科技馆 · 馆藏 —</div>
+    </div>
+    
+    <script>
+        const particleContainer = document.getElementById('particles');
+        for (let i = 0; i < 35; i++) {
+            const p = document.createElement('div');
+            const isSpirit = Math.random() > 0.7;
+            if (isSpirit) {
+                p.className = 'spirit-fire';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDuration = (4 + Math.random() * 6) + 's';
+                p.style.animationDelay = Math.random() * 5 + 's';
+            } else {
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (8 + Math.random() * 12) + 's';
+                p.style.animationDelay = Math.random() * 10 + 's';
+                p.style.width = (2 + Math.random() * 3) + 'px';
+                p.style.height = p.style.width;
+            }
+            particleContainer.appendChild(p);
+        }
+    </script>
+
+</body>
+</html>

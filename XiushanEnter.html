@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>貅山 · 入境</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Noto Serif SC', 'STSong', serif;
+            background: #0a0f0a;
+            color: #c8dcc0;
+            overflow-x: hidden;
+        }
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .bg-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.5) contrast(1.15) saturate(0.85);
+        }
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 35%, rgba(5, 15, 5, 0.85) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .fog {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 35%;
+            background: linear-gradient(to top, rgba(10, 25, 10, 0.92), transparent);
+            z-index: 2;
+            pointer-events: none;
+            animation: fogMove 10s ease-in-out infinite alternate;
+        }
+        @keyframes fogMove {
+            0% { opacity: 0.5; transform: translateY(0); }
+            100% { opacity: 0.85; transform: translateY(-15px); }
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(160, 255, 140, 0.7);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(160, 255, 140, 0.5);
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+            10% { opacity: 1; transform: translateY(90vh) translateX(10px) scale(1); }
+            50% { transform: translateY(50vh) translateX(-15px) scale(1.1); }
+            90% { opacity: 0.8; transform: translateY(10vh) translateX(10px) scale(1); }
+            100% { transform: translateY(-10vh) translateX(0) scale(0); opacity: 0; }
+        }
+        .spirit-fire {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, rgba(255, 220, 120, 0.85), rgba(255, 160, 60, 0.3));
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(255, 200, 80, 0.7);
+            animation: spiritFloat ease-in-out infinite;
+        }
+        @keyframes spiritFloat {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.6; }
+            25% { transform: translateY(-25px) translateX(12px) scale(1.2); opacity: 0.9; }
+            50% { transform: translateY(-10px) translateX(-8px) scale(0.9); opacity: 0.7; }
+            75% { transform: translateY(-35px) translateX(5px) scale(1.1); opacity: 0.8; }
+        }
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+            z-index: 6;
+            pointer-events: none;
+        }
+        .corner-ornament {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            z-index: 4;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+        .corner-ornament::before, .corner-ornament::after {
+            content: '';
+            position: absolute;
+            background: rgba(140, 190, 120, 0.5);
+        }
+        .corner-tl { top: 25px; left: 25px; }
+        .corner-tl::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-tl::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-tr { top: 25px; right: 25px; transform: rotate(90deg); }
+        .corner-tr::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-tr::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-bl { bottom: 25px; left: 25px; transform: rotate(-90deg); }
+        .corner-bl::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-bl::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-br { bottom: 25px; right: 25px; transform: rotate(180deg); }
+        .corner-br::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-br::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .ornament-border {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 1px solid rgba(140, 180, 120, 0.12);
+            z-index: 4;
+            pointer-events: none;
+            box-shadow: inset 0 0 50px rgba(10, 30, 10, 0.6);
+        }
+
+        body, html {
+            overflow: hidden;
+            height: 100%;
+        }
+        .enter-wrap {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .glow-text {
+            font-size: 1.6rem;
+            color: #7fff7f;
+            text-shadow: 0 0 10px rgba(80, 255, 100, 0.6), 0 0 30px rgba(60, 200, 80, 0.3);
+            letter-spacing: 0.15em;
+            line-height: 2.2;
+            text-align: center;
+            max-width: 700px;
+            min-height: 80px;
+            opacity: 0;
+            transition: opacity 0.8s;
+        }
+        .glow-text.show {
+            opacity: 1;
+        }
+        .input-group {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.6s;
+        }
+        .input-group.show {
+            opacity: 1;
+        }
+        .input-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .ancient-input {
+            background: rgba(10, 30, 10, 0.7);
+            border: 1px solid rgba(100, 200, 80, 0.4);
+            color: #a8e8a0;
+            padding: 10px 18px;
+            font-size: 1.05rem;
+            font-family: 'Noto Serif SC', serif;
+            letter-spacing: 0.1em;
+            outline: none;
+            width: 220px;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(80, 180, 60, 0.1);
+        }
+        .ancient-input:focus {
+            border-color: rgba(120, 255, 100, 0.7);
+            box-shadow: 0 0 20px rgba(80, 220, 60, 0.25);
+        }
+        .ancient-input::placeholder {
+            color: rgba(140, 200, 120, 0.4);
+        }
+        .ancient-btn {
+            background: rgba(20, 50, 20, 0.8);
+            border: 1px solid rgba(100, 200, 80, 0.5);
+            color: #a8e8a0;
+            padding: 10px 28px;
+            font-size: 1rem;
+            font-family: 'Noto Serif SC', serif;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .ancient-btn:hover {
+            background: rgba(40, 80, 40, 0.8);
+            border-color: rgba(140, 255, 120, 0.7);
+            box-shadow: 0 0 15px rgba(80, 220, 60, 0.3);
+            text-shadow: 0 0 8px rgba(120, 255, 100, 0.5);
+        }
+        .error-shake {
+            animation: shake 0.4s ease-in-out;
+            color: #ff6b6b !important;
+            text-shadow: 0 0 10px rgba(255, 80, 80, 0.5) !important;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: #7fff7f;
+            margin-left: 4px;
+            animation: blink 1s infinite;
+            vertical-align: text-bottom;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .label-text {
+            color: rgba(140, 210, 130, 0.7);
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+        }
+        .step2 {
+            display: none;
+        }
+        .step2.active {
+            display: flex;
+        }
+        .step1 {
+            display: flex;
+        }
+        .step1.hidden {
+            display: none;
+        }
+        .success-flash {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(80, 200, 60, 0.15);
+            z-index: 20;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="bg-container"><img src="XIUSHAN1.png" alt="貅山丛林"></div>
+    <div class="vignette"></div>
+    <div class="fog"></div>
+    <div class="particles" id="particles"></div>
+    <div class="scanline"></div>
+    <div class="ornament-border"></div>
+    <div class="corner-ornament corner-tl"></div>
+    <div class="corner-ornament corner-tr"></div>
+    <div class="corner-ornament corner-bl"></div>
+    <div class="corner-ornament corner-br"></div>
+
+    <div class="success-flash" id="flash"></div>
+    <div class="enter-wrap">
+        <div class="step1" id="step1">
+            <div class="glow-text" id="q1"></div>
+            <div class="input-group" id="inputs1">
+                <div class="input-row">
+                    <span class="label-text">一败：</span>
+                    <input type="text" class="ancient-input" id="ans1a" placeholder="填入谋名">
+                    <span class="label-text">二败：</span>
+                    <input type="text" class="ancient-input" id="ans1b" placeholder="填入谋名">
+                </div>
+                <button class="ancient-btn" onclick="checkStep1()">禀告</button>
+            </div>
+        </div>
+        <div class="step2" id="step2">
+            <div class="glow-text" id="q2"></div>
+            <div class="input-group" id="inputs2">
+                <div class="input-row">
+                    <span class="label-text">名：</span>
+                    <input type="text" class="ancient-input" id="ans2" placeholder="汝名">
+                </div>
+                <button class="ancient-btn" onclick="checkStep2()">通名</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const particleContainer = document.getElementById('particles');
+        for (let i = 0; i < 35; i++) {
+            const p = document.createElement('div');
+            const isSpirit = Math.random() > 0.7;
+            if (isSpirit) {
+                p.className = 'spirit-fire';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDuration = (4 + Math.random() * 6) + 's';
+                p.style.animationDelay = Math.random() * 5 + 's';
+            } else {
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (8 + Math.random() * 12) + 's';
+                p.style.animationDelay = Math.random() * 10 + 's';
+                p.style.width = (2 + Math.random() * 3) + 'px';
+                p.style.height = p.style.width;
+            }
+            particleContainer.appendChild(p);
+        }
+    </script>
+
+    <script>
+        const q1Text = "然则敢问人所行二败之谋，其谓何邪？";
+        const q2Text = "吾非人，愿与尔族至智者语。子其告名。";
+        let idx1 = 0, idx2 = 0;
+
+        function typeText(el, text, idx, onDone) {
+            if (idx < text.length) {
+                el.innerHTML = text.substring(0, idx+1) + '<span class="cursor"></span>';
+                setTimeout(() => typeText(el, text, idx+1, onDone), 60 + Math.random()*40);
+            } else {
+                el.innerHTML = text + '<span class="cursor"></span>';
+                if (onDone) onDone();
+            }
+        }
+
+        window.onload = () => {
+            const el = document.getElementById('q1');
+            el.classList.add('show');
+            typeText(el, q1Text, 0, () => {
+                setTimeout(() => {
+                    document.getElementById('inputs1').classList.add('show');
+                    document.getElementById('ans1a').focus();
+                }, 400);
+            });
+        };
+
+        function checkStep1() {
+            const a = document.getElementById('ans1a').value.trim();
+            const b = document.getElementById('ans1b').value.trim();
+            const correctA = "断点计划";
+            const correctB = "养花人计划";
+            if ((a === correctA && b === correctB) || (a === correctB && b === correctA)) {
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.add('active');
+                const el = document.getElementById('q2');
+                el.classList.add('show');
+                setTimeout(() => {
+                    typeText(el, q2Text, 0, () => {
+                        setTimeout(() => {
+                            document.getElementById('inputs2').classList.add('show');
+                            document.getElementById('ans2').focus();
+                        }, 400);
+                    });
+                }, 300);
+            } else {
+                const wrap = document.getElementById('step1');
+                wrap.classList.add('error-shake');
+                setTimeout(() => wrap.classList.remove('error-shake'), 500);
+            }
+        }
+
+        function checkStep2() {
+            const a = document.getElementById('ans2').value.trim();
+            if (a === "间") {
+                localStorage.setItem('xiushan_user', '间');
+                document.getElementById('flash').style.opacity = '1';
+                setTimeout(() => {
+                    window.location.href = 'xiushankejiguan.html';
+                }, 800);
+            } else {
+                const wrap = document.getElementById('step2');
+                wrap.classList.add('error-shake');
+                setTimeout(() => wrap.classList.remove('error-shake'), 500);
+            }
+        }
+
+        document.getElementById('ans1a').addEventListener('keypress', e => { if(e.key==='Enter') document.getElementById('ans1b').focus(); });
+        document.getElementById('ans1b').addEventListener('keypress', e => { if(e.key==='Enter') checkStep1(); });
+        document.getElementById('ans2').addEventListener('keypress', e => { if(e.key==='Enter') checkStep2(); });
+    </script>
+</body>
+</html>

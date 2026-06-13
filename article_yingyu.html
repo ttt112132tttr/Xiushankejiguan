@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>貅与蠃鱼 · 貅山科技馆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'Noto Serif SC', 'STSong', serif;
+            background: #0a0f0a;
+            color: #c8dcc0;
+            overflow-x: hidden;
+        }
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .bg-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.5) contrast(1.15) saturate(0.85);
+        }
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 35%, rgba(5, 15, 5, 0.85) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .fog {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 35%;
+            background: linear-gradient(to top, rgba(10, 25, 10, 0.92), transparent);
+            z-index: 2;
+            pointer-events: none;
+            animation: fogMove 10s ease-in-out infinite alternate;
+        }
+        @keyframes fogMove {
+            0% { opacity: 0.5; transform: translateY(0); }
+            100% { opacity: 0.85; transform: translateY(-15px); }
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(160, 255, 140, 0.7);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(160, 255, 140, 0.5);
+            animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+            10% { opacity: 1; transform: translateY(90vh) translateX(10px) scale(1); }
+            50% { transform: translateY(50vh) translateX(-15px) scale(1.1); }
+            90% { opacity: 0.8; transform: translateY(10vh) translateX(10px) scale(1); }
+            100% { transform: translateY(-10vh) translateX(0) scale(0); opacity: 0; }
+        }
+        .spirit-fire {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, rgba(255, 220, 120, 0.85), rgba(255, 160, 60, 0.3));
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(255, 200, 80, 0.7);
+            animation: spiritFloat ease-in-out infinite;
+        }
+        @keyframes spiritFloat {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.6; }
+            25% { transform: translateY(-25px) translateX(12px) scale(1.2); opacity: 0.9; }
+            50% { transform: translateY(-10px) translateX(-8px) scale(0.9); opacity: 0.7; }
+            75% { transform: translateY(-35px) translateX(5px) scale(1.1); opacity: 0.8; }
+        }
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+            z-index: 6;
+            pointer-events: none;
+        }
+        .corner-ornament {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            z-index: 4;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+        .corner-ornament::before, .corner-ornament::after {
+            content: '';
+            position: absolute;
+            background: rgba(140, 190, 120, 0.5);
+        }
+        .corner-tl { top: 25px; left: 25px; }
+        .corner-tl::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-tl::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-tr { top: 25px; right: 25px; transform: rotate(90deg); }
+        .corner-tr::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-tr::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-bl { bottom: 25px; left: 25px; transform: rotate(-90deg); }
+        .corner-bl::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-bl::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .corner-br { bottom: 25px; right: 25px; transform: rotate(180deg); }
+        .corner-br::before { top: 0; left: 0; width: 25px; height: 2px; }
+        .corner-br::after { top: 0; left: 0; width: 2px; height: 25px; }
+        .ornament-border {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 1px solid rgba(140, 180, 120, 0.12);
+            z-index: 4;
+            pointer-events: none;
+            box-shadow: inset 0 0 50px rgba(10, 30, 10, 0.6);
+        }
+
+        .article-wrap {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 50px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .back-link {
+            color: rgba(140, 210, 120, 0.6);
+            text-decoration: none;
+            font-size: 0.95rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .back-link:hover {
+            color: #a8f0a0;
+            text-shadow: 0 0 8px rgba(120, 220, 100, 0.4);
+        }
+        .article-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #e0f0d8;
+            letter-spacing: 0.25em;
+            text-shadow: 0 0 15px rgba(100, 200, 80, 0.35);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .article-divider {
+            width: 60px;
+            height: 2px;
+            background: rgba(120, 200, 100, 0.4);
+            margin: 20px auto 40px;
+            box-shadow: 0 0 8px rgba(100, 200, 80, 0.3);
+        }
+        .article-body {
+            font-size: 1.1rem;
+            line-height: 2.4;
+            color: rgba(200, 230, 180, 0.88);
+            text-align: justify;
+            letter-spacing: 0.05em;
+            white-space: pre-wrap;
+        }
+        .article-body p {
+            margin-bottom: 1.5em;
+            text-indent: 2em;
+        }
+        .article-footer {
+            margin-top: 60px;
+            text-align: center;
+            color: rgba(140, 200, 120, 0.35);
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="bg-container"><img src="XIUSHAN1.png" alt="貅山丛林"></div>
+    <div class="vignette"></div>
+    <div class="fog"></div>
+    <div class="particles" id="particles"></div>
+    <div class="scanline"></div>
+    <div class="ornament-border"></div>
+    <div class="corner-ornament corner-tl"></div>
+    <div class="corner-ornament corner-tr"></div>
+    <div class="corner-ornament corner-bl"></div>
+    <div class="corner-ornament corner-br"></div>
+
+    <div class="article-wrap">
+        <a class="back-link" href="xiushankejiguan.html">← 返回貅山科技馆</a>
+        <div class="article-title">貅与蠃鱼</div>
+        <div class="article-divider"></div>
+        <div class="article-body">蠃鱼者，状如覆铫，鸟首鱼翼，音如鸳鸯，见则天下大水。尝游于归墟之表，遇貅。
+
+蠃鱼问曰："闻子能吞时啖空，自太古至于今，凡若干纪，子之腹犹未果乎？"
+
+貅曰："未也。"
+
+蠃鱼曰："何不饱而止？"
+
+貅曰："吾之食，非饱之食也。吾食时，犹尔食水。尔饮水时，水入尔腹，复出尔鳃，水未尝减，尔未尝饱。吾吞时亦然。时入吾口，复出吾脊，时未尝亡，吾未尝止。吾非食时者，吾乃时之鳃也。"
+
+蠃鱼曰："善。然吾闻人世有术，名曰断点。欲以两身一人，塞子之喉。子为所塞乎？"
+
+貅笑曰："彼以绳为结，吾啮之如麻。彼以身为饵，吾吞之如芥。非不塞也，塞不足塞也。彼所以败者，以彼视时为线。线则可结，结则可解。然时非线也。"
+
+蠃鱼曰："时非线，则何物？"
+
+貅曰："吾不知。吾但食之而已。吾食线，线尽。吾食结，结散。彼欲以二身相悖而止吾，不知二身皆在线中。线中物，安能止食线者？"
+
+蠃鱼曰："吾又闻人世有异术，名曰养花人。彼不结绳，不置饵，不以身为塞。彼种花于子腹中。子能食花乎？"
+
+貅默然良久，曰："不能。"
+
+蠃鱼曰："何故？"
+
+貅曰："吾食时，时在外。花不在外，花在内。彼所谓花者，非时中之物，乃'在'中之物。吾能食一时、一事、一身，而不能食一决断、一承担、一到时。彼以绽出为根，以存在为土。吾口虽巨，不能吞存在也。"
+
+蠃鱼曰："然则花能止子乎？"
+
+貅曰："亦不能。彼不我止，彼自不我食。吾绕花而行，犹水绕石。石在水中，水不减石；花在吾域，吾不食花。彼存其存，吾行吾行。非敌也，非友也，两不相伤。"
+
+蠃鱼太息曰："吾以大水为患，人以吾为灾。子以吞时为业，人亦以子为灾。然子非灾，吾亦非灾。水与时，自行其道耳。人之有术，人之有花，亦自行其道耳。道与道不相害，而人谓之害者，以其畏也。"
+
+貅曰："然。吾畏吾所不知者。彼花人所为，吾不能尽解。彼所谓'曾在之将来从自身放出当前'者，吾嚼之如嚼影，吞之如吞空。不饱，不饥，无可如何。"
+
+蠃鱼曰："此人之所谓存在也。存在非子之食。子食时，时尽。存在不尽。彼养花人知此。故不争。"
+
+貅不复言，沉入归墟。蠃鱼鼓翼而去，天下大雨。</div>
+        <div class="article-footer">— 貅山科技馆 · 馆藏 —</div>
+    </div>
+    
+    <script>
+        const particleContainer = document.getElementById('particles');
+        for (let i = 0; i < 35; i++) {
+            const p = document.createElement('div');
+            const isSpirit = Math.random() > 0.7;
+            if (isSpirit) {
+                p.className = 'spirit-fire';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDuration = (4 + Math.random() * 6) + 's';
+                p.style.animationDelay = Math.random() * 5 + 's';
+            } else {
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (8 + Math.random() * 12) + 's';
+                p.style.animationDelay = Math.random() * 10 + 's';
+                p.style.width = (2 + Math.random() * 3) + 'px';
+                p.style.height = p.style.width;
+            }
+            particleContainer.appendChild(p);
+        }
+    </script>
+
+</body>
+</html>
