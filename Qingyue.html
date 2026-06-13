@@ -866,7 +866,7 @@
                 title: '身份验证',
                 subtitle: '回答以下问题以进入加密会话',
                 questions: [
-                    { label: '问题', id: 'bq1', placeholder: '渤海东隅，有邑名OO，常蒙重雾，一水经其地，号曰OO。（填入四个字）' }
+                    { label: '问题', id: 'bq1', placeholder: '渤海东隅，有邑名OO，常蒙重雾，一水经其地，号曰OO。' }
                 ],
                 answers: ['麓睢冥河'],
                 targetRoom: 'bai'
@@ -938,13 +938,13 @@
                             {name: '境', text: '……'},
                             {name: '境', text: '<img src="https://temp.aoki.dpdns.org/temp/43ce22a3773a1d7041ae9520caf8c817.png" class="chat-image" style="margin: 20px 0;" alt="图片">'},
                             {name: '白', text: '啥意思'},
-                            {name: '境', text: '结合我发给你的那个音频，得出答案后可以在<span class="highlight-text">大云市科学院</span>搜索'}
+                            {name: '境', text: '得出答案后可以在<span class="highlight-text">灵狐搜索</span>搜一下'}
                         ],
                         terminate: '聊天已结束'
                     }
                 ],
                 hasAudio: true,
-                audioUrl: '1.mp3'
+                audioUrl: '/mnt/agents/upload/未命名音频.wav'
             },
             yue: {
                 title: '粤的聊天室',
@@ -1002,7 +1002,7 @@
                     {
                         msgs: [
                             {name: '和', text: '兄弟你有灵狐搜索的网址没'},
-                            {name: '堀', text: '我没有，但是我记得隔壁那个拾野网站有人发过，好像叫风什么什么，我也是用的他发的网站，你可以去搜一下'}
+                            {name: '堀', text: '我没有，但是我记得隔壁那个拾野网站有人发过，好像叫风什么什么，我也是用的他发的网站'}
                         ],
                         terminate: '聊天已结束'
                     }
@@ -1011,7 +1011,8 @@
             tie: {
                 title: '餮的聊天室',
                 status: 'PUBLIC',
-                <img src="asd.jpg" alt="1">
+                hasImage: true,
+                imageUrl: 'https://temp.aoki.dpdns.org/temp/a1fe0066d404b1c27286d5b54818fe27.png',
                 sessions: [
                     {
                         msgs: [
@@ -1027,7 +1028,8 @@
             ku2: {
                 title: '库的聊天室',
                 status: 'PUBLIC',
-               <img src="his.jpg" alt="2">
+                hasImage: true,
+                imageUrl: 'https://temp.aoki.dpdns.org/temp/16e95a8955d1e3081bd035945c1aa983.png',
                 sessions: [
                     {
                         msgs: [
@@ -1115,7 +1117,7 @@
                         html += `
                             <div class="search-result-item" onclick="openChat('tie')">
                                 <div class="search-result-title">餮的聊天室</div>
-                                <div class="search-result-snippet">餮：有人想知道<span class="highlight-text">阿尔法号</span>的事情吗，来这里找我<br>库：走了十几分钟，我去了这里没人啊</div>
+                                <div class="search-result-snippet">餮：有人想知道<span class="highlight-text">阿尔法号</span>的事情吗，来这里找我<br>库：我去了这里没人啊</div>
                                 <div class="search-result-meta">2026-06-09 · 公开会话 · 含图片</div>
                             </div>
                         `;
